@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="记录平时的点点滴滴">
+<meta property="og:type" content="website">
+<meta property="og:title" content="启航的蜗牛">
+<meta property="og:url" content="https://www.alicharles.com/page/8/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="记录平时的点点滴滴">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="charles">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  
+
+<div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+    <!-- 指示符 -->
+    <div class="carousel-indicators">
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0"  class="active" ></button>
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" ></button>
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" ></button>
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="3" ></button>
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="4" ></button>
+        
+    </div>
+
+    <!-- 轮播图片 -->
+    <div class="carousel-inner">
+        
+        <div class="carousel-item  active ">
+            <img src="/images/c2.jpg" alt="常用架构分析" >
+            <a class="container" href="/article/architecture/architecture/">
+                <div class="carousel-caption text-start">
+                    <h3>常用架构分析</h3>
+                    <p class="excerpt">常用经典架构分析，了解设计思路和注意问题，主要以电商架构为主，设计到秒杀、商品、用户、库存、交易等相关通用解决方案，解析业务过程中的难点和解决方式。</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="carousel-item ">
+            <img src="/images/c1.jpg" alt="深入理解Disruptor" >
+            <a class="container" href="/article/disruptor/understanding-disruptor/">
+                <div class="carousel-caption text-start">
+                    <h3>深入理解Disruptor</h3>
+                    <p class="excerpt">Disruptor是LMAX公司开源的一个高效的内存无锁队列，一个高性能的异步处理框架，或者可以认为是最快的消息框架(轻量的JMS)，也可以认为是一个观察者模式实现，或者事件-监听模式的实现，直接称disruptor模式。disruptor最大特点是高性能，其LMAX架构可以获得每秒6百万订单，用1微秒的延迟获得吞吐量为100K+。理解Disruptor的原理，可以帮助我们更好的理解内存无锁，CAS，volatile，缓冲行等并发原理。</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="carousel-item ">
+            <img src="/images/c2.jpg" alt="深入理解jvm虚拟机" >
+            <a class="container" href="/article/jvm/understanding-jvm/">
+                <div class="carousel-caption text-start">
+                    <h3>深入理解jvm虚拟机</h3>
+                    <p class="excerpt">每个Java开发者都知道Java字节码是执行在JRE(（Java Runtime Environment Java运行时环境）上的。JRE中最重要的部分是Java虚拟机（JVM），JVM负责分析和执行Java字节码。Java开发人员并不需要去关心JVM是如何运行的。在没有深入理解JVM的情况下，许多开发者已经开发出了非常多的优秀的应用以及Java类库。不过，如果你了解JVM的话，你会更加了解Java的，并且你会轻松解决那些看似简单但是无从下手的问题。</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="carousel-item ">
+            <img src="/images/c3.jpg" alt="JDK中的设计模式" >
+            <a class="container" href="/article/design-pattern/jdk-design-pattern/">
+                <div class="carousel-caption text-start">
+                    <h3>JDK中的设计模式</h3>
+                    <p class="excerpt">本文主要是归纳了JDK中所包含的设计模式，包括作用和其设计类图。 一、设计模式的作用 反复出现问题的解决方案 增强软件的灵活性 适应软件不断变化 二、设计模式的七大原则 开闭原则OCP（Open Close Principle），一个软件实体如类、模块和函数应该对扩展开放，对修改关闭。 里氏代换原则LSP（Liskov Substitution Principle），子类可以扩展父类的功能，但不能</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="carousel-item ">
+            <img src="/images/c2.jpg" alt="Java并发编程之锁" >
+            <a class="container" href="/article/java/java-lock/">
+                <div class="carousel-caption text-start">
+                    <h3>Java并发编程之锁</h3>
+                    <p class="excerpt">作为一个java开发者，并发编程是不可或缺的，在并发的过程，Lock是并发的关键， 本文主要从排它锁和共享锁的实例来讲解锁的机制。 本文主要从以下方面来讲解锁的原理以及使用： 1、AbstractQueuedSynchronizer分析 2、ReentrantLock独占锁分析 3、CountDownLatch共享锁分析 4、ConditionObject分析 5、CyclicBarrier分析</p>
+                </div>
+            </a>
+        </div>
+        
+    </div>
+
+    <!-- 左右切换按钮 -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
+
+
+<div class="container bg-white my-2">
+    <div class="row mx-0">
+        <div class="col-sm-12 col-lg-9 charles-border-right px-lg-5 py-lg-2">
+            <section id="posts" class="posts-collapse">
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/disruptor/disruptor-practise/">
+                Disruptor（五）DSL相关实战
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        本文主要讲解使用 Disruptor 的 DSL 演示生产者和消费者的数据交换，和以往的线程间通信不同，disruptor 使用消息传递的方式，通过 RingBuffer 进行线程间的数据传递和通信，下面分别从一对一和多对一的模型进行讲解。下面主要通过计算区间[0 , 100000000)中的所有数值相加为例子讲解 Disruptor 中的 dsl 使用。
+1、一对一一个生产者和一个消费者之间进行数据传递，使用 disruptor 主要涉及到 RingBuffer 中的 ValueEvent 定义，ValueAdditionEventHandler 消费者处理，以及生产者发布。
+1.1 Rin
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-03-10T00:00:00+08:00">
+                2017-03-10
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/disruptor/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">disruptor</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Disruptor/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Disruptor</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/disruptor/disruptor-practise/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/disruptor/disruptor-ringbuffer-muti-write/">
+                Disruptor（四）RingBuffer多生产者写入
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        上一章主要介绍了单个生产者如何向 RingBuffer 数据写入数据，如何不要让 Ring 重叠，写入后通知消费者，生产者一端的批处理，以及多个生产者如何协同工作，本章主要介绍多生产者向 RingBuffer 数据写入数据。
+1、多生产者 MultiProducerSequencer 申请下一个节点和单生产者不同的是在 next 方法中会直接通过 cursor.compareAndSet(current, next)设置生产者的游标 cursor 的 sequence。大家很可能会问设置了生产者的游标后，没有提交数据之前，多生产者场景中消费者是否就能够获取到数据，答案是否定的，在 MultiP
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-03-05T00:00:00+08:00">
+                2017-03-05
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/disruptor/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">disruptor</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Disruptor/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Disruptor</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/disruptor/disruptor-ringbuffer-muti-write/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/disruptor/disruptor-ringbuffer-single-write/">
+                Disruptor（三）RingBuffer单生产者写入
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        上一章主要介绍了消费者从 RingBuffer 读取数据，本章主要介绍单个生产者如何向 RingBuffer 数据写入数据。在 RingBuffer 数据写入过程中如何不要让 Ring 重叠，写入后通知消费者，生产者一端的批处理，以及多个生产者如何协同工作。在 RingBuffer 写入数据的过程涉及到两阶段提交(two-phasecommit)1）生产者需要申请 buffer 里的下一个节点。2）当生产者向节点写完数据，需要调用调用 publish 发布数据。
+1、单个生产者 SingleProducerSequencer 数据写入在后台由 ProducerSequencer 负责所有的交互
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-02-16T00:00:00+08:00">
+                2017-02-16
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/disruptor/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">disruptor</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Disruptor/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Disruptor</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/disruptor/disruptor-ringbuffer-single-write/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/disruptor/disruptor-ringbuffer-read/">
+                Disruptor（二）RingBuffer读取
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        上一章主要介绍 Ring Buffer 的数据结构，本章主要讲解如何使用 Disruptor 从 Ring Buffer 中读取数据。
+1、消费者通过 ProcessingSequenceBarrier 读取数据能够读取数据的前提是数据已经写入到 Ring Buffer 中，关于数据的写入，后面一章节会详细讲解。RingBuffer 的元素的大小是 2 的 n 次方（上面 ringBufferSize 为 8，从序号 0 开始）。消费者(Consumer)是一个想从 RingBuffer 里读取数据的线程，它可以通过访问 ProcessingSequenceBarrier 对象和 RingBu
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-12-03T00:00:00+08:00">
+                2016-12-03
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/disruptor/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">disruptor</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Disruptor/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Disruptor</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/disruptor/disruptor-ringbuffer-read/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/disruptor/disruptor-ringbuffer/">
+                Disruptor（一）RingBuffer数据结构
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+Disruptor 是 LMAX 公司开源的一个高效的内存无锁队列。
+
+并发程序设计几个概念1、锁： 锁是用来做并发最简单的方式，当然其代价也是最高的。内核态的锁的时候需要操作系统进行一次上下文切换，等待锁的线程会被挂起直至锁释放。在上下文切换的时候，cpu 之前缓存的指令和数据都将失效，对性能有很大的损失。用户态的锁虽然避免了这些问题，但是其实它们只是在没有真实的竞争时才有效。2、CAS： CAS 的涵义不多介绍了。使用 CAS 时不像上锁那样需要一次上下文切换，但是也需要处理器锁住它的指令流水线来保证原子性，并且还要加上 Memory Barrier 来保证其结果可见。3、MemoryB
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-09-20T00:00:00+08:00">
+                2016-09-20
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/disruptor/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">disruptor</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Disruptor/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Disruptor</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/disruptor/disruptor-ringbuffer/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/disruptor/understanding-disruptor/">
+                深入理解Disruptor
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+Disruptor 是 LMAX 公司开源的一个高效的内存无锁队列，一个高性能的异步处理框架，或者可以认为是最快的消息框架(轻量的 JMS)，也可以认为是一个观察者模式实现，或者事件-监听模式的实现，直接称 disruptor 模式。disruptor 最大特点是高性能，其 LMAX 架构可以获得每秒 6 百万订单，用 1 微秒的延迟获得吞吐量为 100K+。理解 Disruptor 的原理，可以帮助我们更好的理解内存无锁，CAS，volatile，缓冲行等并发原理。
+
+本文主要从以下方面介绍 disruptor：1、Disruptor 概念和 RingBuffer 数据结构2、RingBu
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-09-06T00:00:00+08:00">
+                2016-09-06
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/disruptor/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">disruptor</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Disruptor/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Disruptor</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/disruptor/understanding-disruptor/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/netty/netty-io-basic/">
+                Netty（一）网络IO基础
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        在讨论 IO 的时候，参与者通常有两个角色：系统内核和用户进程。用户进程发送 IO 请求过后，系统内核在准备好 IO 数据后，会通过内存拷贝的方式，将准备好的缓存 IO 数据共享给用户进程缓存。
+网络 I&amp;#x2F;O 模型简介根据 UNIX 网络编程对 I&amp;#x2F;O 模型的分类，提供了阻塞 I&amp;#x2F;O 模型、非阻塞 I&amp;#x2F;O 模型、I&amp;#x2F;O 复用模型、信号驱动 I&amp;#x2F;O 模型、异步 I&amp;#x2F;O 这 5 种 I&amp;#x2F;O 模型。
+1、阻塞 I&amp;#x2F;O 模型最常用的模型，所有文件操作都是阻塞的。套接字 socket 在进程空间中调用 recvfr
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-28T00:00:00+08:00">
+                2016-08-28
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/netty/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">netty</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Netty/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Netty</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/netty/netty-io-basic/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/jvm/java-memory-model/">
+                JVM（七）深入理解java内存模型
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+java 线程之间的通信对程序员完全透明，内存可见性问题很容易困扰 java 程序员，本文试图揭开 java 内存模型神秘的面纱。
+
+本文大致分三部分：重排序与顺序一致性；三个同步原语（lock，volatile，final）的内存语义，重排序规则及在处理器中的实现；java 内存模型的设计目标，及其与处理器内存模型和顺序一致性内存模型的关系。
+
+深入理解 java 内存模型（一）——基础
+深入理解 java 内存模型（二）——重排序
+深入理解 java 内存模型（三）——顺序一致性
+深入理解 java 内存模型（四）——volatile
+深入理解 java 内存模型（五）——锁
+深入理解 
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-07T00:00:00+08:00">
+                2016-08-07
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/jvm/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">jvm</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/JVM/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">JVM</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/jvm/java-memory-model/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+            </section>
+        </div>
+        <div class="col px-lg-3 py-lg-2">
+            <div class="sidebar">
+    <div class="widget-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+    <div class="author">
+        <!--个人信息-->
+        
+        <img class="author-image" itemprop="image"
+             src="/images/logo.jpg"
+             alt=""/>
+        
+        <p class="author-name" itemprop="name"></p>
+        <p class="description" itemprop="description">
+            
+        </p>
+    </div>
+
+    <nav class="state">
+        <!--文章-->
+        
+        <div class="state-item state-posts">
+            <a href="/archives">
+                <span class="state-item-count">98</span>
+                <span class="state-item-name">文章</span>
+            </a>
+        </div>
+        
+
+        <!--类目-->
+        
+        <div class="state-item state-categories">
+            <a href="/categories">
+                <span class="state-item-count">25</span>
+                <span class="state-item-name">分类</span>
+            </a>
+        </div>
+        
+
+        <!--标签-->
+        
+        <div class="state-item state-tags">
+            <a href="/tags">
+                <span class="state-item-count">36</span>
+                <span class="state-item-name">标签</span>
+            </a>
+        </div>
+        
+    </nav>
+
+    <!--社交链接-->
+    
+    
+    <nav class="links-of-author">
+        
+        <div class="links-of-author-row row px-4">
+            <span class="links-of-author-item col-2" style="padding:0;"></span>
+            <span class="links-of-author-item col-4 " style="padding:0;">
+                <a href="https://weibo.com/charles0212" target="_blank" title="微博">
+                    <i class="fab fa-weibo "></i>
+                    微博
+                </a>
+            </span>
+            
+            <span class="links-of-author-item col-6" style="padding:0;">
+                <a href="https://www.facebook.com/cheng.zhang.charles" target="_blank" title="facebook">
+                    <i class="fab fa-facebook "></i>
+                    facebook
+                </a>
+            </span>
+            
+        </div>
+        
+        <div class="links-of-author-row row px-4">
+            <span class="links-of-author-item col-2" style="padding:0;"></span>
+            <span class="links-of-author-item col-4 " style="padding:0;">
+                <a href="https://zhihu.com/people/charles0212" target="_blank" title="知乎">
+                    <i class="fab fa-dribbble "></i>
+                    知乎
+                </a>
+            </span>
+            
+            <span class="links-of-author-item col-6" style="padding:0;">
+                <a href="https://github.com/charles0212" target="_blank" title="github">
+                    <i class="fab fa-github "></i>
+                    github
+                </a>
+            </span>
+            
+        </div>
+        
+    </nav>
+    
+
+</div>
+</div>
+        </div>
+    </div>
+    <div class="row mx-0">
+        <div class="col-sm-12 col-lg-9 px-lg-5">
+            <div class="pagination justify-content-center my-4">
+                <a class="extend prev" rel="prev" href="/page/7/">上一页</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/9/">下一页</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

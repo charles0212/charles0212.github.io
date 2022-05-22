@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        MySQL表碎片 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; 原文链接： &gt; https:&#x2F;&#x2F;www.percona.com&#x2F;blog&#x2F;2020&#x2F;06&#x2F;24&#x2F;mysql-table-fragmentation-beware-of-bulk-insert-with-failure-or-rollback&#x2F;  当心批量插入失败或者回滚时带来的 MySQL 表碎片，通常，DBA 都了解使用 DELETE 语句会产生表碎片。在大多数情况下，当执行大量的删除时，D">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL表碎片">
+<meta property="og:url" content="https://www.alicharles.com/article/mysql/mysql-table-fragmentation/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; 原文链接： &gt; https:&#x2F;&#x2F;www.percona.com&#x2F;blog&#x2F;2020&#x2F;06&#x2F;24&#x2F;mysql-table-fragmentation-beware-of-bulk-insert-with-failure-or-rollback&#x2F;  当心批量插入失败或者回滚时带来的 MySQL 表碎片，通常，DBA 都了解使用 DELETE 语句会产生表碎片。在大多数情况下，当执行大量的删除时，D">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-05-25T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.496Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Mysql">
+<meta property="article:tag" content="InnoDB">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>MySQL表碎片</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2019-05-26T00:00:00+08:00">
+            2019-05-26
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/database/" itemprop="url" rel="index">
+              <span itemprop="name">数据库</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p>原文链接：<br><a target="_blank" rel="noopener" href="https://www.percona.com/blog/2020/06/24/mysql-table-fragmentation-beware-of-bulk-insert-with-failure-or-rollback/">https://www.percona.com/blog/2020/06/24/mysql-table-fragmentation-beware-of-bulk-insert-with-failure-or-rollback/</a></p>
+</blockquote>
+<p><strong>当心批量插入失败或者回滚时带来的 MySQL 表碎片</strong>，通常，DBA 都了解使用 DELETE 语句会产生表碎片。在大多数情况下，当执行大量的删除时，DBA 总会重新构建表以回收磁盘空间。但是，您是否认为只有删除才会导致表碎片？（答案：并不是）。<br>在这篇博文中，我将解释插入如何会带来碎片。</p>
+<p>在讨论这个主题之前，我们需要了解 MySQL，有两种碎片：</p>
+<ul>
+<li>在表中的 InnoDB 页完全空闲引起的碎片。</li>
+<li>InnoDB 页未填充满（页中还有一些空闲空间）引起的碎片。</li>
+</ul>
+<p>主要有三种由插入引起的碎片场景：</p>
+<ul>
+<li>插入，然后回滚</li>
+<li>插入语句失败</li>
+<li>页分裂引起的碎片</li>
+</ul>
+<h2 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h2><p>我创建了自己的测试环境来测试这些案例。</p>
+<ul>
+<li>DB：Percona 版分支</li>
+<li>Table：frag，ins_frag，frag_page_spl</li>
+<li>表大小：2G</li>
+</ul>
+<h2 id="场景-1：插入后回滚"><a href="#场景-1：插入后回滚" class="headerlink" title="场景 1：插入后回滚"></a>场景 1：插入后回滚</h2><p>首先，我创建了一个新表”ins_flag”。然后我开启一个事务（使用 BEGIN）,如下所示开始拷贝”frag”表中数据到”ins_flag”中。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; create table ins_frag like frag;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql&gt; begin;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql&gt; insert into ins_frag select * from frag;
+Query OK, 47521280 rows affected (3 min 7.45 sec)
+Records: 47521280  Duplicates: 0  Warnings: 0
+
+#Linux shell
+sakthi-3.2# ls -lrth
+total 8261632
+-rw-r-----  1 _mysql  _mysql   2.0G Jun 17 02:43 frag.ibd
+-rw-r-----  1 _mysql  _mysql   2.0G Jun 17 03:00 ins_frag.ibd</code></pre>
+
+<p>如上所示，您可以看到已经执行了插入，但是我还没有提交或者回滚插入操作。您注意到 2 张表都已经占用 2G 磁盘空间。</p>
+<p>现在我将回滚插入操作。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; select count(*) from ins_frag;
++----------+
+| count(*) |
++----------+
+| 47521280 |
++----------+
+1 row in set (1.87 sec)
+
+mysql&gt; rollback;
+Query OK, 0 rows affected (5 min 45.21 sec)
+
+mysql&gt; select count(*) from ins_frag;
++----------+
+| count(*) |
++----------+
+|        0 |
++----------+
+1 row in set (0.00 sec)
+
+
+#Linux shell
+sakthi-3.2# ls -lrth
+total 8261632
+-rw-r-----  1 _mysql  _mysql   2.0G Jun 17 02:43 frag.ibd
+-rw-r-----  1 _mysql  _mysql   2.0G Jun 17 03:09 ins_frag.ibd</code></pre>
+
+<p>当插入回滚后，”ins_frag”表仍然占有相同的 2GB 的磁盘空间。让我们在 MySQL 客户端看看碎片空间。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT
+-&gt; table_schema as &#39;DATABASE&#39;,
+-&gt; table_name as &#39;TABLE&#39;,
+-&gt; CONCAT(ROUND(( data_length + index_length ) &#x2F; ( 1024 * 1024 * 1024 ), 2), &#39;G&#39;) &#39;TOTAL&#39;,
+-&gt; CONCAT(ROUND(data_free &#x2F; ( 1024 * 1024 * 1024 ), 2), &#39;G&#39;) &#39;DATAFREE&#39;
+-&gt; FROM information_schema.TABLES
+-&gt; where table_schema&#x3D;&#39;percona&#39; and table_name&#x3D;&#39;ins_frag&#39;;
++----------+----------+-------+----------+
+| DATABASE | TABLE.   | TOTAL | DATAFREE |
++----------+----------+-------+----------+
+| percona  | ins_frag | 0.00G | 1.96G    |
++----------+----------+-------+----------+
+1 row in set (0.01 sec)</code></pre>
+
+<p>这清楚的显示了插入之后回滚会产生碎片。我们需要重建表来回收磁盘空间。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; alter table ins_frag engine&#x3D;innodb;
+Query OK, 0 rows affected (2.63 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+#Linux shell
+
+sakthi-3.2# ls -lrth
+total 4131040
+-rw-r-----  1 _mysql  _mysql   2.0G Jun 17 02:43 frag.ibd
+-rw-r-----  1 _mysql  _mysql   112K Jun 17 03:11 ins_frag.ibd</code></pre>
+
+<h2 id="场景-2-插入语句失败"><a href="#场景-2-插入语句失败" class="headerlink" title="场景 2: 插入语句失败"></a>场景 2: 插入语句失败</h2><p>在会话 1 中，我将在事务中执行相同的插入语句。但是这次我会在会话 2 中中断并杀掉这个插入语句。<br><strong>会话 1</strong></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">#Linux shell
+
+sakthi-3.2# ls -lrth
+total 4131040
+-rw-r-----  1 _mysql  _mysql   2.0G Jun 17 02:43 frag.ibd
+-rw-r-----  1 _mysql  _mysql   112K Jun 17 04:02 ins_frag.ibd
+
+#MySQL shell
+
+mysql&gt; begin;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql&gt; insert into ins_frag select * from frag;   #is running</code></pre>
+
+<p><strong>会话 2</strong></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; pager grep -i insert ; show processlist;
+PAGER set to &#39;grep -i insert&#39;
+| 33 | root            | localhost | percona | Query   |    14 | executing              | insert into ins_frag select * from frag |
+4 rows in set (0.00 sec)
+
+mysql&gt; kill 33;
+Query OK, 0 rows affected (0.00 sec)</code></pre>
+
+<p>插入中断并失败了。<strong>在会话 1 查看：</strong></p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; insert into ins_frag select * from frag;
+ERROR 2013 (HY000): Lost connection to MySQL server during query
+
+#Linux shell
+
+sakthi-3.2# ls -lrth
+total 4591616
+-rw-r-----  1 _mysql  _mysql   2.0G Jun 17 02:43 frag.ibd
+-rw-r-----  1 _mysql  _mysql   212M Jun 17 04:21 ins_frag.ibd
+
+#MySQL shell
+
+mysql&gt; select count(*) from ins_frag;
++----------+
+| count(*) |
++----------+
+|        0 |
++----------+
+1 row in set (0.10 sec)</code></pre>
+
+<p>插入并未完成，表中无数据。但是仍然，这个表的 ibd 文件已经涨到 212M。通过 MySQL 客户端查看表空间碎片。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SELECT
+-&gt; table_schema as &#39;DATABASE&#39;,
+-&gt; table_name as &#39;TABLE&#39;,
+-&gt; CONCAT(ROUND(( data_length + index_length ) &#x2F; ( 1024 * 1024 ), 2), &#39;M&#39;) &#39;TOTAL&#39;,
+-&gt; CONCAT(ROUND(data_free &#x2F; ( 1024 * 1024 ), 2), &#39;M&#39;) &#39;DATAFREE&#39;
+-&gt; FROM information_schema.TABLES
+-&gt; where table_schema&#x3D;&#39;percona&#39; and table_name&#x3D;&#39;ins_frag&#39;;
++----------+----------+---------+----------+
+| DATABASE | TABLE    | TOTAL   | DATAFREE |
++----------+----------+---------+----------+
+| percona  | ins_frag | 0.03M   | 210.56M  |
++----------+----------+---------+----------+
+1 row in set (0.01 sec)</code></pre>
+
+<p>表中有碎片，需要重建表回收这些空间。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; alter table ins_frag engine&#x3D;&#39;innodb&#39;;
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+#Linux shell
+
+sakthi-3.2# ls -lrth
+total 4131040
+-rw-r-----  1 _mysql  _mysql   2.0G Jun 17 02:43 frag.ibd
+-rw-r-----  1 _mysql  _mysql   112K Jun 17 04:32 ins_frag.ibd</code></pre>
+
+<h2 id="场景-3-页分裂引起的碎片"><a href="#场景-3-页分裂引起的碎片" class="headerlink" title="场景 3: 页分裂引起的碎片"></a>场景 3: 页分裂引起的碎片</h2><p>我们知道，InnoDB 记录存储在 InnoDB 页中。默认情况下，每个页大小是 16K，但是您可以选择更改页大小。</p>
+<p>如果 InnoDB 页没有足够的空间容纳新的记录或索引条目，它将被分成 2 页，每页约占 50%。这意味着，即使对表只有插入，没有回滚和删除，最终也可能只有平均 75%的页利用率——因此这种页内部损失为 25%。</p>
+<p>当按排序建立索引，它们会有更多的拥塞，如果表很多插入到索引中随机位置，就会导致页分裂。</p>
+<p>参阅 Marco Tusa 写的博客 InnoDB Page Merging and Page Splitting，详细介绍了页分裂和 InnoDB 页结构&#x2F;操作。</p>
+<p>为了实验，我创建了一个具有排序索引的表（降序）</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; show create table frag_page_splG
+*************************** 1. row ***************************
+Table: frag_page_spl
+Create Table: CREATE TABLE &#96;frag_page_spl&#96; (
+&#96;id&#96; int NOT NULL AUTO_INCREMENT,
+&#96;name&#96; varchar(16) DEFAULT NULL,
+&#96;messages&#96; varchar(600) DEFAULT NULL,
+PRIMARY KEY (&#96;id&#96;),
+KEY &#96;idx_spl&#96; (&#96;messages&#96; DESC)
+) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8mb4 COLLATE&#x3D;utf8mb4_0900_ai_ci
+1 row in set (0.07 sec)</code></pre>
+
+<p>我们可以通过表 INFORMATION_SCHEMA.INNODB_METRICS 监控页分裂情况。对此，您需要启用 InnoDB monitor。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; SET GLOBAL innodb_monitor_enable&#x3D;all;
+Query OK, 0 rows affected (0.09 sec)</code></pre>
+
+<p>我写了一个 6 个并发随机插入的脚本。脚本执行结束后：</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">mysql&gt; select name,count,type,status,comment from information_schema.innodb_metrics where name like &#39;%index_page_spl%&#39;G
+*************************** 1. row ***************************
+name: index_page_splits
+count: 52186
+type: counter
+status: enabled
+comment: Number of index page splits
+1 row in set (0.05 sec)
+
+mysql&gt; SELECT
+-&gt; table_schema as &#39;DATABASE&#39;,
+-&gt; table_name as &#39;TABLE&#39;,
+-&gt; CONCAT(ROUND(( data_length + index_length ) &#x2F; ( 1024 * 1024 ), 2), &#39;M&#39;) &#39;TOTAL&#39;,
+-&gt; CONCAT(ROUND(data_free &#x2F; ( 1024 * 1024 ), 2), &#39;M&#39;) &#39;DATAFREE&#39;
+-&gt; FROM information_schema.TABLES
+-&gt; where table_schema&#x3D;&#39;percona&#39; and table_name&#x3D;&#39;frag_page_spl&#39;;
++----------+---------------+----------+----------+
+| DATABASE | TABLE.        | TOTAL    | DATAFREE |
++----------+---------------+----------+----------+
+| percona  | frag_page_spl | 2667.55M | 127.92M  |
++----------+---------------+----------+----------+
+1 row in set (0.00 sec)</code></pre>
+
+<p>从指标上看，我们看到页分裂次数在增加。输出显示有 52186 次页分裂，产生了 127.92MB 的碎片。<br>一旦发生页分裂，唯一的方法是将创建的页降至合并阈值之下。当这种情况发生时，InnoDB 通过合并操作将数据从分裂的页中移出。对表和特定的索引合并阈值是可配置的。<br>另一种重新组织数据的方法是 OPTIMIZE TABLE。这是一个非常重和漫长的过程，但通常这是解决过多页比较稀疏的唯一方法。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>前面两种情况很少见。因为大多数应用程序都不会设计在表中写入大量数据。</li>
+<li>在执行批量插入时（INSERT INTO SELECT * FROM, 加载 mysqldump 的数据, INSERT with huge data 等）需要注意这些问题。</li>
+<li>碎片占用的磁盘空间始终是可重用的。</li>
+</ul>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Mysql/" itemprop="url" rel="index">
+                  <span itemprop="name">Mysql</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/InnoDB/" itemprop="url" rel="index">
+                  <span itemprop="name">InnoDB</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/mysql/mysql-mvcc/" rel="next" title="MVCC多版本并发控制">
+            <i class="fa far fa-chevron-left"></i> MVCC多版本并发控制
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/mysql/mysql-btree-depth/" rel="prev" title="MySQL B+树深度的了解">
+            MySQL B+树深度的了解 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-text">测试环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF-1%EF%BC%9A%E6%8F%92%E5%85%A5%E5%90%8E%E5%9B%9E%E6%BB%9A"><span class="toc-text">场景 1：插入后回滚</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF-2-%E6%8F%92%E5%85%A5%E8%AF%AD%E5%8F%A5%E5%A4%B1%E8%B4%A5"><span class="toc-text">场景 2: 插入语句失败</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF-3-%E9%A1%B5%E5%88%86%E8%A3%82%E5%BC%95%E8%B5%B7%E7%9A%84%E7%A2%8E%E7%89%87"><span class="toc-text">场景 3: 页分裂引起的碎片</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

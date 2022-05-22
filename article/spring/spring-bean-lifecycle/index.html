@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Spring Bean的生命周期 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="要彻底搞清楚 Spring 的生命周期，首先要把这四个阶段牢牢记住。实例化和属性赋值对应构造方法和setter 方法的注入，初始化和销毁是用户能自定义扩展的两个阶段。   1. 实例化-&gt;Instantiation  2. 属性赋值-&gt;Populate  3. 初始化-&gt;Initialization  4. 销毁-&gt;Destruction  实例化 -&gt; 属性赋值 -&gt; 初始化 -&gt; 销毁   1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Bean的生命周期">
+<meta property="og:url" content="https://www.alicharles.com/article/spring/spring-bean-lifecycle/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="要彻底搞清楚 Spring 的生命周期，首先要把这四个阶段牢牢记住。实例化和属性赋值对应构造方法和setter 方法的注入，初始化和销毁是用户能自定义扩展的两个阶段。   1. 实例化-&gt;Instantiation  2. 属性赋值-&gt;Populate  3. 初始化-&gt;Initialization  4. 销毁-&gt;Destruction  实例化 -&gt; 属性赋值 -&gt; 初始化 -&gt; 销毁   1">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649521466271-63972c73-03ba-4d2e-a4a0-69cdd8a179c6.png#clientId=u437c72b1-3eed-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=354&id=u714da385&margin=%5Bobject%20Object%5D&name=image.png&originHeight=472&originWidth=562&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=47256&status=done&style=none&taskId=uef4c9713-7b08-483d-860f-b78efc2a756&title=&width=422">
+<meta property="article:published_time" content="2018-07-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.497Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649521466271-63972c73-03ba-4d2e-a4a0-69cdd8a179c6.png#clientId=u437c72b1-3eed-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=354&id=u714da385&margin=%5Bobject%20Object%5D&name=image.png&originHeight=472&originWidth=562&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=47256&status=done&style=none&taskId=uef4c9713-7b08-483d-860f-b78efc2a756&title=&width=422">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Spring Bean的生命周期</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2018-08-01T00:00:00+08:00">
+            2018-08-01
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/spring/" itemprop="url" rel="index">
+              <span itemprop="name">spring</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>要彻底搞清楚 Spring 的生命周期，首先要把这四个阶段牢牢记住。实例化和属性赋值对应<strong>构造方法</strong>和<strong>setter 方法</strong>的注入，初始化和销毁是用户能自定义扩展的两个阶段。</p>
+<ol>
+<li>实例化-&gt;Instantiation</li>
+<li>属性赋值-&gt;Populate</li>
+<li>初始化-&gt;Initialization</li>
+<li>销毁-&gt;Destruction</li>
+</ol>
+<p>实例化 -&gt; 属性赋值 -&gt; 初始化 -&gt; 销毁</p>
+<h2 id="1、影响多个-Bean-的接口"><a href="#1、影响多个-Bean-的接口" class="headerlink" title="1、影响多个 Bean 的接口"></a>1、影响多个 Bean 的接口</h2><p>实现了这些接口的 Bean 会切入到多个 Bean 的生命周期中。正因为如此，这些接口的功能非常强大，Spring 内部扩展也经常使用这些接口，例如自动注入以及 AOP 的实现都和他们有关。</p>
+<ul>
+<li>InstantiationAwareBeanPostProcessor</li>
+<li>BeanPostProcessor</li>
+</ul>
+<p>这两兄弟可能是 Spring 扩展中最重要的两个接口！InstantiationAwareBeanPostProcessor 作用于实例化阶段的前后，BeanPostProcessor 作用于初始化阶段的前后。如图：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649521466271-63972c73-03ba-4d2e-a4a0-69cdd8a179c6.png#clientId=u437c72b1-3eed-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=354&id=u714da385&margin=%5Bobject%20Object%5D&name=image.png&originHeight=472&originWidth=562&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=47256&status=done&style=none&taskId=uef4c9713-7b08-483d-860f-b78efc2a756&title=&width=422" alt="image.png"><br><strong>其中 InstantiationAwareBeanPostProcessor 继承自 BeanPostProcessor 是 Spring 非常重要的拓展接口</strong><br>1、postProcessBeforeInstantiation 调用时机为 bean 实例化(Instantiation)之前 如果返回了 bean 实例, 则会替代原来正常通过 target bean 生成的 bean 的流程. 典型的例如 aop 返回 proxy 对象. 此时 bean 的执行流程将会缩短, 只会执行 BeanPostProcessor#postProcessAfterInitialization 接口完成初始化。<br>2、postProcessAfterInstantiation 调用时机为 bean 实例化(Instantiation)之后和任何初始化(Initialization)之前。<br>3、postProcessProperties 调用时机为 postProcessAfterInstantiation 执行之后并返回 true, 返回的 PropertyValues 将作用于给定 bean 属性赋值。Spring 5.1 之后出现以替换@Deprecated 标注的 postProcessPropertyValues<br>4、postProcessPropertyValues 已经被标注@Deprecated，后续将会被 postProcessProperties 取代。<br>进入执行流程<br>步骤 1 ：InstantiationAwareBeanPostProcessor 的触发入口 AbstractAutowireCapableBeanFactory #createBean 开始。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+* Central method of this class: creates a bean instance,
+* populates the bean instance, applies post-processors, etc.
+*
+* @see #doCreateBean
+*&#x2F;
+@Override
+protected Object createBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args)
+    throws BeanCreationException &#123;
+
+    &#x2F;&#x2F; 省略......
+    try &#123;
+        &#x2F;**
+        * 注释1. InstantiationAwareBeanPostProcessor#postProcessorsBeforeInstantiation触发入口
+        *&#x2F;
+        Object bean &#x3D; resolveBeforeInstantiation(beanName, mbdToUse);
+        if (bean !&#x3D; null) &#123;
+            return bean;
+        &#125;
+    &#125; catch (Throwable ex) &#123;
+        throw new BeanCreationException(mbdToUse.getResourceDescription(), beanName,
+                                        &quot;BeanPostProcessor before instantiation of bean failed&quot;, ex);
+    &#125;
+    &#x2F;&#x2F; 省略......
+    try &#123;
+        &#x2F;**
+        * 注释2. postProcessAfterInstantiation、postProcessProperties 触发入口
+        * 主要逻辑都在doCreateBean()方法中，
+        * 方法中包含了实例化、属性赋值、初始化过程。逻辑很清晰
+        * 这三个方法与三个生命周期阶段一一对应，非常重要
+        *&#x2F;
+        Object beanInstance &#x3D; doCreateBean(beanName, mbdToUse, args);
+        if (logger.isTraceEnabled()) &#123;
+            logger.trace(&quot;Finished creating instance of bean &#39;&quot; + beanName + &quot;&#39;&quot;);
+        &#125;
+        return beanInstance;
+    &#125; catch (BeanCreationException | ImplicitlyAppearedSingletonException ex) &#123;
+        &#x2F;&#x2F; A previously detected exception with proper bean creation context already,
+        &#x2F;&#x2F; or illegal singleton state to be communicated up to DefaultSingletonBeanRegistry.
+        throw ex;
+    &#125; catch (Throwable ex) &#123;
+        throw new BeanCreationException(
+            mbdToUse.getResourceDescription(), beanName, &quot;Unexpected exception during bean creation&quot;, ex);
+    &#125;
+&#125;</code></pre>
+
+<p>步骤 2：注释 1 中，跟进 AbstractAutowireCapableBeanFactory#resolveBeforeInstantiation， 分析 postProcessorsBeforeInstantiation 执行时机 ：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;** 注释1 代码进入后执行InstantiationAwareBeanPostProcessor#ostProcessBeforeInstantiation方法*&#x2F;
+@Nullable
+protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) &#123;
+    Object bean &#x3D; null;
+    if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) &#123;
+        &#x2F;&#x2F; Make sure bean class is actually resolved at this point.
+        if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
+            Class&lt;?&gt; targetType &#x3D; determineTargetType(beanName, mbd);
+            if (targetType !&#x3D; null) &#123;
+                &#x2F;**
+                * 注释3：回调beanPostProcessorsBeforeInstantiation实例化，如果返回bean非null则直接执行
+                * 不为空null就直接返回了而不执行doCreateBean()方法了，而该方法是创建Bean对象的方法
+                * beanPostProcessorsAfterInitialization进行实例初始化
+                *&#x2F;
+                bean &#x3D; applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
+                if (bean !&#x3D; null) &#123;
+                    &#x2F;** 注释4 *&#x2F;
+                    bean &#x3D; applyBeanPostProcessorsAfterInitialization(bean, beanName);
+                &#125;
+            &#125;
+        &#125;
+        mbd.beforeInstantiationResolved &#x3D; (bean !&#x3D; null);
+    &#125;
+    return bean;
+&#125;
+
+&#x2F;**注释3 代码跟进*&#x2F;
+@Nullable
+protected Object applyBeanPostProcessorsBeforeInstantiation(Class&lt;?&gt; beanClass, String beanName) &#123;
+    for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
+        if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
+            &#x2F;**
+            * 注释5：只要其中一个postProcessBeforeInstantiation返回实例bean即结束回调，
+            * 这个bean将会直接返回给bean容器管理
+            *&#x2F;
+            InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
+            Object result &#x3D; ibp.postProcessBeforeInstantiation(beanClass, beanName);
+            if (result !&#x3D; null) &#123;
+                return result;
+            &#125;
+        &#125;
+    &#125;
+    return null;
+&#125;
+
+&#x2F;** 注释4 代码跟进*&#x2F;
+@Override
+public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
+    throws BeansException &#123;
+    Object result &#x3D; existingBean;
+    for (BeanPostProcessor processor : getBeanPostProcessors()) &#123;
+        &#x2F;**注释6 *&#x2F;
+        Object current &#x3D; processor.postProcessAfterInitialization(result, beanName);
+        if (current &#x3D;&#x3D; null) &#123;
+            return result;
+        &#125;
+        result &#x3D; current;
+    &#125;
+    return result;
+&#125;</code></pre>
+
+<p>可以看到，postProcessBeforeInstantiation 在 doCreateBean 之前调用，也就是在 bean 实例化之前调用的，英文源码注释解释道该方法的返回值会替换原本的 Bean 作为代理，这也是 Aop 等功能实现的关键点。</p>
+<blockquote>
+<p>代码说明：</p>
+</blockquote>
+<ol>
+<li>注释 5 中，如果 postProcessBeforeInstantiation 方法返回了 Object 是 null;那么就直接返回，调用 doCreateBean 方法();</li>
+<li>注释 5 中，如果 postProcessBeforeInstantiation 返回不为 null;说明修改了 bean 对象;然后这个时候就立马执行 postProcessAfterInitialization 方法(注意这个是初始化之后的方法,也就是通过这个方法实例化了之后，直接执行初始化之后的方法;中间的实例化之后 和 初始化之前都不执行);</li>
+<li>注释 6 中，在调用 postProcessAfterInitialization 方法时候如果返回 null;那么就直接返回，调用 doCreateBean 方法();(初始化之后的方法返回了 null,那就需要调用 doCreateBean 生成对象了)</li>
+<li>在调用 postProcessAfterInitialization 时返回不为 null;那这个 bean 就直接返回给 ioc 容器了初始化之后的操作是这里面最后一个方法了；</li>
+</ol>
+<p>步骤 2：跟进 AbstractAutowireCapableBeanFactory#doCreateBean， 分析 postProcessAfterInstantiation、postProcessProperties 执行时机 ：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args)
+    throws BeanCreationException &#123;
+
+    BeanWrapper instanceWrapper &#x3D; null;
+    if (mbd.isSingleton()) &#123;
+        instanceWrapper &#x3D; this.factoryBeanInstanceCache.remove(beanName);
+    &#125;
+    if (instanceWrapper &#x3D;&#x3D; null) &#123;
+        &#x2F;**  注释7 实例化阶段！ *&#x2F;
+        instanceWrapper &#x3D; createBeanInstance(beanName, mbd, args);
+    &#125;
+    &#x2F;&#x2F; 省略......
+    &#x2F;&#x2F; Initialize the bean instance.
+    Object exposedObject &#x3D; bean;
+    try &#123;
+        &#x2F;** 注释8 依据bean definition 完成bean属性赋值 *&#x2F;
+        populateBean(beanName, mbd, instanceWrapper);
+        &#x2F;** 注释9 执行bean初始化 *&#x2F;
+        exposedObject &#x3D; initializeBean(beanName, exposedObject, mbd);
+    &#125; catch (Throwable ex) &#123;
+        if (ex instanceof BeanCreationException &amp;&amp; beanName.equals(((BeanCreationException) ex).getBeanName())) &#123;
+            throw (BeanCreationException) ex;
+        &#125; else &#123;
+            throw new BeanCreationException(
+                mbd.getResourceDescription(), beanName, &quot;Initialization of bean failed&quot;, ex);
+        &#125;
+    &#125;
+    &#x2F;&#x2F; 省略......
+    return exposedObject;
+&#125;</code></pre>
+
+<blockquote>
+<p>这三个方法与三个生命周期阶段一一对应，非常重要</p>
+<ol>
+<li>createBeanInstance() -&gt; 实例化（注释 7）</li>
+<li>populateBean() -&gt; 属性赋值（注释 8）</li>
+<li>initializeBean() -&gt; 初始化（注释 9）</li>
+</ol>
+</blockquote>
+<p>注释 8 中，继续跟进 AbstractAutowireCapableBeanFactory#populateBean</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">protected void populateBean(String beanName, RootBeanDefinition mbd, @Nullable BeanWrapper bw) &#123;
+
+    &#x2F;&#x2F; Give any InstantiationAwareBeanPostProcessors the opportunity to modify the
+    &#x2F;&#x2F; state of the bean before properties are set. This can be used, for example,
+    &#x2F;&#x2F; to support styles of field injection.
+    boolean continueWithPropertyPopulation &#x3D; true;
+    &#x2F;&#x2F; InstantiationAwareBeanPostProcessor#postProcessAfterInstantiation()
+    &#x2F;**
+    * 注释10：满足两个要求：
+    * 1、BeanDefinition为应用程序bean，而非基础框架bean信息。
+    * 2、注册过InstantiationAwareBeanPostProcessor类型接口，上文有提到这个标志位。
+    * 3、注册了多个接口时，只要其中一个postProcessAfterInstantiation返回false，即停止后续执行。
+    *&#x2F;
+    if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) &#123;
+        for (BeanPostProcessor bp : getBeanPostProcessors()) &#123;
+            if (bp instanceof InstantiationAwareBeanPostProcessor) &#123;
+                InstantiationAwareBeanPostProcessor ibp &#x3D; (InstantiationAwareBeanPostProcessor) bp;
+                if (!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) &#123;
+                    continueWithPropertyPopulation &#x3D; false;
+                    break;
+                &#125;
+            &#125;
+        &#125;
+    &#125;
+
+    &#x2F;&#x2F; 忽略后续的属性赋值操作代码
+&#125;</code></pre>
+
+<p>可以看到该方法在属性赋值方法内，但是在真正执行赋值操作之前。其返回值为 boolean，返回 false 时可以阻断属性赋值阶段（continueWithPropertyPopulation &#x3D; false;）<br>关于 BeanPostProcessor 执行阶段的源码穿插在下文 Aware 接口的调用时机分析中，因为部分 Aware 功能的就是通过他实现的!只需要先记住 BeanPostProcessor 在初始化前后调用就可以了。</p>
+<h2 id="2、只调用一次的接口"><a href="#2、只调用一次的接口" class="headerlink" title="2、只调用一次的接口"></a>2、只调用一次的接口</h2><p>这一大类接口的特点是功能丰富，常用于用户自定义扩展。<br>第二大类中又可以分为两类：</p>
+<ol>
+<li>Aware 类型的接口</li>
+<li>生命周期接口</li>
+</ol>
+<p>Aware 类型的接口的作用就是让我们能够拿到 Spring 容器中的一些资源。基本都能够见名知意，Aware 之前的名字就是可以拿到什么资源，例如 BeanNameAware 可以拿到 BeanName，以此类推。调用时机需要注意：所有的 Aware 方法都是在初始化阶段之前调用的！<br>Aware 接口众多，这里同样通过分类的方式帮助大家记忆。<br>Aware 接口具体可以分为两组，至于为什么这么分，详见下面的源码分析。如下排列顺序同样也是 Aware 接口的执行顺序，能够见名知意的接口不再解释。<br><strong>Aware Group1</strong></p>
+<ol>
+<li>BeanNameAware</li>
+<li>BeanClassLoaderAware</li>
+<li>BeanFactoryAware</li>
+</ol>
+<p><strong>Aware Group2</strong></p>
+<ol>
+<li>EnvironmentAware</li>
+<li>EmbeddedValueResolverAware (这个知道的人可能不多，实现该接口能够获取 Spring EL 解析器，用户的自定义注解需要支持 spel 表达式的时候可以使用，非常方便。)</li>
+<li>ApplicationContextAware(ResourceLoaderAware\ApplicationEventPublisherAware\MessageSourceAware) 这几个接口可能让人有点懵，实际上这几个接口可以一起记，其返回值实质上都是当前的 ApplicationContext 对象，因为 ApplicationContext 是一个复合接口，如下：</li>
+</ol>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public interface ApplicationContext extends EnvironmentCapable, ListableBeanFactory, HierarchicalBeanFactory, MessageSource, ApplicationEventPublisher, ResourcePatternResolver &#123;
+&#125;</code></pre>
+
+<p>这里涉及常问的问题，<strong>ApplicationContext 和 BeanFactory 的区别</strong>，可以从 ApplicationContext 继承的这几个接口入手，除去 BeanFactory 相关的两个接口（ListableBeanFactory, HierarchicalBeanFactory）就是 ApplicationContext 独有的功能，这里不详细说明。</p>
+<h3 id="Aware-调用时机源码分析"><a href="#Aware-调用时机源码分析" class="headerlink" title="Aware 调用时机源码分析"></a>Aware 调用时机源码分析</h3><p>详情如下，忽略了部分无关代码。代码位置就是我们上文提到的 initializeBean 方法详情，这也说明了 Aware 都是在初始化阶段之前调用的！</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;&#x2F; 注释9 代码进入 调用初始化阶段
+protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) &#123;
+
+    &#x2F;&#x2F; 注释11 这里调用的是Group1中的三个Bean开头的Aware
+    invokeAwareMethods(beanName, bean);
+
+    Object wrappedBean &#x3D; bean;
+
+    &#x2F;**
+    * 这里调用的是Group2中的几个Aware，
+    * 而实质上这里就是前面所说的BeanPostProcessor的调用点！
+    * 也就是说与Group1中的Aware不同，这里是通过BeanPostProcessor（ApplicationContextAwareProcessor）实现的。
+    *&#x2F;
+    &#x2F;** 注释12 *&#x2F;
+    wrappedBean &#x3D; applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
+    &#x2F;** 注释13 下文即将介绍的InitializingBean调用点 *&#x2F;
+    invokeInitMethods(beanName, wrappedBean, mbd);
+    &#x2F;** 注释14 BeanPostProcessor的另一个调用点*&#x2F;
+    wrappedBean &#x3D; applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
+
+    return wrappedBean;
+&#125;
+
+&#x2F;**注释11 代码进入 *&#x2F;
+private void invokeAwareMethods(final String beanName, final Object bean) &#123;
+    if (bean instanceof Aware) &#123;
+        if (bean instanceof BeanNameAware) &#123;
+            ((BeanNameAware) bean).setBeanName(beanName);
+        &#125;
+        if (bean instanceof BeanClassLoaderAware) &#123;
+            ((BeanClassLoaderAware) bean).setBeanClassLoader(getBeanClassLoader());
+        &#125;
+        if (bean instanceof BeanFactoryAware) &#123;
+            ((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
+        &#125;
+    &#125;
+&#125;</code></pre>
+
+<p>注释 11 代码进入后，可以看到并不是所有的 Aware 接口都使用同样的方式调用。Bean××Aware 都是在代码中直接调用的。<br>而 ApplicationContext 相关的 Aware 都是通过 applyBeanPostProcessorsBeforeInitialization 来调用 BeanPostProcessor#postProcessBeforeInitialization()实现的。感兴趣的可以自己看一下 ApplicationContextAwareProcessor 这个类的源码，就是判断当前创建的 Bean 是否实现了相关的 Aware 方法，如果实现了会调用回调方法将资源传递给 Bean。<br>至于 Spring 为什么这么实现，应该没什么特殊的考量。也许和 Spring 的版本升级有关。基于对修改关闭，对扩展开放的原则，Spring 对一些新的 Aware 采用了扩展的方式添加。<br>BeanPostProcessor 的调用时机也能在这里体现，包围住 invokeInitMethods 方法，也就说明了在初始化阶段的前后执行。<br>关于 Aware 接口的执行顺序，其实只需要记住第一组在第二组执行之前就行了。每组中各个 Aware 方法的调用顺序其实没有必要记，有需要的时候点进源码一看便知。</p>
+<h3 id="简单的两个生命周期接口"><a href="#简单的两个生命周期接口" class="headerlink" title="简单的两个生命周期接口"></a>简单的两个生命周期接口</h3><p>至于剩下的两个生命周期接口就很简单了，实例化和属性赋值都是 Spring 帮助我们做的，能够自己实现的有初始化和销毁两个生命周期阶段。</p>
+<ol>
+<li>InitializingBean 对应生命周期的初始化阶段，在上面源码的 invokeInitMethods(beanName, wrappedBean, mbd);方法中调用。<br>有一点需要注意，因为 Aware 方法都是执行在初始化方法之前，所以可以在初始化方法中放心大胆的使用 Aware 接口获取的资源，这也是我们自定义扩展 Spring 的常用方式。<br>除了实现 InitializingBean 接口之外还能通过注解或者 xml 配置的方式指定初始化方法，至于这几种定义方式的调用顺序其实没有必要记。因为这几个方法对应的都是同一个生命周期，只是实现方式不同，我们一般只采用其中一种方式。</li>
+<li>DisposableBean 类似于 InitializingBean，对应生命周期的销毁阶段，以 ConfigurableApplicationContext#close()方法作为入口，实现是通过循环取所有实现了 DisposableBean 接口的 Bean 然后调用其 destroy()方法 。感兴趣的可以自行跟一下源码。</li>
+</ol>
+<p>扩展阅读: BeanPostProcessor 注册时机与执行顺序</p>
+<h3 id="注册时机"><a href="#注册时机" class="headerlink" title="注册时机"></a>注册时机</h3><p>我们知道 BeanPostProcessor 也会注册为 Bean，那么 Spring 是如何保证 BeanPostProcessor 在我们的业务 Bean 之前初始化完成呢？请看我们熟悉的 refresh()方法的源码，省略部分无关代码：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">@Override
+public void refresh() throws BeansException, IllegalStateException &#123;
+    synchronized (this.startupShutdownMonitor) &#123;
+
+        try &#123;
+            &#x2F;&#x2F; Allows post-processing of the bean factory in context subclasses.
+            postProcessBeanFactory(beanFactory);
+
+            &#x2F;&#x2F; Invoke factory processors registered as beans in the context.
+            invokeBeanFactoryPostProcessors(beanFactory);
+
+            &#x2F;&#x2F; Register bean processors that intercept bean creation.
+            &#x2F;&#x2F; 所有BeanPostProcesser初始化的调用点
+            registerBeanPostProcessors(beanFactory);
+
+            &#x2F;&#x2F; Initialize message source for this context.
+            initMessageSource();
+
+            &#x2F;&#x2F; Initialize event multicaster for this context.
+            initApplicationEventMulticaster();
+
+            &#x2F;&#x2F; Initialize other special beans in specific context subclasses.
+            onRefresh();
+
+            &#x2F;&#x2F; Check for listener beans and register them.
+            registerListeners();
+
+            &#x2F;&#x2F; Instantiate all remaining (non-lazy-init) singletons.
+            &#x2F;&#x2F; 所有单例非懒加载Bean的调用点
+            finishBeanFactoryInitialization(beanFactory);
+
+            &#x2F;&#x2F; Last step: publish corresponding event.
+            finishRefresh();
+        &#125;
+
+&#125;</code></pre>
+
+<p>可以看出，Spring 是先执行 registerBeanPostProcessors()进行 BeanPostProcessors 的注册，然后再执行 finishBeanFactoryInitialization 初始化我们的单例非懒加载的 Bean。</p>
+<h3 id="执行顺序"><a href="#执行顺序" class="headerlink" title="执行顺序"></a>执行顺序</h3><p>BeanPostProcessor 有很多个，而且每个 BeanPostProcessor 都影响多个 Bean，其执行顺序至关重要，必须能够控制其执行顺序才行。关于执行顺序这里需要引入两个排序相关的接口：PriorityOrdered、Ordered</p>
+<ul>
+<li>PriorityOrdered 是一等公民，首先被执行，PriorityOrdered 公民之间通过接口返回值排序</li>
+<li>Ordered 是二等公民，然后执行，Ordered 公民之间通过接口返回值排序</li>
+<li>都没有实现是三等公民，最后执行</li>
+</ul>
+<p>在以下源码中，可以很清晰的看到 Spring 注册各种类型 BeanPostProcessor 的逻辑，根据实现不同排序接口进行分组。优先级高的先加入，优先级低的后加入。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;&#x2F; First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+&#x2F;&#x2F; 首先，加入实现了PriorityOrdered接口的BeanPostProcessors，顺便根据PriorityOrdered排了序
+String[] postProcessorNames &#x3D;
+    beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
+for (String ppName : postProcessorNames) &#123;
+    if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) &#123;
+        currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
+        processedBeans.add(ppName);
+    &#125;
+&#125;
+sortPostProcessors(currentRegistryProcessors, beanFactory);
+registryProcessors.addAll(currentRegistryProcessors);
+invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
+currentRegistryProcessors.clear();
+
+&#x2F;&#x2F; Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
+&#x2F;&#x2F; 然后，加入实现了Ordered接口的BeanPostProcessors，顺便根据Ordered排了序
+postProcessorNames &#x3D; beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
+for (String ppName : postProcessorNames) &#123;
+    if (!processedBeans.contains(ppName) &amp;&amp; beanFactory.isTypeMatch(ppName, Ordered.class)) &#123;
+        currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
+        processedBeans.add(ppName);
+    &#125;
+&#125;
+sortPostProcessors(currentRegistryProcessors, beanFactory);
+registryProcessors.addAll(currentRegistryProcessors);
+invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
+currentRegistryProcessors.clear();
+
+&#x2F;&#x2F; Finally, invoke all other BeanDefinitionRegistryPostProcessors until no further ones appear.
+&#x2F;&#x2F; 最后加入其他常规的BeanPostProcessors
+boolean reiterate &#x3D; true;
+while (reiterate) &#123;
+    reiterate &#x3D; false;
+    postProcessorNames &#x3D; beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
+    for (String ppName : postProcessorNames) &#123;
+        if (!processedBeans.contains(ppName)) &#123;
+            currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
+            processedBeans.add(ppName);
+            reiterate &#x3D; true;
+        &#125;
+    &#125;
+    sortPostProcessors(currentRegistryProcessors, beanFactory);
+    registryProcessors.addAll(currentRegistryProcessors);
+    invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
+    currentRegistryProcessors.clear();
+&#125;&#x2F;&#x2F; First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+&#x2F;&#x2F; 首先，加入实现了PriorityOrdered接口的BeanPostProcessors，顺便根据PriorityOrdered排了序
+String[] postProcessorNames &#x3D;
+    beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
+for (String ppName : postProcessorNames) &#123;
+    if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) &#123;
+        currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
+        processedBeans.add(ppName);
+    &#125;
+&#125;
+sortPostProcessors(currentRegistryProcessors, beanFactory);
+registryProcessors.addAll(currentRegistryProcessors);
+invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
+currentRegistryProcessors.clear();
+
+&#x2F;&#x2F; Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
+&#x2F;&#x2F; 然后，加入实现了Ordered接口的BeanPostProcessors，顺便根据Ordered排了序
+postProcessorNames &#x3D; beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
+for (String ppName : postProcessorNames) &#123;
+    if (!processedBeans.contains(ppName) &amp;&amp; beanFactory.isTypeMatch(ppName, Ordered.class)) &#123;
+        currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
+        processedBeans.add(ppName);
+    &#125;
+&#125;
+sortPostProcessors(currentRegistryProcessors, beanFactory);
+registryProcessors.addAll(currentRegistryProcessors);
+invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
+currentRegistryProcessors.clear();
+
+&#x2F;&#x2F; Finally, invoke all other BeanDefinitionRegistryPostProcessors until no further ones appear.
+&#x2F;&#x2F; 最后加入其他常规的BeanPostProcessors
+boolean reiterate &#x3D; true;
+while (reiterate) &#123;
+    reiterate &#x3D; false;
+    postProcessorNames &#x3D; beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
+    for (String ppName : postProcessorNames) &#123;
+        if (!processedBeans.contains(ppName)) &#123;
+            currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
+            processedBeans.add(ppName);
+            reiterate &#x3D; true;
+        &#125;
+    &#125;
+    sortPostProcessors(currentRegistryProcessors, beanFactory);
+    registryProcessors.addAll(currentRegistryProcessors);
+    invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
+    currentRegistryProcessors.clear();
+&#125;</code></pre>
+
+<p>根据排序接口返回值排序，默认升序排序，返回值越低优先级越高。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+* Useful constant for the highest precedence value.
+* @see java.lang.Integer#MIN_VALUE
+*&#x2F;
+int HIGHEST_PRECEDENCE &#x3D; Integer.MIN_VALUE;
+
+&#x2F;**
+* Useful constant for the lowest precedence value.
+* @see java.lang.Integer#MAX_VALUE
+*&#x2F;
+int LOWEST_PRECEDENCE &#x3D; Integer.MAX_VALUE;&#125;</code></pre>
+
+<p>PriorityOrdered、Ordered 接口作为 Spring 整个框架通用的排序接口，在 Spring 中应用广泛，也是非常重要的接口。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Spring Bean 的生命周期分为四个阶段和多个扩展点。扩展点又可以分为影响多个 Bean 和影响单个 Bean。整理如下：</p>
+<blockquote>
+<p><strong>四个阶段</strong></p>
+<ul>
+<li>实例化 Instantiation</li>
+<li>属性赋值 Populate</li>
+<li>初始化 Initialization</li>
+<li>销毁 Destruction</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>多个扩展点</strong></p>
+<ul>
+<li>影响多个 Bean<ul>
+<li>BeanPostProcessor</li>
+<li>InstantiationAwareBeanPostProcessor</li>
+</ul>
+</li>
+<li>影响单个 Bean<ul>
+<li>Aware<ul>
+<li>Aware Group1<ul>
+<li>BeanNameAware</li>
+<li>BeanClassLoaderAware</li>
+<li>BeanFactoryAware</li>
+</ul>
+</li>
+<li>Aware Group2<ul>
+<li>EnvironmentAware</li>
+<li>EmbeddedValueResolverAware</li>
+<li>ApplicationContextAware(ResourceLoaderAware\ApplicationEventPublisherAware\MessageSourceAware)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>生命周期<ul>
+<li>InitializingBean</li>
+<li>DisposableBean</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<ol>
+<li>如果实现了 BeanFactoryPostProcessor 接口，那么在容器启动的时候，该接口中的 postProcessBeanFactory 方法可以修改 Bean 中元数据中的信息。该方法是在实例化对象之前执行</li>
+<li>如果实现了 InstantiationAwareBeanPostProcessor 接口，那么在实例化 Bean 对象之前会调用<strong>postProcessBeforeInstantiation</strong>方法，该方法如果返回的不为 null 则会直接调用 postProcessAfterInitialization 方法，而跳过了 Bean 实例化后及初始化前的相关方法，如果返回 null 则正常流程，<strong>postProcessAfterInstantiation</strong>在实例化成功后执行，这个时候对象已经被实例化，但是该实例的属性还未被设置，都是 null。因为它的返回值是决定要不要调用 postProcessPropertyValues 方法的其中一个因素，因为还有一个因素是 mbd.getDependencyCheck()；如果该方法返回 false,并且不需要 check，那么 postProcessPropertyValues 就会被忽略不执行；如果返回 true, postProcessPropertyValues 就会被执行,<strong>postProcessPropertyValues</strong>用来修改属性，在初始化方法之前执行。</li>
+<li>如果实现了 Aware 相关的结果，那么相关的 set 方法会在初始化之前执行。</li>
+<li>如果实现了 BeanPostProcessor 接口，那么该接口的方法会在实例化后的初始化方法前后执行。</li>
+<li>如果实现了 InitializingBean 接口则在初始化的时候执行 afterPropertiesSet</li>
+<li>如果指定了 init-method 属性则在初始化的时候会执行指定的方法。</li>
+<li>如果指定了@PostConstruct 则在初始化的时候会执行标注的方法。</li>
+<li>到此对象创建完成</li>
+<li>当对象需要销毁的时候。</li>
+<li>如果实现了 DisposableBean 接口会执行 destroy 方法</li>
+<li>如果指定了 destroy-method 属性则会执行指定的方法</li>
+<li>如果指定了@PreDestroy 注解则会执行标注的方法</li>
+</ol>
+</blockquote>
+<p>至此，Spring Bean 的生命周期介绍完毕。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zrtqsk/p/3735273.html">Spring Bean 的生命周期（详细）</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_20021569/article/details/109178816">Spring Bean 的生命周期（Spring5）</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/riemann_/article/details/118500805">一文读懂 Spring Bean 的生命周期</a></p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Spring/" itemprop="url" rel="index">
+                  <span itemprop="name">Spring</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/spock/" rel="next" title="Spock 基于BDD测试">
+            <i class="fa far fa-chevron-left"></i> Spock 基于BDD测试
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/mysql/mysql-page-merge-and-split/" rel="prev" title="InnoDB中的页合并与分裂">
+            InnoDB中的页合并与分裂 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%BD%B1%E5%93%8D%E5%A4%9A%E4%B8%AA-Bean-%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="toc-text">1、影响多个 Bean 的接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E5%8F%AA%E8%B0%83%E7%94%A8%E4%B8%80%E6%AC%A1%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="toc-text">2、只调用一次的接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Aware-%E8%B0%83%E7%94%A8%E6%97%B6%E6%9C%BA%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-text">Aware 调用时机源码分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E4%B8%A4%E4%B8%AA%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E6%8E%A5%E5%8F%A3"><span class="toc-text">简单的两个生命周期接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E6%97%B6%E6%9C%BA"><span class="toc-text">注册时机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="toc-text">执行顺序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

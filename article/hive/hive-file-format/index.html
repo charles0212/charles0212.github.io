@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Hive文件格式 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="一、文件定义  ORC File，它的全名是 Optimized Row Columnar (ORC) file，其实就是对 RCFile 做了一些优化。 据官方文档介绍，这种文件格式可以提供一种高效的方法来存储 Hive 数据。它的设计目标是来克服 Hive 其他格式的缺陷。 运用 ORC File 可以提高 Hive 的读、写以及处理数据的性能。 和 RCFile 格式相比，ORC File">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive文件格式">
+<meta property="og:url" content="https://www.alicharles.com/article/hive/hive-file-format/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="一、文件定义  ORC File，它的全名是 Optimized Row Columnar (ORC) file，其实就是对 RCFile 做了一些优化。 据官方文档介绍，这种文件格式可以提供一种高效的方法来存储 Hive 数据。它的设计目标是来克服 Hive 其他格式的缺陷。 运用 ORC File 可以提高 Hive 的读、写以及处理数据的性能。 和 RCFile 格式相比，ORC File">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647844523024-2b5c70d6-ad6d-4c2d-b9b3-7574e6b90e5f.png#clientId=u33b0a1c0-a42f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uedd4c4f5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=601&originWidth=439&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=161175&status=done&style=none&taskId=ucae6d17b-cb33-424e-94d1-c8bfe888641&title=">
+<meta property="article:published_time" content="2021-06-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.495Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Hive">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647844523024-2b5c70d6-ad6d-4c2d-b9b3-7574e6b90e5f.png#clientId=u33b0a1c0-a42f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uedd4c4f5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=601&originWidth=439&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=161175&status=done&style=none&taskId=ucae6d17b-cb33-424e-94d1-c8bfe888641&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Hive文件格式</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2021-06-20T00:00:00+08:00">
+            2021-06-20
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/hive/" itemprop="url" rel="index">
+              <span itemprop="name">hive</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<h2 id="一、文件定义"><a href="#一、文件定义" class="headerlink" title="一、文件定义"></a>一、文件定义</h2><p>ORC File，它的全名是 Optimized Row Columnar (ORC) file，其实就是对 RCFile 做了一些优化。<br>据官方文档介绍，这种文件格式可以提供一种高效的方法来存储 Hive 数据。它的设计目标是来克服 Hive 其他格式的缺陷。<br>运用 ORC File 可以提高 Hive 的读、写以及处理数据的性能。<br>和 RCFile 格式相比，ORC File 格式有以下优点：<br>1、每个 task 只输出单个文件，这样可以减少 NameNode 的负载；<br>2、支持各种复杂的数据类型，比如： datetime, decimal, 以及一些复杂类型 struct, list, map, and union；<br>3、在文件中存储了一些轻量级的索引数据；<br>4、基于数据类型的块模式压缩：<br>a、integer 类型的列用行程长度编码 run-length encoding;<br>b、String 类型的列用字典编码 dictionary encoding；<br>5、用多个互相独立的 RecordReaders 并行读相同的文件；<br>6、无需扫描 markers 就可以分割文件；<br>7、绑定读写所需要的内存；<br>8、metadata 的存储是用 Protocol Buffers 的，所以它支持添加和删除一些列。</p>
+<h2 id="二、文件结构"><a href="#二、文件结构" class="headerlink" title="二、文件结构"></a>二、文件结构</h2><p>ORC File 包含一组组的行数据，称为 stripes，除此之外，ORC File 的 file footer 还包含一些额外的辅助信息。<br>在 ORC File 文件的最后，有一个被称为 postscript 的区，它主要是用来存储压缩参数及压缩页脚的大小。<br>在默认情况下，一个 stripe 的大小为 250MB。大尺寸的 stripes 使得从 HDFS 读数据更高效。<br>在 file footer 里面包含了该 ORC File 文件中 stripes 的信息，每个 stripe 中有多少行，以及每列的数据类型。<br>当然，它里面还包含了列级别的一些聚合的结果，比如：count, min, max, and sum。<br>下图显示出可 ORC File 文件结构：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647844523024-2b5c70d6-ad6d-4c2d-b9b3-7574e6b90e5f.png#clientId=u33b0a1c0-a42f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uedd4c4f5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=601&originWidth=439&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=161175&status=done&style=none&taskId=ucae6d17b-cb33-424e-94d1-c8bfe888641&title=" alt="image.png"></p>
+<h2 id="三、Stripe-结构"><a href="#三、Stripe-结构" class="headerlink" title="三、Stripe 结构"></a>三、Stripe 结构</h2><p>从上图我们可以看出，每个 Stripe 都包含 index data、row data 以及 stripe footer。Stripe footer 包含流位置的目录；Row data 在表扫描的时候会用到。<br>Index data 包含每列的最大和最小值以及每列所在的行。<br>行索引里面提供了偏移量，它可以跳到正确的压缩块位置。具有相对频繁的行索引，使得在 stripe 中快速读取的过程中可以跳过很多行，尽管这个 stripe 的大小很大。<br>在默认情况下，最大可以跳过 10000 行。拥有通过过滤谓词而跳过大量的行的能力，你可以在表的 secondary keys 进行排序，从而可以大幅减少执行时间。<br>比如你的表的主分区是交易日期，那么你可以对次分区（state、zip code 以及 last name）进行排序。</p>
+<h2 id="四、Hive-里面如何用-ORCFile"><a href="#四、Hive-里面如何用-ORCFile" class="headerlink" title="四、Hive 里面如何用 ORCFile"></a>四、Hive 里面如何用 ORCFile</h2><p>在建 Hive 表的时候我们就应该指定文件的存储格式。所以你可以在 Hive QL 语句里面指定用 ORCFile 这种文件格式，如下：</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">CREATE TABLE ... STORED AS ORC
+ALTER TABLE ... [PARTITION partition_spec] SET FILEFORMAT ORC
+SET hive.default.fileformat&#x3D;Orc</code></pre>
+
+<p>所有关于 ORCFile 的参数都是在 Hive QL 语句的 TBLPROPERTIES 字段里面出现，他们是：</p>
+<table><thead><tr>
+<th>Key</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead><tbody><tr>
+<td>orc.compress</td>
+<td>ZLIB</td>
+<td>high level compression (one of NONE, ZLIB, SNAPPY)</td>
+</tr>
+<tr>
+<td>orc.compress.size</td>
+<td>262,144</td>
+<td>number of bytes in each compression chunk</td>
+</tr>
+<tr>
+<td>orc.stripe.size</td>
+<td>268435456</td>
+<td>number of bytes in each stripe</td>
+</tr>
+<tr>
+<td>orc.row.index.stride</td>
+<td>10,000</td>
+<td>number of rows between index entries (must be &gt;&#x3D; 1000)</td>
+</tr>
+<tr>
+<td>orc.create.index</td>
+<td>true</td>
+<td>whether to create row indexes</td>
+</tr>
+</tbody></table><p>下面的例子是建立一个没有启用压缩的 ORCFile 的表</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create table Addresses (
+  name string,
+  street string,
+  city string,
+  state string,
+  zip int
+) stored as orc tblproperties (&quot;orc.compress&quot;&#x3D;&quot;NONE&quot;);</code></pre>
+
+<h2 id="五、序列化和压缩"><a href="#五、序列化和压缩" class="headerlink" title="五、序列化和压缩"></a>五、序列化和压缩</h2><p>对 ORCFile 文件中的列进行压缩是基于这列的数据类型是 integer 或者 string。具体什么序列化我就不涉及了。<br>想深入了解的可以看看下面的英文：<br>Integer Column Serialization<br>Integer columns are serialized in two streams.<br>1、present bit stream: is the value non-null?<br>2、data stream: a stream of integers<br>Integer data is serialized in a way that takes advantage of the common distribution of numbers:<br>1、Integers are encoded using a variable-width encoding that has fewer bytes for small integers.<br>2、Repeated values are run-length encoded.<br>3、Values that differ by a constant in the range (-128 to 127) are run-length encoded.<br>The variable-width encoding is based on Google’s protocol buffers and uses the high bit to represent whether this byte is not the last and the lower 7 bits to encode data. To encode negative numbers, a zigzag encoding is used where 0, -1, 1, -2, and 2 map into 0, 1, 2, 3, 4, and 5 respectively.</p>
+<p>Each set of numbers is encoded this way:<br>1、If the first byte (b0) is negative:<br>-b0 variable-length integers follow.<br>2、If the first byte (b0) is positive:<br>it represents b0 + 3 repeated integers<br>the second byte (-128 to +127) is added between each repetition<br>1 variable-length integer.<br>In run-length encoding, the first byte specifies run length and whether the values are literals or duplicates. Duplicates can step by -128 to +128. Run-length encoding uses protobuf style variable-length integers.</p>
+<p>String Column Serialization<br>Serialization of string columns uses a dictionary to form unique column values The dictionary is sorted to speed up predicate filtering and improve compression ratios.<br>String columns are serialized in four streams.<br>1、present bit stream: is the value non-null?<br>2、dictionary data: the bytes for the strings<br>3、dictionary length: the length of each entry<br>4、row data: the row values<br>Both the dictionary length and the row values are run length encoded streams of integers.</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Hive/" itemprop="url" rel="index">
+                  <span itemprop="name">Hive</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/design-pattern/go-design-pattern/" rel="next" title="设计模式与GO">
+            <i class="fa far fa-chevron-left"></i> 设计模式与GO
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/hbase/hbase-lsm/" rel="prev" title="HBase LSM树">
+            HBase LSM树 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%96%87%E4%BB%B6%E5%AE%9A%E4%B9%89"><span class="toc-text">一、文件定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="toc-text">二、文件结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81Stripe-%E7%BB%93%E6%9E%84"><span class="toc-text">三、Stripe 结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81Hive-%E9%87%8C%E9%9D%A2%E5%A6%82%E4%BD%95%E7%94%A8-ORCFile"><span class="toc-text">四、Hive 里面如何用 ORCFile</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8E%8B%E7%BC%A9"><span class="toc-text">五、序列化和压缩</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

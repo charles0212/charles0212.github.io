@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        分类: java |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="记录平时的点点滴滴">
+<meta property="og:type" content="website">
+<meta property="og:title" content="启航的蜗牛">
+<meta property="og:url" content="https://www.alicharles.com/categories/java/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="记录平时的点点滴滴">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="charles">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-2">
+    <div class="row mx-0">
+        <div class="col-sm-12 col-lg-9 charles-border-right px-lg-5 py-lg-2">
+            <section id="posts" class="posts-collapse">
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/java/java-reference/">
+                Java引用类型
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        内存回收每一个 Java 程序中的对象都会占用一定的计算机资源，最常见的，如：每个对象都会在堆空间上申请一定的内存空间。但是除了内存之外，对象还会占用其它资源，如文件句柄，端口，socket 等等。当你创建一个对象的时候，必须保证它在销毁的时候会释放它占用的资源。否则程序将会在 OOM 中结束它的使命。在 Java 中数据内存分配发生在栈和堆中，对于栈中的变量（引用类型，基本类型）会在方法的退出时自动释放，对于 new 出来对象分配到堆中，不需要程序员来管理内存的分配和释放，Java 有自动进行内存管理的神器——垃圾回收器，垃圾回收器会自动回收那些不再使用的对象。那如何判断对象不再使用呢？就是
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-03-01T00:00:00+08:00">
+                2015-03-01
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/java/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">java</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/java/java-reference/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/java/java-cyclicbarrier/">
+                Java锁（五）CyclicBarrier分析
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        CyclicBarrier 的字面意思是可循环使用（Cyclic）的屏障（Barrier）。它要做的事情是，让一组线程到达一个屏障（也可以叫同步点）时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续干活。CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截的线程数量，每个线程调用 await 方法告诉 CyclicBarrier 我已经到达了屏障，然后当前线程被阻塞。
+1、CyclicBarrier 使用实例public class CyclicBarrierTest &amp;#123;
+    stat
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-02-08T00:00:00+08:00">
+                2015-02-08
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/java/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">java</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Lock/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Lock</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/java/java-cyclicbarrier/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/java/java-conditionobject/">
+                Java锁（四）ConditionObject分析
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        在讲 ConditionObject 之前，先讲解下条件队列。条件队列能够使得一组线程能够通过某种方式来等待特定的条件变成真，条件队列中的成员是一个个正在等待状态的线程。条件队列提供了一种挂起方式，当现场等待的条件非真时，挂起自己并释放锁，一旦等待条件为真，则立即醒来。
+条件队列主要功能1、隐式锁对应的条件队列对象的内置锁（synchronized 语义对应的同步机制），关联着一个内置的条件队列。Object 的 wait&amp;#x2F;notify&amp;#x2F;notifyAll 等方法构成了内部条件队列的 API（即将内部锁与内部条件队列关联的机制）。 内部条件队列是需要内置锁保护的，需要调用对
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-02-06T00:00:00+08:00">
+                2015-02-06
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/java/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">java</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Lock/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Lock</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/java/java-conditionobject/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/java/java-countdownlatch/">
+                Java锁（三）CountDownLatch共享锁分析
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+在开始解读 AQS 的共享功能前，我们再重温一下 CountDownLatch，CountDownLatch 为 java.util.concurrent 包下的计数器工具类，常被用在多线程环境下，它在初始时需要指定一个计数器的大小，然后可被多个线程并发的实现减 1 操作，并在计数器为 0 后调用 await 方法的线程被唤醒，从而实现多线程间的协作。
+
+1、闭锁使用class Driver2 &amp;#123;
+    void main() throws InterruptedException &amp;#123;
+        CountDownLatch doneSignal &amp;#x3D; n
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-02-05T00:00:00+08:00">
+                2015-02-05
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/java/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">java</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Lock/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Lock</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/java/java-countdownlatch/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/java/java-reentrantlock/">
+                Java锁（二）ReentrantLock独占锁分析
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        ReentrantLock 的功能是实现代码段的并发访问控制，是一种排它锁，也就是通常意义上所说的锁，内部有两种实现 NonfairSync 和 FairSync，公平锁和非公平锁，默认采用非公平锁策略。ReentrantLock 的实现不仅可以替代隐式的 synchronized 关键字，而且能够提供超过关键字本身的多种功能。
+1、ReentrantLock 的使用class X &amp;#123;
+  private final ReentrantLock lock &amp;#x3D; new ReentrantLock();
+  &amp;#x2F;&amp;#x2F; ...
+
+  public void m()
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-02-03T00:00:00+08:00">
+                2015-02-03
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/java/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">java</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Lock/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Lock</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/java/java-reentrantlock/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/java/java-aqs/">
+                Java锁（一）AQS分析
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+作为一个 java 开发者，并发编程是不可或缺的，在并发的过程，Lock 是并发的关键。
+
+本系列文章主要来讲解锁的原理和机制。在理解 J.U.C 原理以及锁机制之前，我们来介绍 J.U.C 框架最核心也是最复杂的一个基础类：java.util.concurrent.locks.AbstractQueuedSynchronizer。上面的继承体系中，AbstractQueuedSynchronizer 是 CountDownLatch&amp;#x2F;Semaphore&amp;#x2F;RenntrantReadWriteLock &amp;#x2F;Worker&amp;#x2F;ReentrantLock 的基础，
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-02-02T00:00:00+08:00">
+                2015-02-02
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/java/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">java</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Lock/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Lock</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/java/java-aqs/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/java/java-lock/">
+                Java并发编程之锁
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+作为一个 java 开发者，并发编程是不可或缺的，在并发的过程，Lock 是并发的关键，本文主要从排它锁和共享锁的实例来讲解锁的机制。
+
+本文主要从以下方面来讲解锁的原理及使用：
+
+AbstractQueuedSynchronizer 分析
+ReentrantLock 独占锁分析
+CountDownLatch 共享锁分析
+ConditionObject 分析
+CyclicBarrier 分析
+
+
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-02-01T00:00:00+08:00">
+                2015-02-01
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/java/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">java</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Lock/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Lock</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/java/java-lock/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+            </section>
+        </div>
+        <div class="col px-lg-3 py-lg-2">
+            <div class="sidebar">
+    <div class="widget-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+    <div class="author">
+        <!--个人信息-->
+        
+        <img class="author-image" itemprop="image"
+             src="/images/logo.jpg"
+             alt=""/>
+        
+        <p class="author-name" itemprop="name"></p>
+        <p class="description" itemprop="description">
+            
+        </p>
+    </div>
+
+    <nav class="state">
+        <!--文章-->
+        
+        <div class="state-item state-posts">
+            <a href="/archives">
+                <span class="state-item-count">98</span>
+                <span class="state-item-name">文章</span>
+            </a>
+        </div>
+        
+
+        <!--类目-->
+        
+        <div class="state-item state-categories">
+            <a href="/categories">
+                <span class="state-item-count">25</span>
+                <span class="state-item-name">分类</span>
+            </a>
+        </div>
+        
+
+        <!--标签-->
+        
+        <div class="state-item state-tags">
+            <a href="/tags">
+                <span class="state-item-count">36</span>
+                <span class="state-item-name">标签</span>
+            </a>
+        </div>
+        
+    </nav>
+
+    <!--社交链接-->
+    
+    
+    <nav class="links-of-author">
+        
+        <div class="links-of-author-row row px-4">
+            <span class="links-of-author-item col-2" style="padding:0;"></span>
+            <span class="links-of-author-item col-4 " style="padding:0;">
+                <a href="https://weibo.com/charles0212" target="_blank" title="微博">
+                    <i class="fab fa-weibo "></i>
+                    微博
+                </a>
+            </span>
+            
+            <span class="links-of-author-item col-6" style="padding:0;">
+                <a href="https://www.facebook.com/cheng.zhang.charles" target="_blank" title="facebook">
+                    <i class="fab fa-facebook "></i>
+                    facebook
+                </a>
+            </span>
+            
+        </div>
+        
+        <div class="links-of-author-row row px-4">
+            <span class="links-of-author-item col-2" style="padding:0;"></span>
+            <span class="links-of-author-item col-4 " style="padding:0;">
+                <a href="https://zhihu.com/people/charles0212" target="_blank" title="知乎">
+                    <i class="fab fa-dribbble "></i>
+                    知乎
+                </a>
+            </span>
+            
+            <span class="links-of-author-item col-6" style="padding:0;">
+                <a href="https://github.com/charles0212" target="_blank" title="github">
+                    <i class="fab fa-github "></i>
+                    github
+                </a>
+            </span>
+            
+        </div>
+        
+    </nav>
+    
+
+</div>
+</div>
+        </div>
+    </div>
+    <div class="row mx-0">
+        <div class="col-sm-12 col-lg-9 px-lg-5">
+            <div class="pagination justify-content-center my-4">
+                <span class="page-number current">1</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

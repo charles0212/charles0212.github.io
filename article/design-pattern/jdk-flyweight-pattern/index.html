@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        JDK设计模式（十）享元模式 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="1、定义  采用一个共享来避免大量拥有相同内容对象的开销。   2、解决的问题  使用共享物件，用来尽可能减少内存使用量，以及分享资讯给尽可能多的相似物件；适合用于只是因重复而导致使用无法令人接受的大量内存的大量物件。   3、模式中的角色  内蕴状态存储在享元内部，不会随环境的改变而有所不同，是可以共享的；外蕴状态是不可以共享的，它随环境的改变而改变的，因此外蕴状态是由客户端来保持（因为环境的变">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JDK设计模式（十）享元模式">
+<meta property="og:url" content="https://www.alicharles.com/article/design-pattern/jdk-flyweight-pattern/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="1、定义  采用一个共享来避免大量拥有相同内容对象的开销。   2、解决的问题  使用共享物件，用来尽可能减少内存使用量，以及分享资讯给尽可能多的相似物件；适合用于只是因重复而导致使用无法令人接受的大量内存的大量物件。   3、模式中的角色  内蕴状态存储在享元内部，不会随环境的改变而有所不同，是可以共享的；外蕴状态是不可以共享的，它随环境的改变而改变的，因此外蕴状态是由客户端来保持（因为环境的变">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648395132246-6f6a485b-fb25-4196-aa2a-b77369c50f2e.png#clientId=uf5f969c2-5399-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua4efe0d7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=308&originWidth=781&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=20055&status=done&style=none&taskId=u65ef4130-df66-422d-b911-31311a53d00&title=">
+<meta property="article:published_time" content="2015-04-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.492Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648395132246-6f6a485b-fb25-4196-aa2a-b77369c50f2e.png#clientId=uf5f969c2-5399-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua4efe0d7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=308&originWidth=781&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=20055&status=done&style=none&taskId=u65ef4130-df66-422d-b911-31311a53d00&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>JDK设计模式（十）享元模式</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2015-04-13T00:00:00+08:00">
+            2015-04-13
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/design-pattern/" itemprop="url" rel="index">
+              <span itemprop="name">design-pattern</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<h2 id="1、定义"><a href="#1、定义" class="headerlink" title="1、定义"></a>1、定义</h2><p>采用一个共享来避免大量拥有相同内容对象的开销。</p>
+<h2 id="2、解决的问题"><a href="#2、解决的问题" class="headerlink" title="2、解决的问题"></a>2、解决的问题</h2><p>使用共享物件，用来尽可能减少内存使用量，以及分享资讯给尽可能多的相似物件；适合用于只是因重复而导致使用无法令人接受的大量内存的大量物件。</p>
+<h2 id="3、模式中的角色"><a href="#3、模式中的角色" class="headerlink" title="3、模式中的角色"></a>3、模式中的角色</h2><p>内蕴状态存储在享元内部，不会随环境的改变而有所不同，是可以共享的；外蕴状态是不可以共享的，它随环境的改变而改变的，因此外蕴状态是由客户端来保持（因为环境的变化是由客户端引起的）。在每个具体的环境下，客户端将外蕴状态传递给享元，从而创建不同的对象出来。享元模式可分为：单纯享元模式和复合享元模式。<br>1、 抽象享元角色(Flyweight)：为具体享元角色规定了必须实现的方法，而外蕴状态就是以参数的形式通过此方法传入。在 Java 中可以由抽象类、接口来担当。<br>2、具体享元角色(ConcreteFlyweight)：实现抽象角色规定的方法。如果存在内蕴状态，就负责为内蕴状态提供存储空间。<br>3、复合享元角色(ConcreteCompositeFlyweight)：它所代表的对象是不可以共享的，并且可以分解成为多个单纯享元对象的组合。<br>4、享元工厂角色(FlyweightFactory)：负责创建和管理享元角色。要想达到共享的目的，这个角色的实现是关键！<br>5、客户端角色(client)：维护对所有享元对象的引用，而且还需要存储对应的外蕴状态。</p>
+<h2 id="4、模式解读"><a href="#4、模式解读" class="headerlink" title="4、模式解读"></a>4、模式解读</h2><p>享元模式的类图如下所示<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648395132246-6f6a485b-fb25-4196-aa2a-b77369c50f2e.png#clientId=uf5f969c2-5399-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua4efe0d7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=308&originWidth=781&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=20055&status=done&style=none&taskId=u65ef4130-df66-422d-b911-31311a53d00&title=" alt="image.png"><br>左半部，和简单工厂模式类似；再看右半部，像合成模式，合成模式用在此处就是为了将具体享元角色和复合享元角色同等对待和处理，通过将享元模式与合成模式组合在一起，可以确保复合享元中所包含的每个单纯享元都具有相同的外蕴状态，而这些单纯享元的内蕴状态往往是不同的。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 复合的享元模式:
+ * 复合享元是不能共享的。
+ * 但是复合享元是可以分解为可共享的单纯享元。
+ *&#x2F;
+public class FlyweightTest &#123;
+    public static void main(String[] args)&#123;
+        FlyweightFactory f &#x3D; new FlyweightFactory();
+
+        Flyweight fly &#x3D; f.factory(&quot;aba&quot;);
+        fly.operation(&quot;charles&quot;);
+
+        f.checkFlyweight();
+    &#125;
+&#125;
+
+&#x2F;**
+ * 抽象享元
+ *&#x2F;
+abstract class Flyweight&#123;
+    public abstract void operation(String extrinsicState);
+&#125;
+
+&#x2F;**
+ * 具体享元
+ *&#x2F;
+class ConcreteFlyweight extends Flyweight&#123;
+
+    private Character inState;
+
+    public ConcreteFlyweight(Character inState)&#123;
+        this.inState &#x3D; inState;
+    &#125;
+
+    &#x2F;**
+     * 外蕴状态改变方法行为，但不会改变内蕴状态
+     *&#x2F;
+    @Override
+    public void operation(String extState)&#123;
+        String str &#x3D; &quot;inState:&quot; + inState + &quot;;extState:&quot; + extState;
+        System.out.println(str);
+    &#125;
+
+&#125;
+
+&#x2F;**
+ * 复合享元
+ *&#x2F;
+class CompositeFlyweight extends Flyweight&#123;
+    private Map&lt;Character , Flyweight&gt; map;
+
+    public CompositeFlyweight()&#123;
+        map &#x3D; new HashMap&lt;Character, Flyweight&gt;();
+    &#125;
+
+    public void add(Character c, Flyweight fly)&#123;
+        map.put(c , fly);
+    &#125;
+
+    @Override
+    public void operation(String extState)&#123;
+        Iterator&lt;Map.Entry&lt;Character , Flyweight&gt;&gt; it &#x3D; map.entrySet().iterator();
+        while(it.hasNext()) &#123;
+            Map.Entry&lt;Character , Flyweight&gt; entry &#x3D; it.next();
+            Flyweight fly &#x3D; entry.getValue();
+            fly.operation(extState);
+        &#125;
+    &#125;
+&#125;
+
+&#x2F;**
+ * 享元工厂
+ *&#x2F;
+class FlyweightFactory&#123;
+    private Map&lt;Character , Flyweight&gt; map;
+
+    public FlyweightFactory()&#123;
+        map &#x3D; new HashMap&lt;Character , Flyweight&gt;();
+    &#125;
+
+    &#x2F;**
+     * 单纯享元工厂
+     *&#x2F;
+    public Flyweight factory(Character state) &#123;
+
+        Flyweight flyweight;
+
+        if(map.containsKey(state)) &#123;
+            flyweight &#x3D; map.get(state);
+        &#125; else&#123;
+            flyweight &#x3D; new ConcreteFlyweight(state);
+            map.put(state , flyweight);
+        &#125;
+
+        return flyweight;
+    &#125;
+
+    &#x2F;**
+     * 复合享元工厂
+     * 此处Character的复合类型恰好是String，
+     * 当无此巧合时，可使用List等聚集类型传入.
+     *&#x2F;
+    public Flyweight factory(String compositeState)&#123;
+        CompositeFlyweight composite &#x3D; new CompositeFlyweight();
+
+        for(int i &#x3D; 0 ; i &lt;compositeState.length(); i++)&#123;
+            Character c &#x3D; new Character(compositeState.charAt(i));
+            composite.add(c , this.factory(c));
+        &#125;
+
+        return composite;
+    &#125;
+
+    &#x2F;**
+     * 辅助方法
+     *&#x2F;
+    public void checkFlyweight() &#123;
+        Iterator&lt;Map.Entry&lt;Character, Flyweight&gt;&gt; it &#x3D; map.entrySet().iterator();
+        System.out.println(&quot;checkFlyweight:&quot;);
+        while(it.hasNext()) &#123;
+            Map.Entry&lt;Character , Flyweight&gt; entry &#x3D; it.next();
+            Character key &#x3D; entry.getKey();
+            System.out.println(&quot;key:&quot; + key);
+        &#125;
+    &#125;
+
+&#125;</code></pre>
+
+<p>从复杂度上来讲，复合享元模式显而易见是比单纯享元模式复杂的。再从享元模式的关键——共享，来分析：复合享元模式在共享上面是没有达到预期的效果，可以说是没有起到共享的目的。虽然对于它内部包含的单纯享元角色来说还是能够起到共享的作用，但是复合享元角色中一个内蕴状态和对象使用了空间来保存，肯定不会节省空间和对象个数的。所以复合享元模式是违背享元模式初衷的，因此我们应该尽量使用单纯享元模式。</p>
+<h2 id="5、JDK-涉及到的设计模式"><a href="#5、JDK-涉及到的设计模式" class="headerlink" title="5、JDK 涉及到的设计模式"></a>5、JDK 涉及到的设计模式</h2><p>JDK 中体现有 Integer.valueOf(int i)，Character.valueOf(char c)以及 String 常量池。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public static Integer valueOf(String s) throws NumberFormatException &#123;
+    return Integer.valueOf(parseInt(s, 10));
+&#125;
+
+&#x2F;* i 在IntegerCache中，返回共享对象，不在其中创建新的Integer对象 *&#x2F;
+public static Integer valueOf(int i) &#123;
+    if (i &gt;&#x3D; IntegerCache.low &amp;&amp; i &lt;&#x3D; IntegerCache.high)
+        return IntegerCache.cache[i + (-IntegerCache.low)];
+    return new Integer(i);
+&#125;
+
+&#x2F;* IntegerCache，一个内部类，注意它的属性都是定义为static final *&#x2F;
+private static class IntegerCache &#123;
+    static final int low &#x3D; -128;
+    static final int high;
+    static final Integer cache[];
+
+    static &#123;
+        &#x2F;**
+         * h值，可以通过设置jdk的AutoBoxCacheMax参数调整，
+         * 自动缓存区间设置为[-128,N],注意区间的下界是固定
+         *&#x2F;
+        int h &#x3D; 127;
+        String integerCacheHighPropValue &#x3D;
+            sun.misc.VM.getSavedProperty(&quot;java.lang.Integer.IntegerCache.high&quot;);
+        if (integerCacheHighPropValue !&#x3D; null) &#123;
+            try &#123;
+                int i &#x3D; parseInt(integerCacheHighPropValue);
+                i &#x3D; Math.max(i, 127);
+                &#x2F;&#x2F; 数组大小最大为Integer.MAX_VALUE
+                h &#x3D; Math.min(i, Integer.MAX_VALUE - (-low) -1);
+            &#125; catch( NumberFormatException nfe) &#123;
+                &#x2F;&#x2F; 不能解析为int，忽略
+            &#125;
+        &#125;
+        high &#x3D; h;
+
+        cache &#x3D; new Integer[(high - low) + 1];
+        int j &#x3D; low;
+        for(int k &#x3D; 0; k &lt;cache.length; k++)
+            cache[k] &#x3D; new Integer(j++); &#x2F;&#x2F;-128到high值逐一分配到缓存数组
+
+        &#x2F;&#x2F; range [-128, 127] must be interned (JLS7 5.1.7)
+        assert IntegerCache.high &gt;&#x3D; 127;
+    &#125;
+
+    private IntegerCache() &#123;&#125;
+&#125;</code></pre>
+
+<h2 id="6、模式总结"><a href="#6、模式总结" class="headerlink" title="6、模式总结"></a>6、模式总结</h2><h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p>享元模式优点就在于它能够大幅度的降低内存中对象的数量；而为了做到这一步也带来了它的缺点：它使得系统逻辑复杂化，而且在一定程度上外蕴状态影响了系统的速度。**</p>
+<h3 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h3><p>1、当我们发现某个类型的对象有大量的实例时，我们是否可以对这些实例进行分类，经过分类后，我们发现只有很少的类别的情况下。<br>2、我们发现通过使用享元模式后能够提高系统的性能和不会带来更多的复杂度时。<br>3、享元模式一般是给出本地内存资源节省的一个方案，并不适合互联网上的分布式应用的情况，不过享元模式对于排他性的要求资源的控制，是个不错的选择的。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/design-pattern/jdk-facade-pattern/" rel="next" title="JDK设计模式（九）外观模式">
+            <i class="fa far fa-chevron-left"></i> JDK设计模式（九）外观模式
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/design-pattern/jdk-proxy-pattern/" rel="prev" title="JDK设计模式（十一）代理模式">
+            JDK设计模式（十一）代理模式 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%AE%9A%E4%B9%89"><span class="toc-text">1、定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">2、解决的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E6%A8%A1%E5%BC%8F%E4%B8%AD%E7%9A%84%E8%A7%92%E8%89%B2"><span class="toc-text">3、模式中的角色</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E6%A8%A1%E5%BC%8F%E8%A7%A3%E8%AF%BB"><span class="toc-text">4、模式解读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81JDK-%E6%B6%89%E5%8F%8A%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="toc-text">5、JDK 涉及到的设计模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6%E3%80%81%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93"><span class="toc-text">6、模式总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-text">优缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">适用场景</span></a></li></ol></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Java引用类型 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="内存回收  每一个 Java 程序中的对象都会占用一定的计算机资源，最常见的，如：每个对象都会在堆空间上申请一定的内存空间。但是除了内存之外，对象还会占用其它资源，如文件句柄，端口，socket 等等。当你创建一个对象的时候，必须保证它在销毁的时候会释放它占用的资源。否则程序将会在 OOM 中结束它的使命。 在 Java 中数据内存分配发生在栈和堆中，对于栈中的变量（引用类型，基本类型）会在方法的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java引用类型">
+<meta property="og:url" content="https://www.alicharles.com/article/java/java-reference/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="内存回收  每一个 Java 程序中的对象都会占用一定的计算机资源，最常见的，如：每个对象都会在堆空间上申请一定的内存空间。但是除了内存之外，对象还会占用其它资源，如文件句柄，端口，socket 等等。当你创建一个对象的时候，必须保证它在销毁的时候会释放它占用的资源。否则程序将会在 OOM 中结束它的使命。 在 Java 中数据内存分配发生在栈和堆中，对于栈中的变量（引用类型，基本类型）会在方法的">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-02-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.488Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Java引用类型</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2015-03-01T00:00:00+08:00">
+            2015-03-01
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/java/" itemprop="url" rel="index">
+              <span itemprop="name">java</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<h2 id="内存回收"><a href="#内存回收" class="headerlink" title="内存回收"></a>内存回收</h2><p>每一个 Java 程序中的对象都会占用一定的计算机资源，最常见的，如：每个对象都会在堆空间上申请一定的内存空间。但是除了内存之外，对象还会占用其它资源，如文件句柄，端口，socket 等等。当你创建一个对象的时候，必须保证它在销毁的时候会释放它占用的资源。否则程序将会在 OOM 中结束它的使命。<br>在 Java 中数据内存分配发生在栈和堆中，对于栈中的变量（引用类型，基本类型）会在方法的退出时自动释放，对于 new 出来对象分配到堆中，不需要程序员来管理内存的分配和释放，Java 有自动进行内存管理的神器——垃圾回收器，垃圾回收器会自动回收那些不再使用的对象。那如何判断对象不再使用呢？就是不在被引用的对象。</p>
+<h2 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h2><p>最早的 JDK 中只存在一个引用类型，这样就对于垃圾收集器来说所有的引用对象回收都是平等的。这样对于开发人员来说无法把控对象回收时机，所有对象回收都交给了垃圾收集器。<br>为了更灵活的控制对象的生命周期，在 JDK1.2 之后，引用被划分为强引用、软引用、弱引用、虚引用四种类型，每种类型有不同的生命周期，它们不同的地方就在于垃圾回收器对待它们会使用不同的处理方式。<strong>这 4 种级别由高到低依次为：强引用、软引用、弱引用和虚引用</strong>。</p>
+<h3 id="1、强引用-StrongReference"><a href="#1、强引用-StrongReference" class="headerlink" title="1、强引用 StrongReference"></a>1、强引用 StrongReference</h3><p>就是我们最普遍使用的方式，如</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">Object obj &#x3D; new Object();</code></pre>
+
+<p>这样对于我们，就是创建一个强引用，只要引用存在，jvm 就不会回收引用对应的空间，哪怕是报出内存空间不足的异常，当我们确定<strong>不需要使用 obj 对象时，可以将 obj 置为 null</strong>，这样 jvm 就认为它将不再使用，可以回收，但具体回收的时机还要看 gc 策略。</p>
+<h3 id="2、软引用-SoftReference"><a href="#2、软引用-SoftReference" class="headerlink" title="2、软引用 SoftReference"></a>2、软引用 SoftReference</h3><p><strong>内存空间不足时，进行垃圾回收，如果内存空间足时，不会发生回收</strong>。<strong>软引用一般和引用队列结合使用</strong>，当对象回收时，会加入到关联的引用队列中。<br>应用场景，<strong>软引用可以很好的用来实现缓存</strong>，当 JVM 需要内存时，垃圾回收器就会回收这些只有被软引用指向的对象。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public class SoftReferenceTest &#123;
+    public static void main(String[] args) &#123;
+        &#x2F;&#x2F; 原始强引用
+        String welcome &#x3D; &quot;hello world&quot;;
+        ReferenceQueue&lt;String&gt; refQueue &#x3D; new ReferenceQueue&lt;String&gt;();
+        SoftReference&lt;String&gt; welcomeRef &#x3D; new SoftReference&lt;&gt;(welcome,refQueue);
+
+        &#x2F;&#x2F; 置为空，这时可以垃圾回收
+        welcome &#x3D; null;
+        &#x2F;&#x2F; 这时不一定回收，只有空间不足时，才会回收
+        System.gc();
+        &#x2F;&#x2F; 这时可能会引用到，也可能引用不到，就看是否空间不足，是否发生了回收
+        String welcomeValue &#x3D; welcomeRef.get();
+        &#x2F;&#x2F; 如果垃圾回收了，则值不为空，如果还没有回收，则为空
+        Reference&lt;? extends String&gt; valueRef &#x3D; refQueue.poll();
+    &#125;
+&#125;</code></pre>
+
+<h3 id="3、弱引用-WeakReference"><a href="#3、弱引用-WeakReference" class="headerlink" title="3、弱引用 WeakReference"></a>3、弱引用 WeakReference</h3><p>与软引用相似，区别就是<strong>发生垃圾回收时，就会将弱引用对象进行回收，而不用考虑空间是否够用</strong>。<br>应用场景：<strong>弱引用非常适合存储元数据</strong>，例如：存储 ClassLoader 引用。如果没有类被加载，那么也没有指向 ClassLoader 的引用。一旦上一次的强引用被去除，只有弱引用的 ClassLoader 就会被回收</p>
+<h3 id="4、虚引用-PhantomReference"><a href="#4、虚引用-PhantomReference" class="headerlink" title="4、虚引用 PhantomReference"></a>4、虚引用 PhantomReference</h3><p>与前面引用不同， <strong>虚引用的对象，在任何时间都可能被垃圾回收，它必须和引用队列联合使用</strong>，<br>当我们回收对象时，发现它还有虚引用，就会在内存回收前，将虛引用增加到引用队列中，<br>这时我们可以通过判断引用队列中，是否有相应的虚引用，然后在对象回收之前采取必须的措施。</p>
+<h2 id="引用队列"><a href="#引用队列" class="headerlink" title="引用队列"></a>引用队列</h2><ul>
+<li>引用队列由 java.lang.ref.<strong>ReferenceQueue</strong>类来表示，它用于保存被回收后对象的引用。当把软引用、弱引用和引用队列联合使用的时候，系统在回收被引用的对象之后，将把被回收对象对应的应用添加到关联的引用队列中。与软引用和弱引用不同的是，虚引用在对象被释放之后，将把已经回收对象对应的虚引用添加它的关联引用队列中，这是得可以在对象被回收之前采取行动。</li>
+<li>软引用和弱引用可以单独使用，但是虚引用不能单独使用，单独使用虚引用没有太大的意义。虚引用的主要作用就是跟踪对象被垃圾回收的状态，程序可以通过检查与虚引用关联的引用队列中是否已经包含了该虚引用，从而了解虚引用所引用对象是否即将被回收。</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/7cb6917c0970">强引用</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a1872fa4ca7c">软引用</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/336c8902833b">虚引用</a></li>
+</ol>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/java/java-cyclicbarrier/" rel="next" title="Java锁（五）CyclicBarrier分析">
+            <i class="fa far fa-chevron-left"></i> Java锁（五）CyclicBarrier分析
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/design-pattern/jdk-prototype-pattern/" rel="prev" title="JDK设计模式（四）原型模式">
+            JDK设计模式（四）原型模式 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%9B%9E%E6%94%B6"><span class="toc-text">内存回收</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B"><span class="toc-text">引用类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E5%BC%BA%E5%BC%95%E7%94%A8-StrongReference"><span class="toc-text">1、强引用 StrongReference</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E8%BD%AF%E5%BC%95%E7%94%A8-SoftReference"><span class="toc-text">2、软引用 SoftReference</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81%E5%BC%B1%E5%BC%95%E7%94%A8-WeakReference"><span class="toc-text">3、弱引用 WeakReference</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81%E8%99%9A%E5%BC%95%E7%94%A8-PhantomReference"><span class="toc-text">4、虚引用 PhantomReference</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E7%94%A8%E9%98%9F%E5%88%97"><span class="toc-text">引用队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">参考资料</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

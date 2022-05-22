@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        DDD（三）洋葱架构 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; 原文：https:&#x2F;&#x2F;herbertograca.com&#x2F;2017&#x2F;09&#x2F;21&#x2F;onion-architecture&#x2F; &gt; &gt; &gt; https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;d87d5389c92a  这篇文章是软件架构编年史(译)的一部分，这部编年史由一系列关于软件架构的文章组成。在这一系列文章中，我将写下我对软件架构的学习和思考，以及我是如何运用这些知识的。如果你阅读了这个系列中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DDD（三）洋葱架构">
+<meta property="og:url" content="https://www.alicharles.com/article/ddd/onion-architecture/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; 原文：https:&#x2F;&#x2F;herbertograca.com&#x2F;2017&#x2F;09&#x2F;21&#x2F;onion-architecture&#x2F; &gt; &gt; &gt; https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;d87d5389c92a  这篇文章是软件架构编年史(译)的一部分，这部编年史由一系列关于软件架构的文章组成。在这一系列文章中，我将写下我对软件架构的学习和思考，以及我是如何运用这些知识的。如果你阅读了这个系列中">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608119083-5309ddc4-278c-4f09-a764-26b5310736ad.png#clientId=udd11f49d-b9ae-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=289&id=u8b611542&margin=%5Bobject%20Object%5D&name=image.png&originHeight=577&originWidth=828&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=403435&status=done&style=none&taskId=u696a16fc-1738-4c2e-b42e-fa75a013357&title=&width=414">
+<meta property="article:published_time" content="2021-09-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.500Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="DDD">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608119083-5309ddc4-278c-4f09-a764-26b5310736ad.png#clientId=udd11f49d-b9ae-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=289&id=u8b611542&margin=%5Bobject%20Object%5D&name=image.png&originHeight=577&originWidth=828&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=403435&status=done&style=none&taskId=u696a16fc-1738-4c2e-b42e-fa75a013357&title=&width=414">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>DDD（三）洋葱架构</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2021-09-05T00:00:00+08:00">
+            2021-09-05
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/ddd/" itemprop="url" rel="index">
+              <span itemprop="name">ddd</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p>原文：<a target="_blank" rel="noopener" href="https://herbertograca.com/2017/09/21/onion-architecture/">https://herbertograca.com/2017/09/21/onion-architecture/</a> &gt; <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/d87d5389c92a">https://www.jianshu.com/p/d87d5389c92a</a></p>
+</blockquote>
+<p>这篇文章是<a target="_blank" rel="noopener" href="https://herbertograca.com/2017/07/03/the-software-architecture-chronicles/">软件架构编年史</a>(<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/b477b2cc6cfa">译</a>)的一部分，这部编年史由<a target="_blank" rel="noopener" href="https://herbertograca.com/category/development/series/software-architecture/">一系列关于软件架构的文章</a>组成。在这一系列文章中，我将写下我对软件架构的学习和思考，以及我是如何运用这些知识的。如果你阅读了这个系列中之前的文章，本篇文章的的内容将更有意义。<br><a target="_blank" rel="noopener" href="http://jeffreypalermo.com/blog/the-onion-architecture-part-1/">2008 年 Jeffrey Palermo 提出了洋葱架构</a>。在我看来，它在端口和适配器架构的基础上贯彻了将领域放在应用中心，将传达机制(UI)和系统使用的基础设施(ORM、搜索引擎、第三方 API…)放在外围的思路。但是它前进了一步，在其中加入了内部层次。</p>
+<p>我们从通常拥有四个层次(<strong>表现层、应用层、领域层、持久化层</strong>)的分层架构发展到了端口和适配器架构，它只是含蓄地提到了两个同心圆层次：</p>
+<ol>
+<li>代表传达机制和基础设施的外层；</li>
+<li>代表业务逻辑的内层。</li>
+</ol>
+<p>端口和适配器架构与洋葱架构有着相同的思路，它们都通过编写适配器代码将应用核心从对基础设施的关注中解放出来，避免基础设施代码渗透到应用核心之中。这样应用使用的工具和传达机制都可以轻松地替换，可以一定程度地避免技术、工具或者供应商锁定。<br>另外，它还有着脱离真实基础设施和传达机制应用仍然可以运行的便利，这样可以使用 mock 代替它们方便测试。<br>然而，洋葱架构还告诉我们，企业应用中存在着不止两个层次，它在业务逻辑中加入了一些在领域驱动设计的过程中被识别出来的层次：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608119083-5309ddc4-278c-4f09-a764-26b5310736ad.png#clientId=udd11f49d-b9ae-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=289&id=u8b611542&margin=%5Bobject%20Object%5D&name=image.png&originHeight=577&originWidth=828&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=403435&status=done&style=none&taskId=u696a16fc-1738-4c2e-b42e-fa75a013357&title=&width=414" alt="image.png"><br>此外，它明确了端口和适配器架构中关于依赖方向的暗示：</p>
+<ul>
+<li>外层依赖内层；</li>
+<li>内层对外层无感知。</li>
+</ul>
+<p>也就是说耦合的方向是从外层指向中心，它提供了一个完全独立的对象模型(领域模型)，该模型位于架构的核心，不依赖其它任何层次。我们拥有了在不影响内层的情况下改变外层的灵活性。它在架构层面运用了<strong>依赖倒置原则</strong>。</p>
+<blockquote>
+<p>洋葱架构的关键原则：</p>
+<ul>
+<li><p>围绕独立的对象模型构建应用</p>
+</li>
+<li><p>内层定义接口，外层实现接口</p>
+</li>
+<li><p>依赖的方向指向圆心</p>
+</li>
+<li><p>所有的应用代码可以独立于基础设施编译和运行</p>
+<p>—— Jeffrey Palermo 2008, <a target="_blank" rel="noopener" href="http://jeffreypalermo.com/blog/the-onion-architecture-part-3/">The Onion Architecture: part 3</a></p>
+</li>
+</ul>
+</blockquote>
+<p>还有，任何一个外部层次都可以直接调用任何一个内部层次，这样既不会破坏耦合的方向，也避免了仅仅为了追求分层模式而创建一些没有任何业务逻辑的代理方法甚至代理类。这和 Martin Flowler 表达的偏好一致。</p>
+<blockquote>
+<p>上层可以使用它们下面的任意层次，而不仅仅是它们直接的下层。——Jeffrey Palermo 2008, <a target="_blank" rel="noopener" href="http://jeffreypalermo.com/blog/the-onion-architecture-part-3/">The Onion Architecture: part 3</a></p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>洋葱架构在端口和适配器架构的基础之上增加了一些的应用业务逻辑的内部组织，这些组织基于领域驱动设计的概念划分的。<br>这又是一次职责分离的更深入的演化，带来了高内聚低耦合，反过来也带来了更好的可测试性和可维护性。</p>
+<h2 id="引用来源"><a href="#引用来源" class="headerlink" title="引用来源"></a>引用来源</h2><blockquote>
+<p>2002 – Martin Fowler – <a target="_blank" rel="noopener" href="https://www.amazon.com/dp/0321127420/ref=wl_it_dp_o_pC_nS_ttl?_encoding=UTF8&colid=CG11VVP0H8Y8&coliid=I1QPWUPW6G7YF5">Patterns of Enterprise Application Architecture</a><br>2008 – Jeffrey Palermo – <a target="_blank" rel="noopener" href="http://jeffreypalermo.com/blog/the-onion-architecture-part-1/">The Onion Architecture: part 1</a><br>2008 – Jeffrey Palermo – <a target="_blank" rel="noopener" href="http://jeffreypalermo.com/blog/the-onion-architecture-part-2/">The Onion Architecture: part 2</a><br>2008 – Jeffrey Palermo – <a target="_blank" rel="noopener" href="http://jeffreypalermo.com/blog/the-onion-architecture-part-3/">The Onion Architecture: part 3</a><br>2013 – Jeffrey Palermo – <a target="_blank" rel="noopener" href="http://jeffreypalermo.com/blog/onion-architecture-part-4-after-four-years/">The Onion Architecture: part 4 – After Four Years</a></p>
+</blockquote>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/DDD/" itemprop="url" rel="index">
+                  <span itemprop="name">DDD</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/ddd/ports-adapters-architecture/" rel="next" title="DDD（二）端口和适配器架构">
+            <i class="fa far fa-chevron-left"></i> DDD（二）端口和适配器架构
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/ddd/clean-architecture/" rel="prev" title="DDD（四）整洁架构">
+            DDD（四）整洁架构 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E7%94%A8%E6%9D%A5%E6%BA%90"><span class="toc-text">引用来源</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

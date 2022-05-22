@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Arthas获取Spring Context |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; Arthas 是 Alibaba 开源的 &gt; Java 诊断工具，深受开发者喜爱。 &gt; https:&#x2F;&#x2F;github.com&#x2F;alibaba&#x2F;arthas  Arthas 提供了非常丰富的关于调用拦截的命令，比如 trace&#x2F;watch&#x2F;monitor&#x2F;tt 。但是很多时候我们在排查问题时，需要更多的线索，并不只是函数的参数和返回值。 比如在一个 spring 应用里，想获取到 spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Arthas获取Spring Context">
+<meta property="og:url" content="https://www.alicharles.com/article/arthas/arthas-context/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; Arthas 是 Alibaba 开源的 &gt; Java 诊断工具，深受开发者喜爱。 &gt; https:&#x2F;&#x2F;github.com&#x2F;alibaba&#x2F;arthas  Arthas 提供了非常丰富的关于调用拦截的命令，比如 trace&#x2F;watch&#x2F;monitor&#x2F;tt 。但是很多时候我们在排查问题时，需要更多的线索，并不只是函数的参数和返回值。 比如在一个 spring 应用里，想获取到 spring">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-06-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.497Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Arthas">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Arthas获取Spring Context</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2020-06-21T00:00:00+08:00">
+            2020-06-21
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/arthas/" itemprop="url" rel="index">
+              <span itemprop="name">arthas</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p>Arthas 是 Alibaba 开源的 Java 诊断工具，深受开发者喜爱。<br><a target="_blank" rel="noopener" href="https://github.com/alibaba/arthas">https://github.com/alibaba/arthas</a></p>
+</blockquote>
+<p>Arthas 提供了非常丰富的关于调用拦截的命令，比如 trace&#x2F;watch&#x2F;monitor&#x2F;tt 。但是很多时候我们在排查问题时，需要更多的线索，并不只是函数的参数和返回值。<br>比如在一个 spring 应用里，想获取到 spring context 里的其它 bean。如果能随意获取到 spring bean，那就可以“为所欲为”了，下面介绍如何利用 Arthas 获取到 spring context。</p>
+<blockquote>
+<p>搜索类 sc -d com.alibaba.dubbo.config.spring.extension.SpringExtensionFactory<br>找不到对应类，可参考 <a target="_blank" rel="noopener" href="http://www.zyiz.net/tech/detail-138429.html">http://www.zyiz.net/tech/detail-138429.html</a></p>
+</blockquote>
+<p>获取数据库密码步骤</p>
+<h2 id="1、获取-classLoder-的-hash-值"><a href="#1、获取-classLoder-的-hash-值" class="headerlink" title="1、获取 classLoder 的 hash 值"></a>1、获取 classLoder 的 hash 值</h2><pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">sc -d com.alibaba.dubbo.config.spring.extension.SpringExtensionFactory
+class-info com.alibaba.dubbo.config.spring.extension.SpringExtensionFactory
+code-source    &#x2F;data&#x2F;project&#x2F;aladdin&#x2F;second&#x2F;dubbo-3.2.18-RELEASE.jar
+name  com.alibaba.dubbo.config.spring.extension.SpringExtensionFactory
+super-class    +-java.lang.Object
+class-loader   +-com.youzan.aladdin.container.loader.AladdinClassLoader@ae13544
+       +-sun.misc.Launcher$AppClassLoader@18b4aac2
+       +-sun.misc.Launcher$ExtClassLoader@7bb52275
+classLoaderHash  ae13544</code></pre>
+
+<h2 id="2、获取对应实例数据"><a href="#2、获取对应实例数据" class="headerlink" title="2、获取对应实例数据"></a>2、获取对应实例数据</h2><pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">ognl -c ae13544 &#39;#context&#x3D;@com.alibaba.dubbo.config.spring.extension.SpringExtensionFactory@contexts.iterator.next, #context.getBean(&quot;dataSource&quot;).getPassword()&#39;</code></pre>
+
+<h2 id="3、可调用任务任意的方法"><a href="#3、可调用任务任意的方法" class="headerlink" title="3、可调用任务任意的方法"></a>3、可调用任务任意的方法</h2><pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">ognl -c ae13544 &#39;#context&#x3D;@com.alibaba.dubbo.config.spring.extension.SpringExtensionFactory@contexts.iterator.next, #obj&#x3D;new com.youzan.ebiz.video.channels.item.api.param.wechat.ItemListGetReq(),#obj.kdtId&#x3D;42163374,#obj.itemIds&#x3D;&#123;1562453283&#125;,#context.getBean(&quot;wechatChannelConsoleServiceImpl&quot;).listAuditStatus(#obj)&#39;</code></pre>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Arthas/" itemprop="url" rel="index">
+                  <span itemprop="name">Arthas</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/hbase/hbase-architecture/" rel="next" title="HBase （一）系统架构">
+            <i class="fa far fa-chevron-left"></i> HBase （一）系统架构
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/hbase/hbase-docker/" rel="prev" title="HBase（二）Docker搭建">
+            HBase（二）Docker搭建 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E8%8E%B7%E5%8F%96-classLoder-%E7%9A%84-hash-%E5%80%BC"><span class="toc-text">1、获取 classLoder 的 hash 值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E8%8E%B7%E5%8F%96%E5%AF%B9%E5%BA%94%E5%AE%9E%E4%BE%8B%E6%95%B0%E6%8D%AE"><span class="toc-text">2、获取对应实例数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E5%8F%AF%E8%B0%83%E7%94%A8%E4%BB%BB%E5%8A%A1%E4%BB%BB%E6%84%8F%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-text">3、可调用任务任意的方法</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

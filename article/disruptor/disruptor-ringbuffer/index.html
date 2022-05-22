@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Disruptor（一）RingBuffer数据结构 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; Disruptor 是 LMAX &gt; 公司开源的一个高效的内存无锁队列。   并发程序设计几个概念  1、锁： 锁是用来做并发最简单的方式，当然其代价也是最高的。内核态的锁的时候需要操作系统进行一次上下文切换，等待锁的线程会被挂起直至锁释放。在上下文切换的时候，cpu 之前缓存的指令和数据都将失效，对性能有很大的损失。用户态的锁虽然避免了这些问题，但是其实它们只是在没有真实的竞争时才有效。 2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Disruptor（一）RingBuffer数据结构">
+<meta property="og:url" content="https://www.alicharles.com/article/disruptor/disruptor-ringbuffer/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; Disruptor 是 LMAX &gt; 公司开源的一个高效的内存无锁队列。   并发程序设计几个概念  1、锁： 锁是用来做并发最简单的方式，当然其代价也是最高的。内核态的锁的时候需要操作系统进行一次上下文切换，等待锁的线程会被挂起直至锁释放。在上下文切换的时候，cpu 之前缓存的指令和数据都将失效，对性能有很大的损失。用户态的锁虽然避免了这些问题，但是其实它们只是在没有真实的竞争时才有效。 2">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648396576091-696e7ca7-d164-49cf-8128-695a46f29a30.png#clientId=u22fa69ef-54c0-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u4592195d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=216&originWidth=305&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=9853&status=done&style=none&taskId=u0f595954-bb3d-45ef-8131-1c1ad0e5f26&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648396576094-091558b4-f73e-484b-b6ac-c8d51304e65f.png#clientId=u22fa69ef-54c0-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uda175c5a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=206&originWidth=306&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=9866&status=done&style=none&taskId=ub85662a4-fa5b-4120-9fb4-3c345f06af1&title=">
+<meta property="article:published_time" content="2016-09-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.491Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Disruptor">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648396576091-696e7ca7-d164-49cf-8128-695a46f29a30.png#clientId=u22fa69ef-54c0-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u4592195d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=216&originWidth=305&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=9853&status=done&style=none&taskId=u0f595954-bb3d-45ef-8131-1c1ad0e5f26&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Disruptor（一）RingBuffer数据结构</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2016-09-20T00:00:00+08:00">
+            2016-09-20
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/disruptor/" itemprop="url" rel="index">
+              <span itemprop="name">disruptor</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p>Disruptor 是 LMAX 公司开源的一个高效的内存无锁队列。</p>
+</blockquote>
+<h2 id="并发程序设计几个概念"><a href="#并发程序设计几个概念" class="headerlink" title="并发程序设计几个概念"></a>并发程序设计几个概念</h2><p>1、<strong>锁</strong>： 锁是用来做并发最简单的方式，当然其代价也是最高的。内核态的锁的时候需要操作系统进行一次上下文切换，等待锁的线程会被挂起直至锁释放。在上下文切换的时候，cpu 之前缓存的指令和数据都将失效，对性能有很大的损失。用户态的锁虽然避免了这些问题，但是其实它们只是在没有真实的竞争时才有效。<br>2、<strong>CAS</strong>： CAS 的涵义不多介绍了。使用 CAS 时不像上锁那样需要一次上下文切换，但是也需要处理器锁住它的指令流水线来保证原子性，并且还要加上 Memory Barrier 来保证其结果可见。<br>3、<strong>MemoryBarrier</strong>: 大家都知道现代 CPU 是乱序执行的，也就是程序顺序与实际的执行顺序很可能是不一致的。在单线程执行时这不是个问题，但是在多线程环境下这种乱序就可能会对执行结果产生很大的影响了。memory barrier 提供了一种控制程序执行顺序的手段, 关于其更多介绍，可以参考<a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Memory_barrier">Memory_barrier</a><br>4、<strong>CacheLine</strong>： cacheLine 解释起来其实很简单，就是 CPU 在做缓存的时候有个最小缓存单元，在同一个单元内的数据被同时被加载到缓存中，充分利用 cacheLine 可以大大降低数据读写的延迟，错误利用 cache line 也会导致缓存不同替换，反复失效。</p>
+<h2 id="并发内存队列考虑的问题"><a href="#并发内存队列考虑的问题" class="headerlink" title="并发内存队列考虑的问题"></a>并发内存队列考虑的问题</h2><p>1、<strong>数据结构问题</strong><br>是选用定长的数组还是可变的链表<br>2、<strong>并发控问题</strong><br>使用锁还是 CAS 操作，是使用粗粒度的一把锁，还是将队列的头、尾、和容量三个变量分开控制，即使分开，能不能避免它们落入同一个 Cache line 中。数据的入队和出队都是很耗时的，尤其在性能要求极高的场景中，这种消耗更显得奢侈。</p>
+<h2 id="Disruptor-数据结构-RingBuffer"><a href="#Disruptor-数据结构-RingBuffer" class="headerlink" title="Disruptor 数据结构 RingBuffer"></a>Disruptor 数据结构 RingBuffer</h2><p>RingBuffer 是一个环（首尾相接的环），你可以把它用做在不同上下文（线程）间传递数据的 buffer。基本来说，RingBuffer 拥有一个序号，这个序号指向数组中下一个可用的元素。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648396576091-696e7ca7-d164-49cf-8128-695a46f29a30.png#clientId=u22fa69ef-54c0-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u4592195d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=216&originWidth=305&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=9853&status=done&style=none&taskId=u0f595954-bb3d-45ef-8131-1c1ad0e5f26&title=" alt="image.png"><br>随着你不停地填充这个 buffer（可能也会有相应的读取），这个序号会一直增长，直到绕过这个环。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648396576094-091558b4-f73e-484b-b6ac-c8d51304e65f.png#clientId=u22fa69ef-54c0-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uda175c5a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=206&originWidth=306&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=9866&status=done&style=none&taskId=ub85662a4-fa5b-4120-9fb4-3c345f06af1&title=" alt="image.png"><br>要找到数组中当前序号指向的元素，可以通过 mod 操作<br>sequence mod array.length &#x3D; array.index<br>以上面的 RingBuffer 为例（java 的 mod 语法）：11 % 8 &#x3D; 3，RingBuffer 槽的个数是 2 的 N 次方，更有利于基于二进制的计算机进行计算，，这样计算余数只需要通过位操作 index &amp; ( size - 1 )就能够得到实际的 index。和维基百科里面的关于[<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Circular_buffer">环形 buffer</a>]的实现方式，与其最大的区别在于：没有尾指针。我们只维护了一个指向下一个可用位置的序号。</p>
+<p>RingBuffer 本身并不控制是否需要重叠，对于如何避免 RingBuffer 产生重叠，以及如何对 RingBuffer 进行读写操作，移到了数据结构（RingBuffer）的外（队列通常注重维护队列的头尾元素，添加和删除元素等)，由于生产者和消费者是分开考虑和控制的，因此有可能能够通过一个核心的环形队列来表示全部的依赖关系，可以大大提高吞吐，降低延迟。</p>
+<h2 id="RingBuffer-的优点"><a href="#RingBuffer-的优点" class="headerlink" title="RingBuffer 的优点"></a>RingBuffer 的优点</h2><p>1、<strong>在可靠消息传递方面有很好的性能</strong><br>不删除 buffer 中的数据（这些数据一直存放在 buffer 中，直到新的数据覆盖他们），这样当另外一个服务通过 nak (拒绝应答信号) 告诉我们没有成功收到消息时，我们能够重新发送给他们。<br>2、<strong>底层使用数组，访问比链表快</strong><br>数组内元素的内存地址的连续性存储的，而且有一个容易预测的访问模式，这是对 CPU 缓存友好的—也就是说，在硬件级别，数组中的元素是会被预加载的，因此在 RingBuffer 当中，cpu 无需时不时去主存加载数组中的下一个元素。（因为只要一个元素被加载到缓存行，其他相邻的几个元素也会被加载进同一个缓存行）。<br>3、<strong>避免 GC 问题</strong><br>可以为数组预先分配内存，使得数组对象一直存在（除非程序终止），这就意味着不需要花大量的时间用于垃圾回收。不像链表那样，需要为每一个添加到其上面的对象创造节点对象—对应的，当删除节点时，需要执行相应的内存清理操作。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Disruptor/" itemprop="url" rel="index">
+                  <span itemprop="name">Disruptor</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/disruptor/understanding-disruptor/" rel="next" title="深入理解Disruptor">
+            <i class="fa far fa-chevron-left"></i> 深入理解Disruptor
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/disruptor/disruptor-ringbuffer-read/" rel="prev" title="Disruptor（二）RingBuffer读取">
+            Disruptor（二）RingBuffer读取 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1%E5%87%A0%E4%B8%AA%E6%A6%82%E5%BF%B5"><span class="toc-text">并发程序设计几个概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E5%86%85%E5%AD%98%E9%98%9F%E5%88%97%E8%80%83%E8%99%91%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">并发内存队列考虑的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Disruptor-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-RingBuffer"><span class="toc-text">Disruptor 数据结构 RingBuffer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RingBuffer-%E7%9A%84%E4%BC%98%E7%82%B9"><span class="toc-text">RingBuffer 的优点</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

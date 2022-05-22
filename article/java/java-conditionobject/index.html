@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Java锁（四）ConditionObject分析 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="在讲 ConditionObject 之前，先讲解下条件队列。条件队列能够使得一组线程能够通过某种方式来等待特定的条件变成真，条件队列中的成员是一个个正在等待状态的线程。条件队列提供了一种挂起方式，当现场等待的条件非真时，挂起自己并释放锁，一旦等待条件为真，则立即醒来。   条件队列主要功能   1、隐式锁对应的条件队列  对象的内置锁（synchronized 语义对应的同步机制），关联着一个内">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java锁（四）ConditionObject分析">
+<meta property="og:url" content="https://www.alicharles.com/article/java/java-conditionobject/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="在讲 ConditionObject 之前，先讲解下条件队列。条件队列能够使得一组线程能够通过某种方式来等待特定的条件变成真，条件队列中的成员是一个个正在等待状态的线程。条件队列提供了一种挂起方式，当现场等待的条件非真时，挂起自己并释放锁，一旦等待条件为真，则立即醒来。   条件队列主要功能   1、隐式锁对应的条件队列  对象的内置锁（synchronized 语义对应的同步机制），关联着一个内">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649590734865-739bf34e-78fb-4a01-8c21-2dbedd5a0aa8.png#clientId=ueca12249-0176-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u7fcdf467&margin=%5Bobject%20Object%5D&name=image.png&originHeight=556&originWidth=656&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=57897&status=done&style=none&taskId=ufc51b264-532e-4873-aaac-2848a6b76ea&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649590734907-8867f1f1-95be-438f-bc78-1eb6a9e72484.png#clientId=ueca12249-0176-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ue8d1fd2b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=469&originWidth=1186&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=76862&status=done&style=none&taskId=ucb02a0ae-ca4e-483b-8600-af99a1423cc&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649590734932-a81a3a72-c37b-4bff-939b-216b5627c773.png#clientId=ueca12249-0176-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u3164b185&margin=%5Bobject%20Object%5D&name=image.png&originHeight=919&originWidth=692&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=90215&status=done&style=none&taskId=u54118d76-26e9-4148-ad0f-073d21c68ba&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649590734733-d11f6304-b1ff-4ca4-9a96-05c753d436f8.png#clientId=ueca12249-0176-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua9bda77d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=270&originWidth=466&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=20651&status=done&style=none&taskId=u00f9d5b8-b2cf-4cad-951e-ad13f639c9e&title=">
+<meta property="article:published_time" content="2015-02-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.499Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Lock">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649590734865-739bf34e-78fb-4a01-8c21-2dbedd5a0aa8.png#clientId=ueca12249-0176-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u7fcdf467&margin=%5Bobject%20Object%5D&name=image.png&originHeight=556&originWidth=656&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=57897&status=done&style=none&taskId=ufc51b264-532e-4873-aaac-2848a6b76ea&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Java锁（四）ConditionObject分析</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2015-02-06T00:00:00+08:00">
+            2015-02-06
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/java/" itemprop="url" rel="index">
+              <span itemprop="name">java</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>在讲 ConditionObject 之前，先讲解下条件队列。条件队列能够使得一组线程能够通过某种方式来等待特定的条件变成真，条件队列中的成员是一个个正在等待状态的线程。条件队列提供了一种挂起方式，当现场等待的条件非真时，挂起自己并释放锁，一旦等待条件为真，则立即醒来。</p>
+<h2 id="条件队列主要功能"><a href="#条件队列主要功能" class="headerlink" title="条件队列主要功能"></a>条件队列主要功能</h2><h3 id="1、隐式锁对应的条件队列"><a href="#1、隐式锁对应的条件队列" class="headerlink" title="1、隐式锁对应的条件队列"></a>1、隐式锁对应的条件队列</h3><p>对象的内置锁（synchronized 语义对应的同步机制），关联着一个内置的条件队列。Object 的 wait&#x2F;notify&#x2F;notifyAll 等方法构成了内部条件队列的 API（即将内部锁与内部条件队列关联的机制）。 内部条件队列是需要内置锁保护的，需要调用对象 X 中的条件队列，必须持有对象 X 上的锁。这是因为状态处于并发环境下，“等待依赖状态的某个条件”与“维护状态的一致性”是绑定在一起的。</p>
+<h3 id="2、显式锁对应的条件队列"><a href="#2、显式锁对应的条件队列" class="headerlink" title="2、显式锁对应的条件队列"></a>2、显式锁对应的条件队列</h3><p>与内置锁对应的是显式锁，显式锁关联的条件队列是显式条件队列。内置锁的局限是每个内置锁只能关联一个条件队列，当线程需要等待多个条件时，则需要同时获取多个内置锁。 显式锁可以与多个条件队列关联，Condition 是显式锁的条件队列，它是 Object 的 wait&#x2F;notify&#x2F;notifyAll 等方法的扩展。提供了在一个对象上设置多个等待集合的功能，即一个对象上设置多个等待条件。</p>
+<h3 id="3、condition-使用"><a href="#3、condition-使用" class="headerlink" title="3、condition 使用"></a>3、condition 使用</h3><p>Condition 也称为条件队列，与内置锁关联的条件队列类似，它是一种广义的内置条件队列。它提供给线程一种方式使得该线程在调用 wait 方法后执行挂起操作，直到线程的等待的某个条件为真时被唤醒。 条件队列必须跟锁一起使用的，因为对共享状态变量的访问发生在多线程环境下，原理与内部条件队列一样。一个 Condition 的实例必须跟一个 Lock 绑定， Condition 一般作为 Lock 的内部类现。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">class BoundedBuffer &#123;
+  final Lock lock &#x3D; new ReentrantLock();
+  final Condition notFull  &#x3D; lock.newCondition();
+  final Condition notEmpty &#x3D; lock.newCondition();
+
+  final Object[] items &#x3D; new Object[100];
+  int putptr, takeptr, count;
+
+  public void put(Object x) throws InterruptedException &#123;
+    lock.lock();
+    try &#123;
+      while (count &#x3D;&#x3D; items.length)
+        notFull.await();
+      items[putptr] &#x3D; x;
+      if (++putptr &#x3D;&#x3D; items.length) putptr &#x3D; 0;
+      ++count;
+      notEmpty.signal();
+    &#125; finally &#123;
+      lock.unlock();
+    &#125;
+  &#125;
+
+  public Object take() throws InterruptedException &#123;
+    lock.lock();
+    try &#123;
+      while (count &#x3D;&#x3D; 0)
+        notEmpty.await();
+      Object x &#x3D; items[takeptr];
+      if (++takeptr &#x3D;&#x3D; items.length) takeptr &#x3D; 0;
+      --count;
+      notFull.signal();
+      return x;
+    &#125; finally &#123;
+      lock.unlock();
+    &#125;
+  &#125;
+
+&#125;</code></pre>
+
+<h3 id="4、AQS-对条件队列类图"><a href="#4、AQS-对条件队列类图" class="headerlink" title="4、AQS 对条件队列类图"></a>4、AQS 对条件队列类图</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649590734865-739bf34e-78fb-4a01-8c21-2dbedd5a0aa8.png#clientId=ueca12249-0176-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u7fcdf467&margin=%5Bobject%20Object%5D&name=image.png&originHeight=556&originWidth=656&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=57897&status=done&style=none&taskId=ufc51b264-532e-4873-aaac-2848a6b76ea&title=" alt="image.png"></p>
+<h3 id="5、条件队列的节点状态"><a href="#5、条件队列的节点状态" class="headerlink" title="5、条件队列的节点状态"></a>5、条件队列的节点状态</h3><p>调用条件队列的等待操作，会设置节点的 waitingStatus 为 Condition，标识当前节点正处于条件队列中。状态转换图如下：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649590734907-8867f1f1-95be-438f-bc78-1eb6a9e72484.png#clientId=ueca12249-0176-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ue8d1fd2b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=469&originWidth=1186&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=76862&status=done&style=none&taskId=ucb02a0ae-ca4e-483b-8600-af99a1423cc&title=" alt="image.png"><br>Node 的各个状态的主要作用，Cancelled 主要是解决线程在持有锁时被外部中断的逻辑，AQS 的可中断锁获取方法 lockInterrutible()是基于该状态实现的，显示锁必须手动释放锁，尤其是有中断的环境中，一个线程被中断可能仍然持有锁，所以必须注意在 finally 中 unlock。Condition 则是条件队列的等待操作，是 Lock 与条件队列关联的基础。Signal 是阻塞后继线程的标识。</p>
+<h3 id="6、条件队列的等待和唤醒操作"><a href="#6、条件队列的等待和唤醒操作" class="headerlink" title="6、条件队列的等待和唤醒操作"></a>6、条件队列的等待和唤醒操作</h3><p>条件队列上的等待和唤醒操作，本质上是节点在 AQS 线程等待队列和条件队列之间相互转移的过程，当需要等待某个条件时，线程会将当前节点添加到条件队列中，并释放锁；当某个线程执行条件队列的唤醒操作，则会将条件队列的节点转移到 AQS 等待队列。每个 Condition 就是一个条件队列，可以通过 Lock 的 newCondition 创建多个等待条件。操作流程如下：<br>条件队列等待 await 如下所示</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public final void await() throws InterruptedException &#123;
+    if (Thread.interrupted())
+        throw new InterruptedException();
+    &#x2F;&#x2F; 将当前线程所在的节点添加到条件等待队列里面
+    Node node &#x3D; addConditionWaiter();
+    &#x2F;&#x2F; 释放并唤醒后续节点
+    int savedState &#x3D; fullyRelease(node);
+    int interruptMode &#x3D; 0;
+    &#x2F;&#x2F; node不在同步队列中，挂起当前线程，
+    while (!isOnSyncQueue(node)) &#123;
+        LockSupport.park(this);
+        &#x2F;&#x2F; 检查在等待时是否中断，如果中断，返回中断模式
+        if ((interruptMode &#x3D; checkInterruptWhileWaiting(node)) !&#x3D; 0)
+            break;
+    &#125;
+    &#x2F;&#x2F; 当前节点进入到队列中，并自旋
+    if (acquireQueued(node, savedState) &amp;&amp; interruptMode !&#x3D; THROW_IE)
+        interruptMode &#x3D; REINTERRUPT;
+    &#x2F;&#x2F; 当前节点的下一个等待者，不为空，移除所有取消的
+    if (node.nextWaiter !&#x3D; null)
+        unlinkCancelledWaiters();
+    if (interruptMode !&#x3D; 0)
+        reportInterruptAfterWait(interruptMode);
+&#125;
+
+&#x2F;**
+ * 添加一个新的等待者到条件等待队列里面
+ *&#x2F;
+private Node addConditionWaiter() &#123;
+    Node t &#x3D; lastWaiter;
+    &#x2F;&#x2F; 如果lastWaiter不为状态节点，移除
+    if (t !&#x3D; null &amp;&amp; t.waitStatus !&#x3D; Node.CONDITION) &#123;
+        unlinkCancelledWaiters();
+        t &#x3D; lastWaiter;
+    &#125;
+    &#x2F;&#x2F; 将当前线程关联的node添加到条件队列中
+    Node node &#x3D; new Node(Thread.currentThread(), Node.CONDITION);
+    if (t &#x3D;&#x3D; null)
+        firstWaiter &#x3D; node;
+    else
+        t.nextWaiter &#x3D; node;
+    lastWaiter &#x3D; node;
+    return node;
+&#125;
+
+&#x2F;**
+ * 使用当前的state值调用release方法，返回保存的state值
+ * 失败时抛出异常，并将节点设置成在Node.CANCELLED，
+ * @param node 等待的状态节点
+ * @return 返回上一次同步队列的state状态
+ *&#x2F;
+final int fullyRelease(Node node) &#123;
+    boolean failed &#x3D; true;
+    try &#123;
+        &#x2F;&#x2F; 获取当前AQS的状态值state
+        int savedState &#x3D; getState();
+        &#x2F;&#x2F; 释放，并唤醒后继节点
+        if (release(savedState)) &#123;
+            failed &#x3D; false;
+            return savedState;
+        &#125; else &#123;
+            &#x2F;&#x2F; 释放失败，抛出异常，并且在finally中将节点设置成在Node.CANCELLED
+            throw new IllegalMonitorStateException();
+        &#125;
+    &#125; finally &#123;
+        if (failed)
+            node.waitStatus &#x3D; Node.CANCELLED;
+    &#125;
+&#125;
+
+public final boolean release(int arg) &#123;
+    if (tryRelease(arg)) &#123;
+        Node h &#x3D; head;
+        if (h !&#x3D; null &amp;&amp; h.waitStatus !&#x3D; 0)
+            unparkSuccessor(h);&#x2F;&#x2F;unblock，唤醒head的后继节点
+        return true;
+    &#125;
+    return false;
+&#125;</code></pre>
+
+<p>await 等待的流程如下图所示<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649590734932-a81a3a72-c37b-4bff-939b-216b5627c773.png#clientId=ueca12249-0176-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u3164b185&margin=%5Bobject%20Object%5D&name=image.png&originHeight=919&originWidth=692&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=90215&status=done&style=none&taskId=u54118d76-26e9-4148-ad0f-073d21c68ba&title=" alt="image.png"></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * Moves the longest-waiting thread, if one exists, from the
+ * wait queue for this condition to the wait queue for the
+ * owning lock.
+ *
+ * @throws IllegalMonitorStateException if &#123;@link &#x3D;isHeldExclusively&#125;
+ *         returns &#123;@code false&#125;
+ *&#x2F;
+public final void signal() &#123;
+    if (!isHeldExclusively())
+        throw new IllegalMonitorStateException();
+    Node first &#x3D; firstWaiter;
+    if (first !&#x3D; null)
+        doSignal(first);
+&#125;
+
+&#x2F;**
+ * Moves all threads from the wait queue for this condition to
+ * the wait queue for the owning lock.
+ *
+ * @throws IllegalMonitorStateException if &#123;@link &#x3D;isHeldExclusively&#125;
+ *         returns &#123;@code false&#125;
+ *&#x2F;
+public final void signalAll() &#123;
+    if (!isHeldExclusively())
+        throw new IllegalMonitorStateException();
+    Node first &#x3D; firstWaiter;
+    if (first !&#x3D; null)
+        doSignalAll(first);
+&#125;
+
+&#x2F;**
+ * Removes and transfers nodes until hit non-cancelled one or
+ * null. Split out from signal in part to encourage compilers
+ * to inline the case of no waiters.
+ * @param first (non-null) the first node on condition queue
+ *&#x2F;
+private void doSignal(Node first) &#123;
+    do &#123;
+        if ( (firstWaiter &#x3D; first.nextWaiter) &#x3D;&#x3D; null)
+            lastWaiter &#x3D; null;
+        first.nextWaiter &#x3D; null;
+    &#125; while (!transferForSignal(first) &amp;&amp;
+             (first &#x3D; firstWaiter) !&#x3D; null);
+&#125;
+
+&#x2F;**
+ * Removes and transfers all nodes.
+ * @param first (non-null) the first node on condition queue
+ *&#x2F;
+private void doSignalAll(Node first) &#123;
+    lastWaiter &#x3D; firstWaiter &#x3D; null;
+    do &#123;
+        Node next &#x3D; first.nextWaiter;
+        first.nextWaiter &#x3D; null;
+        transferForSignal(first);
+        first &#x3D; next;
+    &#125; while (first !&#x3D; null);
+&#125;
+
+&#x2F;**
+ * 将节点从条件队列转到同步队列中
+ * 成功，返回true
+ * 否则节点被取消，在收到信号前
+ *&#x2F;
+final boolean transferForSignal(Node node) &#123;
+    &#x2F;*
+     * 节点被取消，不能改变waitStatus
+     *&#x2F;
+    if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
+        return false;
+
+    &#x2F;*
+     * 将节点粘到队列中，尝试设置前驱节点的waitStatus，表明线程可能正在等待
+     * 如果取消或者尝试设置waitStatus失败，唤醒重新同步
+     * 在这种情况下waitStatus会出错，但是是瞬时无害的
+     *&#x2F;
+    Node p &#x3D; enq(node);
+    int ws &#x3D; p.waitStatus;
+    if (ws &gt; 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
+        LockSupport.unpark(node.thread);
+    return true;
+&#125;</code></pre>
+
+<p>signal 通知条件等待<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649590734733-d11f6304-b1ff-4ca4-9a96-05c753d436f8.png#clientId=ueca12249-0176-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua9bda77d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=270&originWidth=466&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=20651&status=done&style=none&taskId=u00f9d5b8-b2cf-4cad-951e-ad13f639c9e&title=" alt="image.png"><br>显式条件队列弥补内置条件队列只能关联一个条件的缺陷，同时继承了 Lock 对象的公平性。在 Condition 对象中，与 Object 的 wait&#x2F;notify&#x2F;notifyAll 对应的扩展方法是 await&#x2F;signal&#x2F;signallAll，同时也具有 Object 的这三个方法，所以使用的时候需要注意使用版本的正确。另外，显式锁必须遵从特定的使用规范，先 lock 在 finally 中 unlock，以确保锁必然会被正确释放。<br>此外，AQS 的两个队列都是链表队列，关联类的方法的都相当简洁，尤其是节点移除队列操作过程中，都及时释放了所占内存。读源码，可以学习到一种编码的严谨性，锻炼自己关注 GC 的意识。这是我见到过的第三处及时释放 GC 的的代码了。从最初的 ArrayList 的元素 remove 中，然后是 HashMap 的动态扩容数组转移操作，最近看 AQS 的元素唤醒和锁释放操作。关注 GC 的确是最近开始形成的一种编程意识。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Lock/" itemprop="url" rel="index">
+                  <span itemprop="name">Lock</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/java/java-countdownlatch/" rel="next" title="Java锁（三）CountDownLatch共享锁分析">
+            <i class="fa far fa-chevron-left"></i> Java锁（三）CountDownLatch共享锁分析
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/java/java-cyclicbarrier/" rel="prev" title="Java锁（五）CyclicBarrier分析">
+            Java锁（五）CyclicBarrier分析 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E9%98%9F%E5%88%97%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD"><span class="toc-text">条件队列主要功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E9%9A%90%E5%BC%8F%E9%94%81%E5%AF%B9%E5%BA%94%E7%9A%84%E6%9D%A1%E4%BB%B6%E9%98%9F%E5%88%97"><span class="toc-text">1、隐式锁对应的条件队列</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E6%98%BE%E5%BC%8F%E9%94%81%E5%AF%B9%E5%BA%94%E7%9A%84%E6%9D%A1%E4%BB%B6%E9%98%9F%E5%88%97"><span class="toc-text">2、显式锁对应的条件队列</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3%E3%80%81condition-%E4%BD%BF%E7%94%A8"><span class="toc-text">3、condition 使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4%E3%80%81AQS-%E5%AF%B9%E6%9D%A1%E4%BB%B6%E9%98%9F%E5%88%97%E7%B1%BB%E5%9B%BE"><span class="toc-text">4、AQS 对条件队列类图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5%E3%80%81%E6%9D%A1%E4%BB%B6%E9%98%9F%E5%88%97%E7%9A%84%E8%8A%82%E7%82%B9%E7%8A%B6%E6%80%81"><span class="toc-text">5、条件队列的节点状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6%E3%80%81%E6%9D%A1%E4%BB%B6%E9%98%9F%E5%88%97%E7%9A%84%E7%AD%89%E5%BE%85%E5%92%8C%E5%94%A4%E9%86%92%E6%93%8D%E4%BD%9C"><span class="toc-text">6、条件队列的等待和唤醒操作</span></a></li></ol></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Disruptor（二）RingBuffer读取 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="上一章主要介绍 Ring Buffer 的数据结构，本章主要讲解如何使用 Disruptor 从 Ring Buffer 中读取数据。   1、消费者通过 ProcessingSequenceBarrier 读取数据  能够读取数据的前提是数据已经写入到 Ring Buffer 中，关于数据的写入，后面一章节会详细讲解。  RingBuffer 的元素的大小是 2 的 n 次方（上面 ringBu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Disruptor（二）RingBuffer读取">
+<meta property="og:url" content="https://www.alicharles.com/article/disruptor/disruptor-ringbuffer-read/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="上一章主要介绍 Ring Buffer 的数据结构，本章主要讲解如何使用 Disruptor 从 Ring Buffer 中读取数据。   1、消费者通过 ProcessingSequenceBarrier 读取数据  能够读取数据的前提是数据已经写入到 Ring Buffer 中，关于数据的写入，后面一章节会详细讲解。  RingBuffer 的元素的大小是 2 的 n 次方（上面 ringBu">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648397116031-82c58b44-3caf-47c7-bb3b-1923c80bd4c0.png#clientId=ucd2ac4d2-f85d-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u326a8084&margin=%5Bobject%20Object%5D&name=image.png&originHeight=280&originWidth=704&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=29588&status=done&style=none&taskId=u8a8a8a8c-b409-491e-8b5a-757f23d4e78&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648397116033-7c7deb37-2b47-48ba-9449-270ec1b3134a.png#clientId=ucd2ac4d2-f85d-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uec892130&margin=%5Bobject%20Object%5D&name=image.png&originHeight=668&originWidth=508&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=44819&status=done&style=none&taskId=u47f1190a-0a68-4a7c-94f2-7c4dae2a966&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648397115980-a1126197-6f1f-48eb-85c7-86399a9d6161.png#clientId=ucd2ac4d2-f85d-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u652bf873&margin=%5Bobject%20Object%5D&name=image.png&originHeight=542&originWidth=441&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=36301&status=done&style=none&taskId=u7d531f19-1748-4b73-b0e2-fcee70debc0&title=">
+<meta property="article:published_time" content="2016-12-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.491Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Disruptor">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648397116031-82c58b44-3caf-47c7-bb3b-1923c80bd4c0.png#clientId=ucd2ac4d2-f85d-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u326a8084&margin=%5Bobject%20Object%5D&name=image.png&originHeight=280&originWidth=704&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=29588&status=done&style=none&taskId=u8a8a8a8c-b409-491e-8b5a-757f23d4e78&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Disruptor（二）RingBuffer读取</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2016-12-03T00:00:00+08:00">
+            2016-12-03
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/disruptor/" itemprop="url" rel="index">
+              <span itemprop="name">disruptor</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>上一章主要介绍 Ring Buffer 的数据结构，本章主要讲解如何使用 Disruptor 从 Ring Buffer 中读取数据。</p>
+<h2 id="1、消费者通过-ProcessingSequenceBarrier-读取数据"><a href="#1、消费者通过-ProcessingSequenceBarrier-读取数据" class="headerlink" title="1、消费者通过 ProcessingSequenceBarrier 读取数据"></a>1、消费者通过 ProcessingSequenceBarrier 读取数据</h2><p>能够读取数据的前提是数据已经写入到 Ring Buffer 中，关于数据的写入，后面一章节会详细讲解。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648397116031-82c58b44-3caf-47c7-bb3b-1923c80bd4c0.png#clientId=ucd2ac4d2-f85d-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u326a8084&margin=%5Bobject%20Object%5D&name=image.png&originHeight=280&originWidth=704&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=29588&status=done&style=none&taskId=u8a8a8a8c-b409-491e-8b5a-757f23d4e78&title=" alt="image.png"><br>RingBuffer 的元素的大小是 2 的 n 次方（上面 ringBufferSize 为 8，从序号 0 开始）。消费者(Consumer)是一个想从 RingBuffer 里读取数据的线程，它可以通过访问 ProcessingSequenceBarrier 对象和 RingBuffer 进行交互。消费者也需要知道它将要处理的序号，每个消费者都需要找到下一个它要访问的序号。在上面的例子中，消费者处理完了 RingBuffer 里序号 8 之前（包括 8）的所有数据，那么它期待访问的下一个序号是 9。</p>
+<h2 id="2、消费者-BatchEventProcessor"><a href="#2、消费者-BatchEventProcessor" class="headerlink" title="2、消费者 BatchEventProcessor"></a>2、消费者 BatchEventProcessor</h2><p>关于消费者如何通过调用 SequenceBarrier 对象的 waitFor()方法，传递它所需要的下一个序号。本章节以 BatchEventProcessor 批量事件处理器为例进行讲解，首先查看类图。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648397116033-7c7deb37-2b47-48ba-9449-270ec1b3134a.png#clientId=ucd2ac4d2-f85d-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uec892130&margin=%5Bobject%20Object%5D&name=image.png&originHeight=668&originWidth=508&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=44819&status=done&style=none&taskId=u47f1190a-0a68-4a7c-94f2-7c4dae2a966&title=" alt="image.png"><br>主要继承 EventProcessor 接口和 Runnable 接口，本章主要介绍 run 方法，对于 BatchEventProcessor 的初始化暂时不做讲解。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public void run() &#123;
+    &#x2F;&#x2F; 线程是否运行
+    if (!running.compareAndSet(false, true)) &#123;
+        throw new IllegalStateException(&quot;Thread is already running&quot;);
+    &#125;
+    &#x2F;&#x2F; 将ProcessingSequenceBarrier的alerted设置成false
+    sequenceBarrier.clearAlert();
+    &#x2F;&#x2F; start事件处理
+    notifyStart();
+
+    T event &#x3D; null;
+    &#x2F;&#x2F; 获取当前事件处理器的下一个sequence
+    long nextSequence &#x3D; sequence.get() + 1L;
+    try &#123;
+        while (true) &#123;
+            try &#123;
+                &#x2F;&#x2F; 从ProcessingSequenceBarrier获取可用的availableSequence
+                final long availableSequence &#x3D; sequenceBarrier.waitFor(nextSequence);
+                &#x2F;&#x2F; 下一个nextSequence比可用的availableSequence小的时候，获取事件，并触发事件处理
+                while (nextSequence &lt;&#x3D; availableSequence) &#123;
+                    event &#x3D; dataProvider.get(nextSequence);
+                    &#x2F;&#x2F; 消费者事件处理
+                    eventHandler.onEvent(event, nextSequence, nextSequence &#x3D;&#x3D; availableSequence);
+                    nextSequence++;
+                &#125;
+                &#x2F;&#x2F; 设置当前事件处理器已经处理的sequence
+                sequence.set(availableSequence);
+            &#125; catch (final TimeoutException e) &#123;
+                &#x2F;&#x2F; 超时处理
+                notifyTimeout(sequence.get());
+            &#125; catch (final AlertException ex) &#123;
+                if (!running.get()) &#123;
+                    break;
+                &#125;
+            &#125; catch (final Throwable ex) &#123;
+                &#x2F;&#x2F; 异常事件处理
+                exceptionHandler.handleEventException(ex, nextSequence, event);
+                sequence.set(nextSequence);
+                nextSequence++;
+            &#125;
+        &#125;
+    &#125; finally &#123;
+        &#x2F;&#x2F; 关闭事件处理
+        notifyShutdown();
+        running.set(false);
+    &#125;
+&#125;</code></pre>
+
+<p>拿到了数据后，消费者(Consumer)会更新自己的标识(cursor)，消费者(Consumer)现在只需要通过简单通过 ProcessingSequenceBarrier 拿到可用的 Ringbuffer 中的 Sequence 序号就可以可以读取数据了。因为这些新的节点的确已经写入了数据（RingBuffer 本身的序号已经更新），而且消费者对这些节点的唯一操作是读而不是写，因此访问不用加锁。不仅代码实现起来可以更加安全和简单，而且不用加锁使得速度更快。另一个好处是可以用多个消费者(Consumer)去读同一个 RingBuffer，不需要加锁，也不需要用另外的队列来协调不同的线程(消费者)。这样你可以在 Disruptor 的协调下实现真正的并发数据处理。</p>
+<h2 id="3、ProcessingSequenceBarrier-获取可用序号"><a href="#3、ProcessingSequenceBarrier-获取可用序号" class="headerlink" title="3、ProcessingSequenceBarrier 获取可用序号"></a>3、ProcessingSequenceBarrier 获取可用序号</h2><p>在上面的 BatchEventProcessor 中的 run 方法中有如下调用</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">final long availableSequence &#x3D; sequenceBarrier.waitFor(nextSequence);</code></pre>
+
+<p>获取 RingBuffer 最大可访问的 availableSequence 序号，在上面的例子中是 10。<br>首先看下 ProcessingSequenceBarrier 的类图。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648397115980-a1126197-6f1f-48eb-85c7-86399a9d6161.png#clientId=ucd2ac4d2-f85d-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u652bf873&margin=%5Bobject%20Object%5D&name=image.png&originHeight=542&originWidth=441&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=36301&status=done&style=none&taskId=u7d531f19-1748-4b73-b0e2-fcee70debc0&title=" alt="image.png"><br>其实现了 SequenceBarrier 接口，用于和 RingBuffer 之间进行交互，下面主要看下构造函数和 waitFor 函数。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public long waitFor(final long sequence)
+        throws AlertException, InterruptedException, TimeoutException &#123;
+    &#x2F;&#x2F; 检查clert异常
+    checkAlert();
+    &#x2F;&#x2F; 通过waitStrategy策略获取可用的序号,cursorSequence为当前的Sequence，dependentSequence为依赖的Sequence[]
+    long availableSequence &#x3D; waitStrategy.waitFor(sequence, cursorSequence, dependentSequence, this);
+    &#x2F;&#x2F; 产生比预期的sequence小,可能序号被重置回老的的oldSequence值
+    &#x2F;&#x2F;可参考https:&#x2F;&#x2F;github.com&#x2F;LMAX-Exchange&#x2F;disruptor&#x2F;issues&#x2F;76
+    if (availableSequence &lt;sequence) &#123;
+        return availableSequence;
+    &#125;
+    &#x2F;&#x2F; 获取最大的可用的已经发布的sequence，可能比sequence小
+    &#x2F;&#x2F; 会在多生产者中出现，当生产者1获取到序号13，生产者2获取到14；生产者1没发布，生产者2发布，会导致获取的可用序号为12，而sequence为13
+    return sequencer.getHighestPublishedSequence(sequence, availableSequence);
+&#125;</code></pre>
+
+<h2 id="4、WaitStrategy-策略"><a href="#4、WaitStrategy-策略" class="headerlink" title="4、WaitStrategy 策略"></a>4、WaitStrategy 策略</h2><p>waitFor 函数的主要功能为获取到可用的 sequence 并返回给事件处理器。SequenceBarrier 内部有一个 WaitStrategy 方法来决定它如何等待这个序号，我现在不会去描述它的细节，代码的注释里已经概括了每一种 WaitStrategy 的优点和缺点，目前的实现方式主要有以下几种，后续会做详细介绍。</p>
+<ul>
+<li>BlockingWaitStrategy</li>
+<li>BusySpinWaitStrategy</li>
+<li>LiteBlockingWaitStrategy</li>
+<li>PhasedBackoffWaitStrategy</li>
+<li>SleepingWaitStrategy</li>
+<li>TimeoutBlockingWaitStrategy</li>
+<li>YieldingWaitStrategy</li>
+</ul>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Disruptor/" itemprop="url" rel="index">
+                  <span itemprop="name">Disruptor</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/disruptor/disruptor-ringbuffer/" rel="next" title="Disruptor（一）RingBuffer数据结构">
+            <i class="fa far fa-chevron-left"></i> Disruptor（一）RingBuffer数据结构
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/disruptor/disruptor-ringbuffer-single-write/" rel="prev" title="Disruptor（三）RingBuffer单生产者写入">
+            Disruptor（三）RingBuffer单生产者写入 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E6%B6%88%E8%B4%B9%E8%80%85%E9%80%9A%E8%BF%87-ProcessingSequenceBarrier-%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-text">1、消费者通过 ProcessingSequenceBarrier 读取数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E6%B6%88%E8%B4%B9%E8%80%85-BatchEventProcessor"><span class="toc-text">2、消费者 BatchEventProcessor</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81ProcessingSequenceBarrier-%E8%8E%B7%E5%8F%96%E5%8F%AF%E7%94%A8%E5%BA%8F%E5%8F%B7"><span class="toc-text">3、ProcessingSequenceBarrier 获取可用序号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81WaitStrategy-%E7%AD%96%E7%95%A5"><span class="toc-text">4、WaitStrategy 策略</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

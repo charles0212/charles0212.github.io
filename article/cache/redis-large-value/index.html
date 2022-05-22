@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Redis大Value |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="大 key 和大 value 的危害，如何处理  Redis 的大 key 有什么危害？ 一个 key 的 value 较大时的情况，比如：   * 内存不均：单 value    较大时，可能会导致节点之间的内存使用不均匀，间接地影响    key 的部分和负载不均匀；  * 阻塞请求：redis 为单线程，单    value    较大读写需要较长的处理时间，会阻塞后续的请求处理；  * 阻">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis大Value">
+<meta property="og:url" content="https://www.alicharles.com/article/cache/redis-large-value/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="大 key 和大 value 的危害，如何处理  Redis 的大 key 有什么危害？ 一个 key 的 value 较大时的情况，比如：   * 内存不均：单 value    较大时，可能会导致节点之间的内存使用不均匀，间接地影响    key 的部分和负载不均匀；  * 阻塞请求：redis 为单线程，单    value    较大读写需要较长的处理时间，会阻塞后续的请求处理；  * 阻">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648744552730-c003770c-2f09-4054-8f06-ea9f281aab67.png#clientId=u2aa5eb80-caf6-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u9ed9ae81&margin=%5Bobject%20Object%5D&name=image.png&originHeight=728&originWidth=1560&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=305690&status=done&style=none&taskId=u8557ca20-7bae-4532-bbec-ad03e3b9faa&title=">
+<meta property="article:published_time" content="2021-06-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-04-02T16:49:05.356Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Cache">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648744552730-c003770c-2f09-4054-8f06-ea9f281aab67.png#clientId=u2aa5eb80-caf6-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u9ed9ae81&margin=%5Bobject%20Object%5D&name=image.png&originHeight=728&originWidth=1560&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=305690&status=done&style=none&taskId=u8557ca20-7bae-4532-bbec-ad03e3b9faa&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Redis大Value</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2021-06-21T00:00:00+08:00">
+            2021-06-21
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/cache/" itemprop="url" rel="index">
+              <span itemprop="name">cache</span>
+            </a>
+        </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/cache/redis/" itemprop="url" rel="index">
+              <span itemprop="name">redis</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>大 key 和大 value 的危害，如何处理</p>
+<p>Redis 的大 key 有什么危害？<br>一个 key 的 value 较大时的情况，比如：</p>
+<ul>
+<li>内存不均：单 value 较大时，可能会导致节点之间的内存使用不均匀，间接地影响 key 的部分和负载不均匀；</li>
+<li>阻塞请求：redis 为单线程，单 value 较大读写需要较长的处理时间，会阻塞后续的请求处理；</li>
+<li>阻塞网络：单 value 较大时会占用服务器网卡较多带宽，可能会影响该服务器上的其他 Redis 实例或者应用。</li>
+</ul>
+<p>虽说答的是挺好的，但是我又随之产生了另一个疑惑，如果 redis 的 key 较长时，会产生什么样的影响呢？查了很多文章，说的都不是特别清楚。所以我决心探究一下这个问题。</p>
+<p>我们需要知道 Redis 是如何存储 key 和 value 的：<br>根结构为 RedisServer，其中包含 RedisDB（数据库）。<br>而 RedisDB 实际上是使用 Dict（字典）结构对 Redis 中的 kv 进行存储的。这里的 key 即字符串，value 可以是 string&#x2F;hash&#x2F;list&#x2F;set&#x2F;zset 这五种对象之一。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648744552730-c003770c-2f09-4054-8f06-ea9f281aab67.png#clientId=u2aa5eb80-caf6-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u9ed9ae81&margin=%5Bobject%20Object%5D&name=image.png&originHeight=728&originWidth=1560&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=305690&status=done&style=none&taskId=u8557ca20-7bae-4532-bbec-ad03e3b9faa&title=" alt="image.png"></p>
+<p>Dict 字典结构中，存储数据的主题为 DictHt，即哈希表。而哈希表本质上是一个 DictEntry（哈希表节点）的数组，并且使用链表法解决哈希冲突问题（关于哈希冲突的解决方法可以参考大佬的文章 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/4d3cb99d7580">解决哈希冲突的常用方法分析</a>）。<br>所以在这里实际存储时，key 和 value 都是存储在 DictEntry 中的。<br>所以基本上来说，<strong>大 key 和大 value 带来的内存不均和网络 IO 压力都是一致的，只是 key 相较于 value 还多一个做 hashcode 和比较的过程（链表中进行遍历比较 key），会有更多的内存相关开销。</strong><br>结论：</p>
+<ol>
+<li>大 key 和大 value 的危害是一致的：内存不均、阻塞请求、阻塞网络。</li>
+<li><strong>key 由于比 value 需要做更多的操作如 hashcode、链表中比较等操作，所以会比 value 更多一些内存相关开销。</strong></li>
+</ol>
+<p>如何处理？<br>Redis 大 key<br>Redis 使用过程中经常会有各种大 key 的情况， 比如：</p>
+<ol>
+<li>单个简单的 key 存储的 value 很大</li>
+<li>hash， set，zset，list 中存储过多的元素（以万为单位）</li>
+</ol>
+<p>由于 redis 是单线程运行的，如果一次操作的 value 很大会对整个 redis 的响应时间造成负面影响，所以，业务上能拆则拆，下面举几个典型的分拆方案。</p>
+<p>业务场景：<br>即通过 hash 的方式来存储每一天用户订单次数。那么 key &#x3D; order_20200102, field &#x3D; order_id, value &#x3D; 10。那么如果一天有百万千万甚至上亿订单的时候，key 后面的值是很多，存储空间也很大，造成所谓的大 key。</p>
+<p>大 key 的风险： 1.读写大 key 会导致超时严重，甚至阻塞服务。 2.如果删除大 key，DEL 命令可能阻塞 Redis 进程数十秒，使得其他请求阻塞，对应用程序和 Redis 集群可用性造成严重的影响。</p>
+<p>redis 使用会出现大 key 的场景： 1.单个简单 key 的存储的 value 过大；<br>2.hash、set、zset、list 中存储过多的元素。</p>
+<p>解决问题： 1.单个简单 key 的存储的 value 过大的解决方案：<br>将大 key 拆分成对个 key-value，使用 multiGet 方法获得值，这样的拆分主要是为了减少单台操作的压力，而是将压力平摊到集群各个实例中，降低单台机器的 IO 操作。<br>2.hash、set、zset、list 中存储过多的元素的解决方案：</p>
+<ol>
+<li>类似于第一种场景，使用第一种方案拆分;</li>
+<li>以 hash 为例，将原先的 hget、hset 方法改成（加入固定一个 hash 桶的数量为 10000），先计算 field 的 hash 值模取 10000，确定该 field 在哪一个 key 上。<br>将大 key 进行分割，为了均匀分割，可以对 field 进行 hash 并通过质数 N 取余，将余数加到 key 上面，我们取质数 N 为 997。<br>那么新的 key 则可以设置为：<br>newKey &#x3D; order_20200102_String.valueOf( Math.abs(order_id.hashcode() % 997) )<br>field &#x3D; order_id<br>value &#x3D; 10<br>hset (newKey, field, value) ;<br>hget(newKey, field)</li>
+</ol>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Cache/" itemprop="url" rel="index">
+                  <span itemprop="name">Cache</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Redis/" itemprop="url" rel="index">
+                  <span itemprop="name">Redis</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/cache/redis-lock/" rel="next" title="Redis分布式锁">
+            <i class="fa far fa-chevron-left"></i> Redis分布式锁
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/hbase/hbase-architecture/" rel="prev" title="HBase 系统架构">
+            HBase 系统架构 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

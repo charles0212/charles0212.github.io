@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        MySQL事务和隔离级别 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="1、数据库事务 ACID 特性  数据库事务的 4 个特性：   * 原子性(Atomicity)  事务中的多个操作，不可分割，要么都成功，要么都失败，事务是数据库的逻辑工作单位，事务中包含的各操作要么都做，要么都不做。   * 一致性(Consistency)  事务执行的结果必须是使数据库从一个一致性状态变到另一个一致性状态。因此当数据库只包含成功事务提交的结果时，就说数据库处于一致性状态。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL事务和隔离级别">
+<meta property="og:url" content="https://www.alicharles.com/article/mysql/mysql-transaction/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="1、数据库事务 ACID 特性  数据库事务的 4 个特性：   * 原子性(Atomicity)  事务中的多个操作，不可分割，要么都成功，要么都失败，事务是数据库的逻辑工作单位，事务中包含的各操作要么都做，要么都不做。   * 一致性(Consistency)  事务执行的结果必须是使数据库从一个一致性状态变到另一个一致性状态。因此当数据库只包含成功事务提交的结果时，就说数据库处于一致性状态。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648310234100-5c0a65d1-3b81-47ce-a200-2e7006f6f49b.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=497&id=u2cb52a02&margin=%5Bobject%20Object%5D&name=image.png&originHeight=994&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=98969&status=done&style=none&taskId=u2963e192-f7fb-4450-983b-b1d9b98a6b8&title=&width=772">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648310714617-0253ccac-7317-4a0c-bd13-877ff146983a.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=957&id=uafea7c26&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1914&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=171359&status=done&style=none&taskId=u74adf793-a0d9-4ed3-a8a3-83903a081a2&title=&width=772">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648311001789-6023982f-c8fb-459e-8aa2-09095e18c719.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1132&id=ue0a170e1&margin=%5Bobject%20Object%5D&name=image.png&originHeight=2264&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=223126&status=done&style=none&taskId=u5365eae2-34c4-4f1f-a33b-e8956a94bf3&title=&width=772">
+<meta property="article:published_time" content="2018-01-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.493Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648310234100-5c0a65d1-3b81-47ce-a200-2e7006f6f49b.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=497&id=u2cb52a02&margin=%5Bobject%20Object%5D&name=image.png&originHeight=994&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=98969&status=done&style=none&taskId=u2963e192-f7fb-4450-983b-b1d9b98a6b8&title=&width=772">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>MySQL事务和隔离级别</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2018-01-29T00:00:00+08:00">
+            2018-01-29
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/database/" itemprop="url" rel="index">
+              <span itemprop="name">数据库</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<h2 id="1、数据库事务-ACID-特性"><a href="#1、数据库事务-ACID-特性" class="headerlink" title="1、数据库事务 ACID 特性"></a>1、数据库事务 ACID 特性</h2><p>数据库事务的 4 个特性：</p>
+<ul>
+<li><strong>原子性(Atomicity)</strong></li>
+</ul>
+<p>事务中的多个操作，不可分割，要么都成功，要么都失败，事务是数据库的逻辑工作单位，事务中包含的各操作要么都做，要么都不做。</p>
+<ul>
+<li><strong>一致性(Consistency)</strong></li>
+</ul>
+<p>事务执行的结果必须是使数据库从一个一致性状态变到另一个一致性状态。因此当数据库只包含成功事务提交的结果时，就说数据库处于一致性状态。如果数据库系统运行中发生故障，有些事务尚未完成就被迫中断，这些未完成事务对数据库所做的修改有一部分已写入物理数据库，这时数据库就处于一种不正确的状态，或者说是不一致的状态。</p>
+<ul>
+<li><strong>隔离性(Isolation)</strong></li>
+</ul>
+<p>多个事务之间就像是串行执行一样，不相互影响，一个事务的执行不能其它事务干扰。即一个事务内部的操作及使用的数据对其它并发事务是隔离的，并发执行的各个事务之间不能互相干扰。</p>
+<ul>
+<li><strong>持续性(Durability)</strong></li>
+</ul>
+<p>事务提交后被持久化到永久存储，也称永久性，指一个事务一旦提交，它对数据库中的数据的改变就应该是永久性的。接下来的其它操作或故障不应该对其执行结果有任何影响。</p>
+<h2 id="2、隔离性"><a href="#2、隔离性" class="headerlink" title="2、隔离性"></a>2、隔离性</h2><p>其中 隔离性 分为了四种：</p>
+<ul>
+<li><strong>READ UNCOMMITTED</strong></li>
+</ul>
+<p>可以读取未提交的数据，未提交的数据称为脏数据，所以又称脏读。此时：幻读，不可重复读和脏读均允许；</p>
+<ul>
+<li><strong>READ COMMITTED</strong></li>
+</ul>
+<p>只能读取已经提交的数据；此时：允许幻读和不可重复读，但不允许脏读，所以 RC 隔离级别要求解决脏读；</p>
+<ul>
+<li><strong>REPEATABLE READ</strong></li>
+</ul>
+<p>同一个事务中多次执行同一个 select,读取到的数据没有发生改变；此时允许幻读，但不允许不可重复读和脏读，所以 RR 隔离级别要求解决不可重复读；事务 A 读取与搜索条件相匹配的若干行。事务 B 以插入或删除行等方式来修改事务 A 的结果集，然后再提交。事务 A 再读取时，却发现数据发生了变化，造成了幻读（MySQL 默认的隔离级别）。</p>
+<ul>
+<li><strong>SERIALIZABLE</strong></li>
+</ul>
+<p>Serializable 是最高的事务隔离级别，同时代价也花费最高，性能很低，一般很少使用，在该级别下，事务顺序执行，不仅可以避免脏读、不可重复读，还避免了幻像读。</p>
+<h2 id="3、几个概念"><a href="#3、几个概念" class="headerlink" title="3、几个概念"></a>3、几个概念</h2><p><strong>脏读</strong>：可以读取未提交的数据。RC 要求解决脏读；<br><strong>不可重复读</strong>：同一个事务中多次执行同一个 select, 读取到的数据发生了改变(被其它事务 update 并且提交)；<br><strong>可重复读</strong>：同一个事务中多次执行同一个 select, 读取到的数据没有发生改变(一般使用 MVCC 实现)；RR 各级级别要求达到可重复读的标准；<br><strong>幻读</strong>：同一个事务中多次执行同一个 select, 读取到的数据行发生改变。也就是行数减少或者增加了(被其它事务 delete&#x2F;insert 并且提交)。SERIALIZABLE 要求解决幻读问题；</p>
+<p><strong>读提交，在读取一条记录时会出现不可重复读；</strong><br><strong>可重复读，通过对事务里面的读写操作加锁解决了读提交的问题，但是对统计某个范围内的记录数量，还是会产生幻读。</strong><br><strong>避免不可重复读需要锁行</strong>，<strong>避免幻影读则需要锁表。</strong></p>
+<p>这里一定要区分 <strong>不可重复读 和 幻读：</strong></p>
+<ul>
+<li><strong>不可重复读重点在于 update 和 delete</strong>： 同样的条件的 select, 你读取过的数据, 再次读取出来发现值不一样了</li>
+<li>幻读的重点在于<strong>新增或者删除</strong>： 同样的条件的 select, 第 1 次和第 2 次读出来的记录数不一样</li>
+</ul>
+<p>从结果上来看, 两者都是为多次读取的结果不一致。但如果你从实现的角度来看, 它们的区别就比较大： 对于前者, 在 RC 下只需要锁住满足条件的记录，就可以避免被其它事务修改，也就是 select for update, select in share mode; RR 隔离下使用 MVCC 实现可重复读； 对于后者, 要锁住满足条件的记录及所有这些记录之间的 gap，也就是需要 gap lock。</p>
+<h3 id="数据库锁"><a href="#数据库锁" class="headerlink" title="数据库锁"></a>数据库锁</h3><p>对于解决<strong>可重复读</strong>需要锁行；对于解决<strong>幻影读</strong>则需要锁表。目前主要使用<strong>悲观锁和乐观锁</strong>来实现这两种隔离级别。<strong>可重复读</strong>，第一次读取到数据后，就将这些数据加锁，其它事务无法修改这些数据；<strong>幻影读，</strong>读用读锁，写用写锁，读锁和写锁互斥，可有效的避免幻读、不可重复读、脏读等问题，但会极大的降低数据库的并发能力。<br><strong>1）悲观锁</strong><br>对数据被外界（包括本系统当前的其他事务，以及来自外部系统的事务处理）修改持保守态度，因此，在整个数据处理过程中，将数据处于锁定状态。<br><strong>悲观锁</strong>的实现，往往依靠数据库提供的锁机制（也只有数据库层提供的锁机制才能真正保证数据访问的排他性，否则，即使在本系统中实现了加锁机制，也无法保证外部系统不会修改数据）。<br>在<strong>悲观锁</strong>的情况下，为了保证事务的隔离性，就需要一致性锁定读。读取数据时给加锁，其它事务无法修改这些数据。修改删除数据时也要加锁，其它事务无法读取这些数据，来保证操作最大程度的独占性。但随之而来的就是<strong>数据库性能的大量开销</strong>，特别是对长事务而言，这样的开销往往无法承受。<br><strong>2）乐观锁</strong><br><strong>乐观锁</strong>机制采取了更加宽松的加锁机制，在一定程度上解决了这个问题。<br>乐观锁大多是基于数据版本（Version）记录机制实现，为数据增加一个版本标识，在基于数据库表的版本解决方案中，一般是通过为数据库表增加一个“version”字段来实现。读取出数据时，将此版本号一同读出，之后更新时，对此版本号加一。此时，将提交数据的版本数据与数据库表对应记录的当前版本信息进行比对，如果提交的数据版本号大于数据库表当前版本号，则予以更新，否则认为是过期数据。要说明的是，MVCC 的实现没有固定的规范，每个数据库都会有不同的实现方式（这里讨论的是 InnoDB 的 MVCC）。</p>
+<p>目前 MySQL、ORACLE、PostgreSQL 等成熟的数据库，出于性能考虑，都是使用了以<strong>乐观锁</strong>为理论基础的 MVCC（多版本并发控制）来避免这两种问题。</p>
+<h3 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h3><table><thead><tr>
+<th>隔离级别</th>
+<th>脏读（Dirty Read）</th>
+<th>不可重复（NonRepeatable Read）</th>
+<th>幻读 （Phantom Read）</th>
+</tr>
+</thead><tbody><tr>
+<td>未提交读（Read uncommitted）</td>
+<td>可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>已提交读（Read committed）</td>
+<td>不可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>可重复读（Repeatable read）</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>可串行化（Serializable ）</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>不可能</td>
+</tr>
+</tbody></table><h2 id="4、实例"><a href="#4、实例" class="headerlink" title="4、实例"></a>4、实例</h2><p>除了 MySQL 默认采用 RR 隔离级别之外，其它几大数据库都是采用 RC 隔离级别。</p>
+<p>但是他们的实现也是极其不一样的。Oracle 仅仅实现了 RC 和 SERIALIZABLE 隔离级别。默认采用 RC 隔离级别，解决了脏读。但是允许不可重复读和幻读。其 SERIALIZABLE 则解决了脏读、不可重复读、幻读。</p>
+<p>MySQL 的实现：MySQL 默认采用 RR 隔离级别，SQL 标准是要求 RR 解决不可重复读的问题，但是因为 MySQL 采用了<strong>gap lock</strong>，所以<strong>实际上 MySQL 的 RR 隔离级别也解决了幻读的问题</strong>。<br>那么 MySQL 的 SERIALIZABLE 是怎么回事呢？其实 MySQL 的 SERIALIZABLE 采用了经典的实现方式，对读和写都加锁。</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">create table &#96;test_trx&#96; (
+&#96;id&#96; int(11) NOT NULL AUTO_INCREMENT,
+&#96;value&#96; int(11) NOT NULL DEFAULT 0,
+PRIMARY KEY(&#96;id&#96;)
+) ENGINE&#x3D;InnoDB AUTO_INCREMENT&#x3D;1 DEFAULT  CHARSET&#x3D;utf8;
+
+insert into test_trx(value) value(1),(2),(3),(4),(5);</code></pre>
+
+<p>下面以例子来说明上面上面的情况</p>
+<h3 id="1-脏读"><a href="#1-脏读" class="headerlink" title="1) 脏读"></a>1) 脏读</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648310234100-5c0a65d1-3b81-47ce-a200-2e7006f6f49b.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=497&id=u2cb52a02&margin=%5Bobject%20Object%5D&name=image.png&originHeight=994&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=98969&status=done&style=none&taskId=u2963e192-f7fb-4450-983b-b1d9b98a6b8&title=&width=772" alt="image.png"></p>
+<blockquote>
+<p>未提交隔离级别, 事务 1 中更新的 value,未提交,事务 2 中可以看到、造成脏读</p>
+</blockquote>
+<h3 id="2-虚读-不可重复读"><a href="#2-虚读-不可重复读" class="headerlink" title="2) 虚读(不可重复读)"></a>2) 虚读(不可重复读)</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648310714617-0253ccac-7317-4a0c-bd13-877ff146983a.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=957&id=uafea7c26&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1914&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=171359&status=done&style=none&taskId=u74adf793-a0d9-4ed3-a8a3-83903a081a2&title=&width=772" alt="image.png"></p>
+<blockquote>
+<p>读提交隔离级别,事务 2 在同一个事务中,读取事务 1 提交后的 update 更改</p>
+</blockquote>
+<h3 id="3-幻读"><a href="#3-幻读" class="headerlink" title="3) 幻读"></a>3) 幻读</h3><p>看下大部分 mysql 所说的幻读现象<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648311001789-6023982f-c8fb-459e-8aa2-09095e18c719.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1132&id=ue0a170e1&margin=%5Bobject%20Object%5D&name=image.png&originHeight=2264&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=223126&status=done&style=none&taskId=u5365eae2-34c4-4f1f-a33b-e8956a94bf3&title=&width=772" alt="image.png"></p>
+<blockquote>
+<p>事务 2,查询记录里面没有记录 7,插入 7 的时候提示主键重复,幻读.</p>
+</blockquote>
+<p>RR 事务隔离级别号称可以解决幻读的问题（通过当前读加锁来实现）</p>
+<h2 id="5、gap-锁（当前读）解决幻读问题"><a href="#5、gap-锁（当前读）解决幻读问题" class="headerlink" title="5、gap 锁（当前读）解决幻读问题"></a>5、gap 锁（当前读）解决幻读问题</h2><p>mysql 说对数据加锁不管共享锁还是互斥锁就能解决幻读的问题</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql">select * from test_trx where id between 1 and 7 lock in share mode;
+
+select * from test_trx where id between 1 and 7 for update;</code></pre>
+
+<p>通过 gap 锁+当前读解决幻读问题,但是 lock in share mode 和 for update 不是标准的 sql 语法.</p>
+<h2 id="6、RR-没有解决的幻读"><a href="#6、RR-没有解决的幻读" class="headerlink" title="6、RR 没有解决的幻读"></a>6、RR 没有解决的幻读</h2><p>场景：我们知道 grap 锁能够将右边的记录进行加锁，因此我要统计表记录的数量，我只需要对最大记录加锁就行了</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Mysql/" itemprop="url" rel="index">
+                  <span itemprop="name">Mysql</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/disruptor/disruptor-practise/" rel="next" title="Disruptor（五）DSL相关实战">
+            <i class="fa far fa-chevron-left"></i> Disruptor（五）DSL相关实战
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/mysql/mysql-deadlock/" rel="prev" title="MySQL死锁分析">
+            MySQL死锁分析 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1-ACID-%E7%89%B9%E6%80%A7"><span class="toc-text">1、数据库事务 ACID 特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E9%9A%94%E7%A6%BB%E6%80%A7"><span class="toc-text">2、隔离性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E5%87%A0%E4%B8%AA%E6%A6%82%E5%BF%B5"><span class="toc-text">3、几个概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E9%94%81"><span class="toc-text">数据库锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-text">隔离级别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E5%AE%9E%E4%BE%8B"><span class="toc-text">4、实例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%84%8F%E8%AF%BB"><span class="toc-text">1) 脏读</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%99%9A%E8%AF%BB-%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB"><span class="toc-text">2) 虚读(不可重复读)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%B9%BB%E8%AF%BB"><span class="toc-text">3) 幻读</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81gap-%E9%94%81%EF%BC%88%E5%BD%93%E5%89%8D%E8%AF%BB%EF%BC%89%E8%A7%A3%E5%86%B3%E5%B9%BB%E8%AF%BB%E9%97%AE%E9%A2%98"><span class="toc-text">5、gap 锁（当前读）解决幻读问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6%E3%80%81RR-%E6%B2%A1%E6%9C%89%E8%A7%A3%E5%86%B3%E7%9A%84%E5%B9%BB%E8%AF%BB"><span class="toc-text">6、RR 没有解决的幻读</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

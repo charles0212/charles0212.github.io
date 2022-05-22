@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        TMC多级缓存 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; TMC (Transparent &gt; Multilevel Cache) &gt; 在通用“分布式缓存解决方案（如 &gt; CodisProxy + Redis &gt; ）”基础上，增加了以下功能： &gt;  &gt;  * 应用层热点探测 &gt;  * 应用层本地缓存 &gt;  * 应用层缓存命中统计 &gt;  &gt; 以帮助应用层解决缓存使用过程中出现的热点访问问题    使用有赞服务的电商商家数量和类型很多， 商家会不定期做一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TMC多级缓存">
+<meta property="og:url" content="https://www.alicharles.com/article/cache/tmc/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; TMC (Transparent &gt; Multilevel Cache) &gt; 在通用“分布式缓存解决方案（如 &gt; CodisProxy + Redis &gt; ）”基础上，增加了以下功能： &gt;  &gt;  * 应用层热点探测 &gt;  * 应用层本地缓存 &gt;  * 应用层缓存命中统计 &gt;  &gt; 以帮助应用层解决缓存使用过程中出现的热点访问问题    使用有赞服务的电商商家数量和类型很多， 商家会不定期做一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646820802045-a323118a-557c-437b-b9be-a088dbe54746.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=375&id=u40be1be5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=375&originWidth=529&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=43922&status=done&style=none&taskId=ua6df5020-2746-48b0-b0d7-c884974a4c5&title=&width=529">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646821796846-9a991b6c-34c8-444c-a836-a36d0a25ec5b.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=704&id=u48b2c098&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1408&originWidth=1948&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=824381&status=done&style=none&taskId=u335a67a8-16fe-4046-abdf-35aaec6946d&title=&width=974">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823138502-b2037837-e4d9-49eb-a1f7-fa9ede195b43.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=773&id=ufc255c34&margin=%5Bobject%20Object%5D&name=image.png&originHeight=773&originWidth=1233&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=328621&status=done&style=none&taskId=u503f2fcc-6797-42f7-b817-b57efea6c9b&title=&width=1233">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823300463-ff6d428d-cac3-4fe8-8ef3-584ba8451831.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=337&id=ucfda2623&margin=%5Bobject%20Object%5D&name=image.png&originHeight=337&originWidth=1097&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=118996&status=done&style=none&taskId=u38ed54a1-a4c7-4353-b314-b765cce3b8e&title=&width=1097">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823329955-979a8907-e143-448a-a563-ed3f61d15085.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=303&id=uc8b73849&margin=%5Bobject%20Object%5D&name=image.png&originHeight=303&originWidth=1089&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=81534&status=done&style=none&taskId=u953b6a30-7332-4636-a1b2-93febeb25be&title=&width=1089">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646821907075-e77eaf88-f968-48e5-bb9d-3a545df7607d.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=894&id=Gag7f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1788&originWidth=2466&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=523892&status=done&style=none&taskId=uc20faab3-42cc-4aa2-a04e-e7c683ce7bb&title=&width=1233">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823769927-04919d8e-a674-458c-9747-74815d47ef3e.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=89&id=uab9b841c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=89&originWidth=757&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=40862&status=done&style=none&taskId=ueb90a1de-ff6b-4442-af25-83381c6f784&title=&width=757">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823827946-0b66c565-0753-4a82-b219-5cfa14cf0ff6.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=891&id=u3bfdcd68&margin=%5Bobject%20Object%5D&name=image.png&originHeight=891&originWidth=1893&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=463441&status=done&style=none&taskId=ub6a503d8-388c-4bb0-b5e4-7e1c20e345d&title=&width=1893">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823662468-ff5848c6-0a20-4ddc-b578-06b89099f5ce.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1970&id=u04c4c881&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1970&originWidth=2832&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=2136422&status=done&style=none&taskId=ud56b3858-b3e0-4ad2-b1e5-0de0f081211&title=&width=2832">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823710525-c6631258-d680-43b8-954d-131d9ae6d86e.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=2232&id=u543813a8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=2232&originWidth=1634&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=540021&status=done&style=none&taskId=ub6fb5c79-1778-47c4-ad67-cb30480bf3f&title=&width=1634">
+<meta property="article:published_time" content="2021-07-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.496Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Cache">
+<meta property="article:tag" content="TMC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646820802045-a323118a-557c-437b-b9be-a088dbe54746.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=375&id=u40be1be5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=375&originWidth=529&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=43922&status=done&style=none&taskId=ua6df5020-2746-48b0-b0d7-c884974a4c5&title=&width=529">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>TMC多级缓存</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2021-08-01T00:00:00+08:00">
+            2021-08-01
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/cache/" itemprop="url" rel="index">
+              <span itemprop="name">cache</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p>TMC (Transparent Multilevel Cache) 在通用“分布式缓存解决方案（如 CodisProxy + Redis ）”基础上，增加了以下功能：</p>
+<ul>
+<li>应用层热点探测</li>
+<li>应用层本地缓存</li>
+<li>应用层缓存命中统计</li>
+</ul>
+<p>以帮助应用层解决缓存使用过程中出现的热点访问问题</p>
+</blockquote>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646820802045-a323118a-557c-437b-b9be-a088dbe54746.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=375&id=u40be1be5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=375&originWidth=529&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=43922&status=done&style=none&taskId=ua6df5020-2746-48b0-b0d7-c884974a4c5&title=&width=529" alt="image.png"></p>
+<p>使用有赞服务的电商商家数量和类型很多， 商家会不定期做一些“商品秒杀”、“商品推广”活动， 导致“营销活动”、“商品详情”、“交易下单”等链路应用出现 缓存热点访问 的情况：</p>
+<ul>
+<li>活动时间、活动类型、活动商品之类的信息不可预期，导致 缓存热点访问 情况不可提前预知;</li>
+<li>缓存热点访问 出现期间，应用层少数热点访问 key 产生大量缓存访问请求:冲击分布式缓存系统，大量 占据内网带宽，最终影响应用层系统稳定性;</li>
+</ul>
+<p>为了应对以上问题，需要一个能够 自动发现热点 并将 热点缓存访问请求前置在应用层本地缓存 的解决方案， 这就是 TMC 产生的原因。</p>
+<h2 id="TMC-架构"><a href="#TMC-架构" class="headerlink" title="TMC 架构"></a>TMC 架构</h2><h3 id="业务定位"><a href="#业务定位" class="headerlink" title="业务定位"></a>业务定位</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646821796846-9a991b6c-34c8-444c-a836-a36d0a25ec5b.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=704&id=u48b2c098&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1408&originWidth=1948&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=824381&status=done&style=none&taskId=u335a67a8-16fe-4046-abdf-35aaec6946d&title=&width=974" alt="image.png"></p>
+<h3 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823138502-b2037837-e4d9-49eb-a1f7-fa9ede195b43.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=773&id=ufc255c34&margin=%5Bobject%20Object%5D&name=image.png&originHeight=773&originWidth=1233&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=328621&status=done&style=none&taskId=u503f2fcc-6797-42f7-b817-b57efea6c9b&title=&width=1233" alt="image.png"></p>
+<h4 id="老的上报链路"><a href="#老的上报链路" class="headerlink" title="老的上报链路"></a>老的上报链路</h4><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823300463-ff6d428d-cac3-4fe8-8ef3-584ba8451831.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=337&id=ucfda2623&margin=%5Bobject%20Object%5D&name=image.png&originHeight=337&originWidth=1097&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=118996&status=done&style=none&taskId=u38ed54a1-a4c7-4353-b314-b765cce3b8e&title=&width=1097" alt="image.png"><br>旧架构强依赖 etcd 和 kafka</p>
+<ul>
+<li>etcd write 1w&#x2F;s， 击穿时 tmc 产生的 变更事件远超这个量级；</li>
+<li>kafka 链路长，延迟较高且潜在风险较高。</li>
+</ul>
+<h4 id="新的上报通道"><a href="#新的上报通道" class="headerlink" title="新的上报通道"></a>新的上报通道</h4><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823329955-979a8907-e143-448a-a563-ed3f61d15085.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=303&id=uc8b73849&margin=%5Bobject%20Object%5D&name=image.png&originHeight=303&originWidth=1089&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=81534&status=done&style=none&taskId=u953b6a30-7332-4636-a1b2-93febeb25be&title=&width=1089" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646821907075-e77eaf88-f968-48e5-bb9d-3a545df7607d.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=894&id=Gag7f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1788&originWidth=2466&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=523892&status=done&style=none&taskId=uc20faab3-42cc-4aa2-a04e-e7c683ce7bb&title=&width=1233" alt="image.png"><br>主要功能：热点上报、缓存失效广播、热点下发、服务依赖<br>主要接接口</p>
+<ul>
+<li>NotifierService#Report 供 sdk 上报新的热 key</li>
+<li>NotifierService#ExpireHotKeys 供 sdk 推送 key 过期通知</li>
+<li>NotifierService#Publish， 供 volcano publish 热 key</li>
+</ul>
+<pre class="line-numbers language-pascal" data-language="pascal"><code class="language-pascal">syntax&#x3D;&quot;proto3&quot;;
+
+package&#x3D;v1;
+
+service NotifierService &#123;
+    rpc ExpireHotKeys (ExpireHotKeysRequest) returns (ExpireHotKeysResponse) &#123;
+    &#125;
+
+    rpc Report (ReportRequest) returns (ReportResponse) &#123;
+    &#125;
+
+    rpc Publish (PublishRequest) returns (PublishResponse) &#123;
+    &#125;
+&#125;
+
+message ExpireHotKeysRequest &#123;
+  repeated string appNames&#x3D;1;
+  repeated bytes hotKeys&#x3D;2;
+  string groupName&#x3D;3;
+&#125;
+
+message ExpireHotKeysResponse &#123;
+  int32 code&#x3D;1;
+  string msg&#x3D;2;
+&#125;
+
+message ReportRequest &#123;
+    repeated ReportData reportData &#x3D; 1;
+    string groupName &#x3D; 2;
+&#125;
+
+message ReportData &#123;
+    string appName &#x3D; 1;
+    string key &#x3D; 2;
+    int32 accessTimes &#x3D; 3;
+    int32 redisHitTimes &#x3D; 4;
+    int32 localCacheHitTimes &#x3D; 5;
+    int32 localCacheLossTimes &#x3D; 6;
+    int32 version &#x3D; 7;
+    int64 sendTime &#x3D; 8;
+&#125;
+
+message ReportResponse &#123;
+    int32 code &#x3D; 1;
+    string msg &#x3D; 2;
+&#125;
+
+message PublishRequest &#123;
+    string groupName &#x3D; 1;
+    repeated string appNames &#x3D; 2;
+    repeated HotKeyChangeModel changeModels &#x3D; 3;
+    int64 findAt &#x3D; 4;
+    enum EventType &#123;
+        NULL &#x3D; 0;
+        DELETE &#x3D; 1;
+        UPDATE &#x3D; 2;
+        EXPIRE &#x3D; 3;
+        FIND &#x3D; 4;
+    &#125;
+    EventType eventType &#x3D; 5;
+&#125;
+
+message HotKeyChangeModel &#123;
+    string hotKey &#x3D; 1;
+    int64 expireTime &#x3D; 2;
+&#125;
+
+message PublishResponse &#123;
+    int32 code &#x3D; 1;
+    string msg &#x3D; 2;
+&#125;
+
+&#x2F;&#x2F; code 0: 正确
+&#x2F;&#x2F; code 400: 参数不对</code></pre>
+
+<ul>
+<li>按 group+key 维度聚合</li>
+<li>跨注册中心的需求，采用 notifier 互调实现</li>
+<li>对于 kvproxy 的 hotkey error，触发立即下发热点 key 的逻辑</li>
+</ul>
+<p>notifier 可能会存在内存泄露问题<br>1、双缓冲队列：通过覆盖写的方式，只能解决突发流量洪峰，丢弃 limit 以外的流量；<br>2、下游 sweep（Tether 广播或者上报 volcano-server）性能受限时，内存中的 message 会产生积压，造成泄漏；<br>使用 LRU 缓存来替换抖动的数据映射来解决</p>
+<h2 id="热点计算"><a href="#热点计算" class="headerlink" title="热点计算"></a>热点计算</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823769927-04919d8e-a674-458c-9747-74815d47ef3e.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=89&id=uab9b841c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=89&originWidth=757&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=40862&status=done&style=none&taskId=ueb90a1de-ff6b-4442-af25-83381c6f784&title=&width=757" alt="image.png"></p>
+<ul>
+<li><strong>数据收集</strong>: 收集 Volcano-SDK 上报的 key 访问事件;</li>
+<li><strong>热度滑窗</strong>: 对 App 的每个 Key ，维护一个时间轮，记录基于当前时刻滑窗的访问热度;</li>
+<li><strong>热度汇聚</strong>: 对 App 的所有 Key ，以&lt;key， 热度&gt;的形式进行 热度排序汇总;</li>
+<li><strong>热点探测</strong>: 对 App ，从 热 Key 排序汇总 结果中选出 TopN 的热点 Key ，推送给 volcano-SDK;</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823827946-0b66c565-0753-4a82-b219-5cfa14cf0ff6.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=891&id=u3bfdcd68&margin=%5Bobject%20Object%5D&name=image.png&originHeight=891&originWidth=1893&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=463441&status=done&style=none&taskId=ub6a503d8-388c-4bb0-b5e4-7e1c20e345d&title=&width=1893" alt="image.png"></p>
+<p><strong>volcano-sdk</strong><br>对于 redis 的 Jedis 客户端中封装已有的 get、set、expire、delete 操作，做热点的发现统计，以及本地缓存变更通知。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823662468-ff5848c6-0a20-4ddc-b578-06b89099f5ce.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1970&id=u04c4c881&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1970&originWidth=2832&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=2136422&status=done&style=none&taskId=ud56b3858-b3e0-4ad2-b1e5-0de0f081211&title=&width=2832" alt="image.png"><br><strong>volcano-server</strong><br>对于收集的数据，进行滑动窗口计算，汇总，热点推送到各机器上<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823710525-c6631258-d680-43b8-954d-131d9ae6d86e.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=2232&id=u543813a8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=2232&originWidth=1634&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=540021&status=done&style=none&taskId=ub6fb5c79-1778-47c4-ad67-cb30480bf3f&title=&width=1634" alt="image.png"></p>
+<h2 id="关于缓存击穿的处理"><a href="#关于缓存击穿的处理" class="headerlink" title="关于缓存击穿的处理"></a>关于缓存击穿的处理</h2><p>如果没有处理好并发问题， 业务方很容易出现， 在缓存数据过期时， 大量相同的请求回源到底层的 DB 读取数据， 导致大量无效回源请求， 增加 DB 的压力， 在大流量的情况下可能会导致 DB 崩溃， 从而导致雪崩。 对于这种情况， 我们在 redis-zan 框架中封装了一个简易接口来避免这种情况。<br>使用 redis-zan 的业务方， 可以通过封装的接口完成缓存击穿的简化处理， 缓存失效自动 DB 回源更新缓存的使用示例:</p>
+<pre class="line-numbers language-protobuf" data-language="protobuf"><code class="language-protobuf">public void testStringGet() throws ExecutionException &#123;
+   String key &#x3D; &quot;youzan:test:db_callback&quot;;
+   Supplier&lt;String&gt; supplier &#x3D; () -&gt; &#123;
+    &#x2F;&#x2F; 处理读取db的数据, 返回对应db的值
+     return ret;
+   &#125;;
+
+   &#x2F;&#x2F; 此方法会从kv读取key的值, 如果不存在, 调用supplier回调函数从db中回源, 然后自动更新到kv, 并设置指定的ttl过期时间.
+   &#x2F;&#x2F; 此方法会自动处理缓存失效时多个并发回源问题, 保证只有第一个线程的调用会回源db并更新kv. 后面的线程会排队等待第一个线程返回.
+
+   String value &#x3D; redisClient.opsForString().get(key, 5, supplier);
+ &#125;</code></pre>
+
+<p>注意， 此方式可以单独使用， 不需要开启 TMC 本地缓存功能也可以使用。<br>类似的， 对于读取业务本身就不存在的数据， 出现的缓存穿透情况， 业务可以设置一个业务认为不存在的标记， 来避免不存在的数据一直请求 DB。</p>
+<h2 id="KV-增强本地缓存-LRUs"><a href="#KV-增强本地缓存-LRUs" class="headerlink" title="KV 增强本地缓存 LRUs"></a>KV 增强本地缓存 LRUs</h2><p>默认的热点缓存一般只用于少量的热点数据缓存(几百以内的 key)， tmc-kv 新功能新增支持本地 LRU 能力， 可以近实时的拦截热点(理论上可以立即缓存热点读请求)， 也可以缓存更多的数据到本地(几十万 key)， 并且通过淘汰算法自动驱逐非热点数据， 不过由于缓存的 key 更多了， 因此有可能会扩大数据不一致的影响范围(开启更新通知广播可以通过更新广播减少不一致窗口)， 适合数据修改不频繁的业务场景， 需要的业务方可以联系开发手动开启本地 LRU 增强功能。</p>
+<h2 id="RPC-缓存"><a href="#RPC-缓存" class="headerlink" title="RPC 缓存"></a>RPC 缓存</h2><p>最近新增了一项 RPC 缓存功能， 来提供更加快捷的本地缓存使用方式， 可以直接缓存 RPC 的响应结果， 业务方不需要关注缓存细节。 通过 RPC 缓存，业务可以：</p>
+<ul>
+<li>提升请求的处理速度，提升业务的吞吐量。从本地缓存中获取响应结果，性能远高于向后端发起 RPC 请求。</li>
+<li>降低后端应用负载，节省成本。本地缓存可以有效的降低后端应用处理的 RPC 请求量(RPS，requests per second)，进而降低后端应用的负载，节省成本。</li>
+<li>流量削峰，提升应用稳定性。缓存命中率在秒杀等瞬间洪水流量场景下会显著提升，从而避免洪水流量瞬间冲击后端服务。</li>
+</ul>
+<p>通过开启缓存配置，即可零开发零成本的享受到 RPC 缓存带来的收益。对于不需要针对 kv 具体缓存数据做读取操作的应用，或者需要 kv 之外数据缓存的业务， 可以使用 RPC 缓存更加简单的提升性能。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Cache/" itemprop="url" rel="index">
+                  <span itemprop="name">Cache</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/TMC/" itemprop="url" rel="index">
+                  <span itemprop="name">TMC</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/hbase/hbase-read-optimize/" rel="next" title="HBase（四）读优化">
+            <i class="fa far fa-chevron-left"></i> HBase（四）读优化
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/gateway/apisix/" rel="prev" title="APISIX">
+            APISIX <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#TMC-%E6%9E%B6%E6%9E%84"><span class="toc-text">TMC 架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%9A%E5%8A%A1%E5%AE%9A%E4%BD%8D"><span class="toc-text">业务定位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-text">整体流程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%80%81%E7%9A%84%E4%B8%8A%E6%8A%A5%E9%93%BE%E8%B7%AF"><span class="toc-text">老的上报链路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B0%E7%9A%84%E4%B8%8A%E6%8A%A5%E9%80%9A%E9%81%93"><span class="toc-text">新的上报通道</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%83%AD%E7%82%B9%E8%AE%A1%E7%AE%97"><span class="toc-text">热点计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-text">关于缓存击穿的处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KV-%E5%A2%9E%E5%BC%BA%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98-LRUs"><span class="toc-text">KV 增强本地缓存 LRUs</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RPC-%E7%BC%93%E5%AD%98"><span class="toc-text">RPC 缓存</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

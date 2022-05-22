@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        设计模式与GO |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; 原文链接：https:&#x2F;&#x2F;refactoringguru.cn&#x2F;design-patterns&#x2F;go &gt; 代码可见：https:&#x2F;&#x2F;github.com&#x2F;charles0212&#x2F;design-patterns     创建型模式  创建型模式 模式描述 抽象工厂 Abstract Factory，让你能创建一系列相关的对象， 而无需指定其具体类。 生成器 Builder，使你能够分步骤创建复杂">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式与GO">
+<meta property="og:url" content="https://www.alicharles.com/article/design-pattern/go-design-pattern/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; 原文链接：https:&#x2F;&#x2F;refactoringguru.cn&#x2F;design-patterns&#x2F;go &gt; 代码可见：https:&#x2F;&#x2F;github.com&#x2F;charles0212&#x2F;design-patterns     创建型模式  创建型模式 模式描述 抽象工厂 Abstract Factory，让你能创建一系列相关的对象， 而无需指定其具体类。 生成器 Builder，使你能够分步骤创建复杂">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849120-8c935106-b50d-43e2-b077-2a346ba4ea36.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u7026b96a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=600&originWidth=960&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=220800&status=done&style=none&taskId=u23e06ec8-c91e-41c5-8e49-2a209dab84c&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849095-626a3435-1374-4508-ab81-9b2109b83745.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uba777813&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=3905&status=done&style=none&taskId=uf226d5b6-e539-49c0-aec5-95610636e66&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849054-7304f282-6d0d-4db6-a776-27e27b6ea17d.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u4dd0d6a1&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=6475&status=done&style=none&taskId=ub6be7df0-5818-4fbc-a0ef-a326ba15135&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849067-c3d1d6c6-8743-4b7e-af85-dcb3a2b7cae4.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ub641ba7c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=2625&status=done&style=none&taskId=u4f78fd44-c2fd-4cc7-9b3e-90113b8a4d7&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849070-e2b0651a-bf98-439d-b77e-acd81280af6c.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u86f89380&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=14041&status=done&style=none&taskId=u3ba94088-fe3a-4dc9-b98e-e424fd9d967&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849617-3ffd03b7-59ba-493d-b9ce-a50d8e84e5c0.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u570258e5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=2128&status=done&style=none&taskId=u542f8ff7-efad-4752-b538-2b8bcbe6ef9&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849754-e74d572b-1040-4330-ac23-b8258c30af2a.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u2ee328c2&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=2971&status=done&style=none&taskId=u277352f6-4f8f-4352-9a49-807a6e2b43e&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849811-f2cbc725-8b43-47ac-b973-3df5e5ce6b30.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u6c885612&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=4018&status=done&style=none&taskId=u997fd844-d4fb-4d98-8ebb-9ea19905ebe&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849824-6006c823-2710-4cce-b04b-66d052334c0f.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u2cccdb85&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=3542&status=done&style=none&taskId=uc7184567-7724-4113-8d62-c4a103eb683&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850270-8f4560cc-e2ff-4d65-bff4-e8646e63c89d.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u0ce9d493&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=10561&status=done&style=none&taskId=u2534127f-0ba4-4ef7-9cdf-e3f8b9320da&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850383-6f6c9195-ec0f-40e8-af0f-aab3744ef1c3.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u8fb6593d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=2784&status=done&style=none&taskId=u20bdf3c8-e29f-441e-9774-3b6dbcc2e8f&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850393-128ff22a-0cc7-4c42-be52-ca5fcc7d4677.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u079e11fd&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=3333&status=done&style=none&taskId=u5eae9f5d-d2f8-440b-b97a-643edeed936&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850546-92b8d448-1ee1-4841-9ecb-d4846da08198.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u1f0338d0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=1645&status=done&style=none&taskId=u6c6ebcbc-4063-4dd8-a702-905aab82c20&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850774-43741606-2215-4297-9049-b41440f13ae3.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua4922a46&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=4034&status=done&style=none&taskId=u0da1875d-f5b9-4f57-b97c-6de189e0cf9&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850803-ce8a391b-ce80-4b21-9048-3e6fb3df91f5.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uce7c51c7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=3065&status=done&style=none&taskId=u2ee77d86-85d4-44f9-9e85-1f45d07f452&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850856-045ccfd2-fa99-4123-810f-0be5779e9871.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u103fd17b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=6061&status=done&style=none&taskId=u9c2c6e91-e2a6-4523-98bf-7c80a3e0914&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851330-f2b8af3a-0f5b-4e54-88d4-29a7d99f8304.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u95977239&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=2038&status=done&style=none&taskId=uf6eb2c39-a29e-45c2-823d-bd5a210b3bb&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851420-3d37f88e-a223-40ee-b78d-a03be8a303aa.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u768009d6&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=3274&status=done&style=none&taskId=u0fb6fc6d-96a3-486a-aa57-6453e1252c6&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851452-91b361c0-b965-4671-ad50-b27d33fd4079.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u1957d769&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=8155&status=done&style=none&taskId=u4a972d76-d3c7-47e3-b467-e830209e43a&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851562-6be2e45f-ed63-4ce3-9d64-e11f31088452.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u53a0ee5d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=4930&status=done&style=none&taskId=u041f7417-5e63-46aa-9c95-76178e05921&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851853-78b38f09-76cb-4f59-a8e0-07c80d3ec98f.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u80f965ba&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=5693&status=done&style=none&taskId=u2c83b195-9a8c-454c-85d0-f2a12aa9d65&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851960-16f0f3ad-4ec5-4c93-8964-4aca78b0fcbe.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ue6914357&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=1585&status=done&style=none&taskId=u5ac64deb-7c04-449d-bd31-098bfb4e3c1&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851999-1a7d7935-a1c0-4794-8f0a-c0d61ef0cb83.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u6ee1c241&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=3891&status=done&style=none&taskId=u55e7de19-52ec-49f9-9dbb-657aefd2004&title=">
+<meta property="article:published_time" content="2021-05-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:55:51.836Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="设计模式">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849120-8c935106-b50d-43e2-b077-2a346ba4ea36.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u7026b96a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=600&originWidth=960&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=220800&status=done&style=none&taskId=u23e06ec8-c91e-41c5-8e49-2a209dab84c&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>设计模式与GO</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2021-06-01T00:00:00+08:00">
+            2021-06-01
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/design-pattern/" itemprop="url" rel="index">
+              <span itemprop="name">design-pattern</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p>原文链接：<a target="_blank" rel="noopener" href="https://refactoringguru.cn/design-patterns/go">https://refactoringguru.cn/design-patterns/go</a><br>代码可见：<a target="_blank" rel="noopener" href="https://github.com/charles0212/design-patterns">https://github.com/charles0212/design-patterns</a></p>
+</blockquote>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849120-8c935106-b50d-43e2-b077-2a346ba4ea36.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u7026b96a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=600&originWidth=960&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=220800&status=done&style=none&taskId=u23e06ec8-c91e-41c5-8e49-2a209dab84c&title=" alt="image.png"></p>
+<h2 id="创建型模式"><a href="#创建型模式" class="headerlink" title="创建型模式"></a>创建型模式</h2><table><colgroup><col width="20"></col><col width="80"></col></colgroup><thead><tr>
+<th><strong>创建型模式</strong></th>
+<th><strong>模式描述</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849095-626a3435-1374-4508-ab81-9b2109b83745.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uba777813&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=3905&status=done&style=none&taskId=uf226d5b6-e539-49c0-aec5-95610636e66&title=" alt="image.png"></td>
+<td><strong>抽象工厂 Abstract Factory</strong>，让你能创建一系列相关的对象， 而无需指定其具体类。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849054-7304f282-6d0d-4db6-a776-27e27b6ea17d.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u4dd0d6a1&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=6475&status=done&style=none&taskId=ub6be7df0-5818-4fbc-a0ef-a326ba15135&title=" alt="image.png"></td>
+<td><strong>生成器 Builder</strong>，使你能够分步骤创建复杂对象。 该模式允许你使用相同的创建代码生成不同类型和形式的对象。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849067-c3d1d6c6-8743-4b7e-af85-dcb3a2b7cae4.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ub641ba7c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=2625&status=done&style=none&taskId=u4f78fd44-c2fd-4cc7-9b3e-90113b8a4d7&title=" alt="image.png"></td>
+<td><strong>工厂方法 Factory Method</strong>，在父类中提供一个创建对象的接口以允许子类决定实例化对象的类型。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849070-e2b0651a-bf98-439d-b77e-acd81280af6c.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u86f89380&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=14041&status=done&style=none&taskId=u3ba94088-fe3a-4dc9-b98e-e424fd9d967&title=" alt="image.png"></td>
+<td><strong>原型 Prototype</strong>，让你能够复制已有对象， 而又无需使代码依赖它们所属的类。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849617-3ffd03b7-59ba-493d-b9ce-a50d8e84e5c0.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u570258e5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=2128&status=done&style=none&taskId=u542f8ff7-efad-4752-b538-2b8bcbe6ef9&title=" alt="image.png"></td>
+<td><strong>单例 Singleton</strong>，让你能够保证一个类只有一个实例， 并提供一个访问该实例的全局节点。</td>
+</tr>
+</tbody></table><h2 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a>结构型模式</h2><table><colgroup><col width="20"></col><col width="80"></col></colgroup><thead><tr>
+<th><strong>结构性模式</strong></th>
+<th><strong>模式描述</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849754-e74d572b-1040-4330-ac23-b8258c30af2a.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u2ee328c2&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=2971&status=done&style=none&taskId=u277352f6-4f8f-4352-9a49-807a6e2b43e&title=" alt="image.png"></td>
+<td><strong>适配器 Adapter</strong>，让接口不兼容的对象能够相互合作。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849811-f2cbc725-8b43-47ac-b973-3df5e5ce6b30.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u6c885612&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=4018&status=done&style=none&taskId=u997fd844-d4fb-4d98-8ebb-9ea19905ebe&title=" alt="image.png"></td>
+<td><strong>桥接 Bridge</strong>，可将一个大类或一系列紧密相关的类拆分为抽象和实现两个独立的层次结构， 从而能在开发时分别使用。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419849824-6006c823-2710-4cce-b04b-66d052334c0f.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u2cccdb85&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=3542&status=done&style=none&taskId=uc7184567-7724-4113-8d62-c4a103eb683&title=" alt="image.png"></td>
+<td><strong>组合 Composite</strong>，你可以使用它将对象组合成树状结构， 并且能像使用独立对象一样使用它们。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850270-8f4560cc-e2ff-4d65-bff4-e8646e63c89d.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u0ce9d493&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=10561&status=done&style=none&taskId=u2534127f-0ba4-4ef7-9cdf-e3f8b9320da&title=" alt="image.png"></td>
+<td><strong>装饰 Decorator</strong>，允许你通过将对象放入包含行为的特殊封装对象中来为原对象绑定新的行为。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850383-6f6c9195-ec0f-40e8-af0f-aab3744ef1c3.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u8fb6593d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=2784&status=done&style=none&taskId=u20bdf3c8-e29f-441e-9774-3b6dbcc2e8f&title=" alt="image.png"></td>
+<td><strong>外观 Facade</strong>，能为程序库、 框架或其他复杂类提供一个简单的接口。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850393-128ff22a-0cc7-4c42-be52-ca5fcc7d4677.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u079e11fd&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=3333&status=done&style=none&taskId=u5eae9f5d-d2f8-440b-b97a-643edeed936&title=" alt="image.png"></td>
+<td><strong>享元 Flyweight</strong>，摒弃了在每个对象中保存所有数据的方式， 通过共享多个对象所共有的相同状态， 让你能在有限的内存容量中载入更多对象。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850546-92b8d448-1ee1-4841-9ecb-d4846da08198.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u1f0338d0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=1645&status=done&style=none&taskId=u6c6ebcbc-4063-4dd8-a702-905aab82c20&title=" alt="image.png"></td>
+<td><strong>代理 Proxy</strong>，让你能够提供对象的替代品或其占位符。 代理控制着对于原对象的访问， 并允许在将请求提交给对象前后进行一些处理。</td>
+</tr>
+</tbody></table><h2 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a>行为型模式</h2><table><colgroup><col width="20"></col><col width="80"></col></colgroup><thead><tr>
+<th><strong>行为性模式</strong></th>
+<th><strong>模式描述</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850774-43741606-2215-4297-9049-b41440f13ae3.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua4922a46&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=4034&status=done&style=none&taskId=u0da1875d-f5b9-4f57-b97c-6de189e0cf9&title=" alt="image.png"></td>
+<td><strong>责任链 Chain of Responsibility</strong>，允许你将请求沿着处理者链进行发送。 收到请求后， 每个处理者均可对请求进行处理， 或将其传递给链上的下个处理者。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850803-ce8a391b-ce80-4b21-9048-3e6fb3df91f5.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uce7c51c7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=3065&status=done&style=none&taskId=u2ee77d86-85d4-44f9-9e85-1f45d07f452&title=" alt="image.png"></td>
+<td><strong>命令 Command</strong>，它可将请求转换为一个包含与请求相关的所有信息的独立对象。 该转换让你能根据不同的请求将方法参数化、 延迟请求执行或将其放入队列中， 且能实现可撤销操作。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419850856-045ccfd2-fa99-4123-810f-0be5779e9871.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u103fd17b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=6061&status=done&style=none&taskId=u9c2c6e91-e2a6-4523-98bf-7c80a3e0914&title=" alt="image.png"></td>
+<td><strong>迭代器 Iterator</strong>，让你能在不暴露集合底层表现形式 （列表、 栈和树等） 的情况下遍历集合中所有的元素。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851330-f2b8af3a-0f5b-4e54-88d4-29a7d99f8304.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u95977239&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=2038&status=done&style=none&taskId=uf6eb2c39-a29e-45c2-823d-bd5a210b3bb&title=" alt="image.png"></td>
+<td><strong>中介者 Mediator</strong>，能让你减少对象之间混乱无序的依赖关系。 该模式会限制对象之间的直接交互， 迫使它们通过一个中介者对象进行合作。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851420-3d37f88e-a223-40ee-b78d-a03be8a303aa.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u768009d6&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=3274&status=done&style=none&taskId=u0fb6fc6d-96a3-486a-aa57-6453e1252c6&title=" alt="image.png"></td>
+<td><strong>备忘录 Memento</strong>，允许在不暴露对象实现细节的情况下保存和恢复对象之前的状态。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851452-91b361c0-b965-4671-ad50-b27d33fd4079.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u1957d769&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=8155&status=done&style=none&taskId=u4a972d76-d3c7-47e3-b467-e830209e43a&title=" alt="image.png"></td>
+<td><strong>观察者 Observer</strong>，允许你定义一种订阅机制， 可在对象事件发生时通知多个 “观察” 该对象的其他对象。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851562-6be2e45f-ed63-4ce3-9d64-e11f31088452.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u53a0ee5d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=4930&status=done&style=none&taskId=u041f7417-5e63-46aa-9c95-76178e05921&title=" alt="image.png"></td>
+<td><strong>状态 State</strong>，让你能在一个对象的内部状态变化时改变其行为， 使其看上去就像改变了自身所属的类一样。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851853-78b38f09-76cb-4f59-a8e0-07c80d3ec98f.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u80f965ba&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=5693&status=done&style=none&taskId=u2c83b195-9a8c-454c-85d0-f2a12aa9d65&title=" alt="image.png"></td>
+<td><strong>策略 Strategy</strong>，能让你定义一系列算法， 并将每种算法分别放入独立的类中， 以使算法的对象能够相互替换。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851960-16f0f3ad-4ec5-4c93-8964-4aca78b0fcbe.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ue6914357&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=1585&status=done&style=none&taskId=u5ac64deb-7c04-449d-bd31-098bfb4e3c1&title=" alt="image.png"></td>
+<td><strong>模板方法 Template Method</strong>，在超类中定义一个算法的框架， 允许子类在不修改结构的情况下重写算法的特定步骤。</td>
+</tr>
+<tr>
+<td><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1651419851999-1a7d7935-a1c0-4794-8f0a-c0d61ef0cb83.png#clientId=ub9cf0ad6-367a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u6ee1c241&margin=%5Bobject%20Object%5D&name=image.png&originHeight=100&originWidth=140&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=3891&status=done&style=none&taskId=u55e7de19-52ec-49f9-9dbb-657aefd2004&title=" alt="image.png"></td>
+<td><strong>访问者 Visitor</strong>，将算法与其所作用的对象隔离开来。</td>
+</tr>
+</tbody></table>
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Go/" itemprop="url" rel="index">
+                  <span itemprop="name">Go</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/nacos/nacos-architecture/" rel="next" title="Nacos2架构设计">
+            <i class="fa far fa-chevron-left"></i> Nacos2架构设计
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/hive/hive-file-format/" rel="prev" title="Hive文件格式">
+            Hive文件格式 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F"><span class="toc-text">创建型模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E5%9E%8B%E6%A8%A1%E5%BC%8F"><span class="toc-text">结构型模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F"><span class="toc-text">行为型模式</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

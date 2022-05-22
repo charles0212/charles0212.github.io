@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        限流熔断降级区别 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="熔断、限流、降级都是保持系统稳定运行的策略，但针对的场景有所不同，常用框架有 hystrix 和 sentinel   限流  限流是指上游服务对本服务请求 QPS 超过阙值时，通过一定的策略(如延迟处理、拒绝处理)对上游服务的请求量进行限制，以保证本服务不被压垮，从而持续提供稳定服务。常见的限流算法有滑动窗口、令牌桶、漏桶等  如上图，当 服务 B 对 服务 D 请求过多时，服务 D 可以放弃一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="限流熔断降级区别">
+<meta property="og:url" content="https://www.alicharles.com/article/stability/stability-diff/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="熔断、限流、降级都是保持系统稳定运行的策略，但针对的场景有所不同，常用框架有 hystrix 和 sentinel   限流  限流是指上游服务对本服务请求 QPS 超过阙值时，通过一定的策略(如延迟处理、拒绝处理)对上游服务的请求量进行限制，以保证本服务不被压垮，从而持续提供稳定服务。常见的限流算法有滑动窗口、令牌桶、漏桶等  如上图，当 服务 B 对 服务 D 请求过多时，服务 D 可以放弃一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1641271491145-c50a4550-6ace-4652-bd90-1a7b7304c3c6.png#clientId=u78b04063-6e1d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=232&id=u9bed191c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=232&originWidth=252&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=12424&status=done&style=none&taskId=uf6e0b014-01bf-479c-8ff3-996b9f01526&title=&width=252">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1641271468202-f451e8ba-cef9-46e5-b7e5-06d4be4c112b.png#clientId=u78b04063-6e1d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=232&id=u0ee24bd0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=232&originWidth=252&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=11093&status=done&style=none&taskId=u9c8a0d0c-51cc-4480-888b-e79283f9fbd&title=&width=252">
+<meta property="article:published_time" content="2021-08-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.497Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Stability">
+<meta property="article:tag" content="Limit">
+<meta property="article:tag" content="Fuse">
+<meta property="article:tag" content="Degradation">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1641271491145-c50a4550-6ace-4652-bd90-1a7b7304c3c6.png#clientId=u78b04063-6e1d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=232&id=u9bed191c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=232&originWidth=252&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=12424&status=done&style=none&taskId=uf6e0b014-01bf-479c-8ff3-996b9f01526&title=&width=252">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>限流熔断降级区别</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2021-08-21T00:00:00+08:00">
+            2021-08-21
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/stability/" itemprop="url" rel="index">
+              <span itemprop="name">stability</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>熔断、限流、降级都是保持系统稳定运行的策略，但针对的场景有所不同，常用框架有 hystrix 和 sentinel</p>
+<h2 id="限流"><a href="#限流" class="headerlink" title="限流"></a>限流</h2><p>限流是指<strong>上游服务</strong>对本服务请求 QPS 超过阙值时，通过一定的策略(如延迟处理、拒绝处理)对上游服务的请求量进行限制，以保证本服务不被压垮，从而持续提供稳定服务。常见的限流算法有滑动窗口、令牌桶、漏桶等<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1641271491145-c50a4550-6ace-4652-bd90-1a7b7304c3c6.png#clientId=u78b04063-6e1d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=232&id=u9bed191c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=232&originWidth=252&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=12424&status=done&style=none&taskId=uf6e0b014-01bf-479c-8ff3-996b9f01526&title=&width=252" alt="image.png"><br>如上图，当 服务 B 对 服务 D 请求过多时，<strong>服务 D 可以放弃一部分请求</strong>，保证自身服务的稳定</p>
+<p>常见限流算法<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/taromilk/p/11751211.html">https://www.cnblogs.com/taromilk/p/11751211.html</a></p>
+<p>限流规则参数说明：<br>限流类型：分为 HSF 限流和 HTTP 限流。请根据应用的访问类型，选择具体的限流类型。<br>需要限流的接口：列出了应用中所有的接口。请根据实际情况选择需要限流的接口。<br>需要限流的方法：针对选择的接口，自动加载接口内所有的方法。可以根据实际情况选择某个方法进行限流，也可以选择对全部方法都进行限流。<br>被限流的应用：此时列表中将加载除当前应用以外的所有应用，因为每一个应用都可能会访问当前应用。请根据实际情况，选择被限流的应用。<br>限流粒度：主要分为 QPS 限流和 Thread 限流。<br>QPS 限流表示对请求中每秒请求次数的限制；<br>Thread 限流是对线程数的限制。<br>一般来讲线程越大则 QPS 越大，但是一个线程的 QPS 一般都会 &gt;1，因为一个线程会持续发请求，请求的响应时间一般就几十毫秒。<br>限流阈值：高于阈值时将触发限流动作。</p>
+<h2 id="熔断"><a href="#熔断" class="headerlink" title="熔断"></a>熔断</h2><p>服务熔断的作用类似于我们家用的保险丝，当<strong>下游某服务出现不可用或响应超时</strong>的情况时，为了防止整个系统出现雪崩，<strong>暂时停止</strong>对该服务的调用<br>上面的解释中有两个很关键的词，一个是暂时，一个是停止。<br>停止是说，当前服务一旦对下游服务进行熔断，当请求到达时，当前服务不再对下游服务进行调用，而是<strong>使用设定好的策略(如构建默认值)直接返回</strong><br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1641271468202-f451e8ba-cef9-46e5-b7e5-06d4be4c112b.png#clientId=u78b04063-6e1d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=232&id=u0ee24bd0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=232&originWidth=252&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=11093&status=done&style=none&taskId=u9c8a0d0c-51cc-4480-888b-e79283f9fbd&title=&width=252" alt="image.png"></p>
+<p>暂时是说，<strong>熔断后，并不会一直不再调用下游服务，而是以一定的策略(如每分钟调用 10 次，若均返回成功，则增大调用量)试探调用下游服务，当下游服务恢复可用时，自动停止熔断</strong>。<br>如上图，当 服务 D 不可用时，服务 B 应对 服务 D 进行熔断。</p>
+<p>熔断器的设计思路<br>Closed：初始状态，熔断器关闭，正常提供服务<br>Open: 失败次数，失败百分比达到一定的阈值之后，熔断器打开，停止访问服务<br>Half-Open：熔断一定时间之后，小流量尝试调用服务，如果成功则恢复，熔断器变为 Closed 状态</p>
+<p>熔断机制<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yawen/p/6655352.html">https://www.cnblogs.com/yawen/p/6655352.html</a></p>
+<h2 id="降级"><a href="#降级" class="headerlink" title="降级"></a>降级</h2><p>降级是指当自身服务压力增大时，采取一些手段，增强自身服务的处理能力，以保障服务的持续可用。比如，<strong>下线非核心服务以保证核心服务的稳定、降低实时性、降低数据一致性</strong></p>
+<p>常见降级策略<br><strong>业务降级，是指牺牲非核心的业务功能，保证核心功能的稳定运行</strong>。<br>简单来说，要实现优雅的业务降级，需要将功能实现拆分到相对独立的不同代码单元，分优先级进行隔离。在后台通过开关控制，降级部分非主流程的业务功能，减轻系统依赖和性能损耗，从而提升集群的整体吞吐率。<br><strong>降级的重点是：业务之间有优先级之分</strong>。降级的典型应用是：电商活动期间。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><table><thead><tr>
+<th><strong>措施</strong></th>
+<th><strong>产生原因</strong></th>
+<th>** 针对服务**</th>
+</tr>
+</thead><tbody><tr>
+<td>限流</td>
+<td>上游服务请求增多</td>
+<td>上游服务</td>
+</tr>
+<tr>
+<td>熔断</td>
+<td>下游服务不可用</td>
+<td>下游服务</td>
+</tr>
+<tr>
+<td>降级</td>
+<td>自身服务的处理能力不够</td>
+<td>自身服务</td>
+</tr>
+</tbody></table><p>降级熔断相似点</p>
+<ul>
+<li>目的一致，都是从可用性可靠性着想，为防止系统的整体缓慢甚至崩溃，采用的技术手段</li>
+<li>最终表现类似，对于两者来说，最终让用户体验到的是某些功能暂时不可达或不可用</li>
+<li>粒度一般都是服务级别</li>
+<li>自治性要求很高，熔断模式一般都是服务基于策略的自动触发，降级虽说可人工干预，但在微服务架构下，完全靠人显然不可能，开关预置、配置中心都是必要手段</li>
+</ul>
+<p>降级熔断区别</p>
+<ul>
+<li>触发原因不一样，服务熔断一般是某个服务（下游服务）故障引起，</li>
+<li>服务降级一般是从整体负荷考虑</li>
+<li>自愈能力要求不一样，服务熔断在发生后有自愈能力，而服务降级没有该职责</li>
+</ul>
+<p>其他内容可参考 <a target="_blank" rel="noopener" href="https://www.cnblogs.com/DengGao/p/rateLimit.html">https://www.cnblogs.com/DengGao/p/rateLimit.html</a></p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Stability/" itemprop="url" rel="index">
+                  <span itemprop="name">Stability</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Limit/" itemprop="url" rel="index">
+                  <span itemprop="name">Limit</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Fuse/" itemprop="url" rel="index">
+                  <span itemprop="name">Fuse</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Degradation/" itemprop="url" rel="index">
+                  <span itemprop="name">Degradation</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/gateway/apisix/" rel="next" title="APISIX">
+            <i class="fa far fa-chevron-left"></i> APISIX
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/stability/sentinel-hystrix/" rel="prev" title="Sentinel与Hystrix的对比">
+            Sentinel与Hystrix的对比 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%90%E6%B5%81"><span class="toc-text">限流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%86%94%E6%96%AD"><span class="toc-text">熔断</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%8D%E7%BA%A7"><span class="toc-text">降级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

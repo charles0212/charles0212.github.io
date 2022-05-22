@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        标签: Stability |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="记录平时的点点滴滴">
+<meta property="og:type" content="website">
+<meta property="og:title" content="启航的蜗牛">
+<meta property="og:url" content="https://www.alicharles.com/tags/Stability/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="记录平时的点点滴滴">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="charles">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-2">
+    <div class="row mx-0">
+        <div class="col-sm-12 col-lg-9 charles-border-right px-lg-5 py-lg-2">
+            <section id="posts" class="posts-collapse">
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/stability/sentinel-hystrix/">
+                Sentinel与Hystrix的对比
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        Sentinel 是阿里中间件团队研发的面向分布式服务架构的轻量级高可用流量控制组件，已开源。Sentinel 主要以流量为切入点，从流量控制、熔断降级、系统负载保护等多个维度来帮助用户保护服务的稳定性。
+大家可能会问：Sentinel 和之前常用的熔断降级库 Netflix Hystrix 有什么异同呢？本文将从多个角度对 Sentinel 和 Hystrix 进行对比，帮助大家进行技术选型。先来看一下 Hystrix 的官方介绍：
+
+Hystrix is a library that helps you control the interactions between these dist
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2021-08-22T00:00:00+08:00">
+                2021-08-22
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/stability/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">stability</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Stability/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Stability</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Sentinel/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Sentinel</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Hystrix/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Hystrix</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/stability/sentinel-hystrix/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/stability/stability-diff/">
+                限流熔断降级区别
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        熔断、限流、降级都是保持系统稳定运行的策略，但针对的场景有所不同，常用框架有 hystrix 和 sentinel
+限流限流是指上游服务对本服务请求 QPS 超过阙值时，通过一定的策略(如延迟处理、拒绝处理)对上游服务的请求量进行限制，以保证本服务不被压垮，从而持续提供稳定服务。常见的限流算法有滑动窗口、令牌桶、漏桶等如上图，当 服务 B 对 服务 D 请求过多时，服务 D 可以放弃一部分请求，保证自身服务的稳定
+常见限流算法https://www.cnblogs.com/taromilk/p/11751211.html
+限流规则参数说明：限流类型：分为 HSF 限流和 HTTP 限流。请根据
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2021-08-21T00:00:00+08:00">
+                2021-08-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/stability/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">stability</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Stability/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Stability</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Limit/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Limit</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Fuse/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Fuse</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Degradation/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Degradation</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/stability/stability-diff/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+            </section>
+        </div>
+        <div class="col px-lg-3 py-lg-2">
+            <div class="sidebar">
+    <div class="widget-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+    <div class="author">
+        <!--个人信息-->
+        
+        <img class="author-image" itemprop="image"
+             src="/images/logo.jpg"
+             alt=""/>
+        
+        <p class="author-name" itemprop="name"></p>
+        <p class="description" itemprop="description">
+            
+        </p>
+    </div>
+
+    <nav class="state">
+        <!--文章-->
+        
+        <div class="state-item state-posts">
+            <a href="/archives">
+                <span class="state-item-count">98</span>
+                <span class="state-item-name">文章</span>
+            </a>
+        </div>
+        
+
+        <!--类目-->
+        
+        <div class="state-item state-categories">
+            <a href="/categories">
+                <span class="state-item-count">25</span>
+                <span class="state-item-name">分类</span>
+            </a>
+        </div>
+        
+
+        <!--标签-->
+        
+        <div class="state-item state-tags">
+            <a href="/tags">
+                <span class="state-item-count">36</span>
+                <span class="state-item-name">标签</span>
+            </a>
+        </div>
+        
+    </nav>
+
+    <!--社交链接-->
+    
+    
+    <nav class="links-of-author">
+        
+        <div class="links-of-author-row row px-4">
+            <span class="links-of-author-item col-2" style="padding:0;"></span>
+            <span class="links-of-author-item col-4 " style="padding:0;">
+                <a href="https://weibo.com/charles0212" target="_blank" title="微博">
+                    <i class="fab fa-weibo "></i>
+                    微博
+                </a>
+            </span>
+            
+            <span class="links-of-author-item col-6" style="padding:0;">
+                <a href="https://www.facebook.com/cheng.zhang.charles" target="_blank" title="facebook">
+                    <i class="fab fa-facebook "></i>
+                    facebook
+                </a>
+            </span>
+            
+        </div>
+        
+        <div class="links-of-author-row row px-4">
+            <span class="links-of-author-item col-2" style="padding:0;"></span>
+            <span class="links-of-author-item col-4 " style="padding:0;">
+                <a href="https://zhihu.com/people/charles0212" target="_blank" title="知乎">
+                    <i class="fab fa-dribbble "></i>
+                    知乎
+                </a>
+            </span>
+            
+            <span class="links-of-author-item col-6" style="padding:0;">
+                <a href="https://github.com/charles0212" target="_blank" title="github">
+                    <i class="fab fa-github "></i>
+                    github
+                </a>
+            </span>
+            
+        </div>
+        
+    </nav>
+    
+
+</div>
+</div>
+        </div>
+    </div>
+    <div class="row mx-0">
+        <div class="col-sm-12 col-lg-9 px-lg-5">
+            <div class="pagination justify-content-center my-4">
+                <span class="page-number current">1</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        JDK设计模式（三）建造者模式 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="将一个复杂的构建与其表示相分离，使得同样的构建过程可以创建不同的表示。 建造模式是将复杂的内部创建封装在内部，对于外部调用的人来说，只需要传入建造者和建造工具，对于内部是如何建造成成品的，调用者无需关心，其类图如下。    建造者角色  Product : 产品类，由多个部件构成。  class Product {     List parts &#x3D; new ArrayList();      pu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JDK设计模式（三）建造者模式">
+<meta property="og:url" content="https://www.alicharles.com/article/design-pattern/jdk-builder-pattern/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="将一个复杂的构建与其表示相分离，使得同样的构建过程可以创建不同的表示。 建造模式是将复杂的内部创建封装在内部，对于外部调用的人来说，只需要传入建造者和建造工具，对于内部是如何建造成成品的，调用者无需关心，其类图如下。    建造者角色  Product : 产品类，由多个部件构成。  class Product {     List parts &#x3D; new ArrayList();      pu">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648312892476-cba9f8b3-8fa5-4ac7-a707-c0f2fd798ccb.png#clientId=uf68f83de-da72-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u851a440b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=338&originWidth=782&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=22011&status=done&style=none&taskId=u5951e2c5-4c3f-4a6f-aa74-74b51f9198e&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648312892556-a165f083-1405-44fe-a04c-1d4c97a408a6.png#clientId=uf68f83de-da72-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ub7ef1453&margin=%5Bobject%20Object%5D&name=image.png&originHeight=563&originWidth=1025&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=46326&status=done&style=none&taskId=u1a3c07a8-89d6-489c-ac04-db27cf7404a&title=">
+<meta property="article:published_time" content="2015-01-19T00:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.493Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648312892476-cba9f8b3-8fa5-4ac7-a707-c0f2fd798ccb.png#clientId=uf68f83de-da72-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u851a440b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=338&originWidth=782&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=22011&status=done&style=none&taskId=u5951e2c5-4c3f-4a6f-aa74-74b51f9198e&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>JDK设计模式（三）建造者模式</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2015-01-19T08:00:00+08:00">
+            2015-01-19
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/design-pattern/" itemprop="url" rel="index">
+              <span itemprop="name">design-pattern</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>将一个复杂的构建与其表示相分离，使得同样的构建过程可以创建不同的表示。<br>建造模式是将复杂的内部创建封装在内部，对于外部调用的人来说，只需要传入建造者和建造工具，对于内部是如何建造成成品的，调用者无需关心，其类图如下。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648312892476-cba9f8b3-8fa5-4ac7-a707-c0f2fd798ccb.png#clientId=uf68f83de-da72-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u851a440b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=338&originWidth=782&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=22011&status=done&style=none&taskId=u5951e2c5-4c3f-4a6f-aa74-74b51f9198e&title=" alt="image.png"></p>
+<h2 id="建造者角色"><a href="#建造者角色" class="headerlink" title="建造者角色"></a>建造者角色</h2><p>Product : 产品类，由多个部件构成。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">class Product &#123;
+    List&lt;String&gt; parts &#x3D; new ArrayList&lt;String&gt;();
+
+    public void AddPart(String part) &#123;
+        parts.add(part);
+    &#125;
+
+    public void show() &#123;
+        for (String part : parts) &#123;
+            System.out.println(part);
+        &#125;
+    &#125;
+&#125;</code></pre>
+
+<p>Builder : 抽象建造者，确定产品由 AB 部件构成，并声明一个得到产品建造后结果的方法 getResult。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">interface Builder &#123;
+    public void buildPartA();
+    public void buildPartB();
+    public Product getResult();
+&#125;</code></pre>
+
+<p>ConcreteBuilder : 实现 Builder 接口中的具体方法。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">class ConcreteBuilder implements Builder &#123;
+    private Product product &#x3D; new Product();
+
+    public void buildPartA() &#123;
+        product.AddPart(&quot;part A&quot;);
+    &#125;
+
+    public void buildPartB() &#123;
+        product.AddPart(&quot;part B&quot;);
+    &#125;
+
+    public Product getResult() &#123;
+        return product;
+    &#125;
+&#125;</code></pre>
+
+<p>Director : 指挥者类，指挥建造 Product 的过程（控制构建各部分组件的顺序）。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">class Director &#123;
+    public void construct(Builder builder) &#123;
+        builder.buildPartA();
+        builder.buildPartB();
+    &#125;
+&#125;</code></pre>
+
+<p>Client : 用户并不需要知道具体的建造过程，只需指定建造 Product 具体类型。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public class BuilderPattern &#123;
+    public static void main(String[] args) &#123;
+        Director director &#x3D; new Director();
+        Builder builder &#x3D; new ConcreteBuilder();
+
+        director.construct(builder);
+        Product product &#x3D; builder.getResult();
+        product.show();
+    &#125;
+&#125;</code></pre>
+
+<p>与抽象工厂的区别：在建造者模式里，有个指导者，由指导者来管理建造者，用户是与指导者联系的，指导者联系建造者最后得到产品。即建造模式可以强制实行一种分步骤进行的建造过程。</p>
+<h2 id="JDK-中使用的建造者模式"><a href="#JDK-中使用的建造者模式" class="headerlink" title="JDK 中使用的建造者模式"></a>JDK 中使用的建造者模式</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648312892556-a165f083-1405-44fe-a04c-1d4c97a408a6.png#clientId=uf68f83de-da72-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ub7ef1453&margin=%5Bobject%20Object%5D&name=image.png&originHeight=563&originWidth=1025&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=46326&status=done&style=none&taskId=u1a3c07a8-89d6-489c-ac04-db27cf7404a&title=" alt="image.png"><br>DOMParser 使用 parse 方法建造 Document 对象，使用 getDocument 获取 XML 的 Document 对象。</p>
+<h3 id="建造者模式的优点"><a href="#建造者模式的优点" class="headerlink" title="建造者模式的优点"></a>建造者模式的优点</h3><p>1、建造者模式的封装性很好。使用建造者模式可以有效的封装变化，在使用建造者模式的场景中，一般产品类和建造者类是比较稳定的，因此，将主要的业务逻辑封装在导演类中对整体而言可以取得比较好的稳定性。<br>2、建造者模式很容易进行扩展。如果有新的需求，通过实现一个新的建造者类就可以完成，基本上不用修改之前已经测试通过的代码，因此也就不会对原有功能引入风险。</p>
+<h3 id="建造者模式与工厂模式的区别"><a href="#建造者模式与工厂模式的区别" class="headerlink" title="建造者模式与工厂模式的区别"></a>建造者模式与工厂模式的区别</h3><p>1、建造者模式与工厂模式是极为相似的，总体上，建造者模式仅仅只比工厂模式多了一个“导演类”的角色。在建造者模式的类图中，假如把这个导演类看做是最终调用的客户端，那么图中剩余的部分就可以看作是一个简单的工厂模式了。<br>2、与工厂模式相比，建造者模式一般用来创建更为复杂的对象，因为对象的创建过程更为复杂，因此将对象的创建过程独立出来组成一个新的类——导演类。也就是说，工厂模式是将对象的全部创建过程封装在工厂类中，由工厂类向客户端提供最终的产品；而建造者模式中，建造者类一般只提供产品类中各个组件的建造，而将具体建造过程交付给导演类。由导演类负责将各个组件按照特定的规则组建为产品，然后将组建好的产品交付给客户端。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>建造者模式与工厂模式类似，适用的场景也很相似。一般来说，如果产品的建造很复杂，那么请用工厂模式；如果产品的建造更复杂，那么请用建造者模式。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/design-pattern/jdk-factory-pattern/" rel="next" title="JDK设计模式（二）工厂模式">
+            <i class="fa far fa-chevron-left"></i> JDK设计模式（二）工厂模式
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/java/java-lock/" rel="prev" title="Java并发编程之锁">
+            Java并发编程之锁 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%BA%E9%80%A0%E8%80%85%E8%A7%92%E8%89%B2"><span class="toc-text">建造者角色</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JDK-%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%9A%84%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="toc-text">JDK 中使用的建造者模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F%E7%9A%84%E4%BC%98%E7%82%B9"><span class="toc-text">建造者模式的优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F%E4%B8%8E%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">建造者模式与工厂模式的区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

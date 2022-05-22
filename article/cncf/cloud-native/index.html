@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Cloud Native定义 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="CNCF 定义  CNCF（Cloud Native Computing Foundation，云原生计算基金会），2016 年 6 月 11 日，CNCF 技术监督委员会经过几个月的讨论，终于投票通过了 Cloud Native 的定义，目前官方的翻译如下：  &gt; Cloud native &gt; technologies empower &gt; organizations to &gt; build and">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cloud Native定义">
+<meta property="og:url" content="https://www.alicharles.com/article/cncf/cloud-native/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="CNCF 定义  CNCF（Cloud Native Computing Foundation，云原生计算基金会），2016 年 6 月 11 日，CNCF 技术监督委员会经过几个月的讨论，终于投票通过了 Cloud Native 的定义，目前官方的翻译如下：  &gt; Cloud native &gt; technologies empower &gt; organizations to &gt; build and">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649594783940-75df1b5e-39f5-4fa5-8e2a-f3cc39d514e3.png#clientId=ud1c53c6a-8e96-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uf12d1fb0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=463&originWidth=975&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=135875&status=done&style=none&taskId=u18635326-7bae-4cc7-9143-39c133c65d3&title=">
+<meta property="article:published_time" content="2016-05-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.500Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="CNCF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649594783940-75df1b5e-39f5-4fa5-8e2a-f3cc39d514e3.png#clientId=ud1c53c6a-8e96-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uf12d1fb0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=463&originWidth=975&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=135875&status=done&style=none&taskId=u18635326-7bae-4cc7-9143-39c133c65d3&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Cloud Native定义</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2016-06-01T00:00:00+08:00">
+            2016-06-01
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/cncf/" itemprop="url" rel="index">
+              <span itemprop="name">cncf</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<h2 id="CNCF-定义"><a href="#CNCF-定义" class="headerlink" title="CNCF 定义"></a>CNCF 定义</h2><p>CNCF（Cloud Native Computing Foundation，云原生计算基金会），2016 年 6 月 11 日，CNCF 技术监督委员会经过几个月的讨论，终于投票通过了 Cloud Native 的定义，目前官方的翻译如下：</p>
+<blockquote>
+<p>Cloud native technologies empower organizations to build and run scalable applications in modern, dynamic environments such as public, private, and hybrid clouds. Containers, service meshes, microservices, immutable infrastructure, and declarative APIs exemplify this approach.</p>
+</blockquote>
+<p>云原生技术有利于各组织在公有云、私有云和混合云等新型动态环境中，构建和运行可弹性扩展的应用。云原生的代表技术包括容器、服务网格、微服务、不可变基础设施和声明式 API。</p>
+<blockquote>
+<p>These techniques enable loosely coupled systems that are resilient, manageable, and observable. Combined with robust automation, they allow engineers to make high-impact changes frequently and predictably with minimal toil.</p>
+</blockquote>
+<p>这些技术能够构建容错性好、易于管理和便于观察的松耦合系统。结合可靠的自动化手段，云原生技术使工程师们能够轻松地对系统作出频繁和可预测的重大变更。</p>
+<blockquote>
+<p>The Cloud Native Computing Foundation seeks to drive adoption of this paradigm by fostering and sustaining an ecosystem of open source, vendor-neutral projects. We democratize state-of-the-art patterns to make these innovations accessible for everyone.</p>
+</blockquote>
+<p>云原生计算基金会（CNCF）致力于培育和维护一个厂商中立的开源生态系统，来推广云原生技术。我们通过把最前沿的模式民主化，让这些创新为大众所用。<br>从这个定义中，我们可以看到云原生应用除了要长在云上，还具备几个典型特征：</p>
+<ul>
+<li>弹性可扩展（scalable）</li>
+<li>松耦合（loosely coupled）</li>
+<li>容错性好（resilient）</li>
+<li>易于管理（manageable）</li>
+<li>便于观察（observable）</li>
+<li>频繁变更（changes frequently）</li>
+</ul>
+<p>为了支持或实现这些特征，CNCF 列举了一些典型的技术手段</p>
+<ul>
+<li>容器：使用容器作为应用的部署和运行单元，让应用彼此隔离、也从环境中隔离出来，有助于上层资源隔离、组件重用，更易移植，便于观察，并且很容易进行标准化的生命周期管理；</li>
+<li>服务网格：使得服务访问与服务提供者的拓扑结构（位置）解耦，从而减少系统变更的风险，便于观察跨组件的交互；</li>
+<li>微服务架构：松耦合的微服务让细粒度的升级或弹性扩展成为可能，使得应用更加敏捷和易于维护、演进；</li>
+<li>不可变基础设施：替换组件或资源的实例而不是去修补它们，这种新陈代谢的方式能防止配置出现失真，提升了系统的可重复性和可预测性，对大规模、高速运转的应用运维至关重要；</li>
+<li>声明式 API：应用之间、应用的微服务之间以及应用与其依赖、环境之间都使用 API 作为 Contract，屏蔽实现，实现完全的松耦合。</li>
+</ul>
+<p>CNCF 在 2016 年 11 月还发布了 Cloud Native 参考架构， 具体见 <a target="_blank" rel="noopener" href="https://www.cncf.io/blog/2017/05/15/developing-cloud-native-applications/">https://www.cncf.io/blog/2017/05/15/developing-cloud-native-applications/</a><br>并把诸多相关的开源项目和厂商产品映射到这个架构里，具体见 <a target="_blank" rel="noopener" href="https://github.com/cncf/landscape">https://github.com/cncf/landscape</a><br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649594783940-75df1b5e-39f5-4fa5-8e2a-f3cc39d514e3.png#clientId=ud1c53c6a-8e96-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uf12d1fb0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=463&originWidth=975&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=135875&status=done&style=none&taskId=u18635326-7bae-4cc7-9143-39c133c65d3&title=" alt="image.png"></p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/CNCF/" itemprop="url" rel="index">
+                  <span itemprop="name">CNCF</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/jvm/jvm-gc/" rel="next" title="JVM（二）垃圾收集算法与收集器">
+            <i class="fa far fa-chevron-left"></i> JVM（二）垃圾收集算法与收集器
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/cncf/service-mesh/" rel="prev" title="Service Mesh概述">
+            Service Mesh概述 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CNCF-%E5%AE%9A%E4%B9%89"><span class="toc-text">CNCF 定义</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

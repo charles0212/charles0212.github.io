@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Redis（三）部署Sentinel高可用集群 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; 大家一定非常熟悉如何利用 Docker &gt; 启动单个 Redis &gt; 容器用于开发环境，本文将介绍如何利用 &gt; Docker Compose &gt; 模板在本机和云端部署基于 &gt; Sentinel 的高可用 Redis &gt; 3 集群。  Redis 集群可以在一组 redis 节点之间实现高可用性和 sharding。今天我们重点围绕 master-slave 的高可用模式来进行讨论，在集群中会有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis（三）部署Sentinel高可用集群">
+<meta property="og:url" content="https://www.alicharles.com/article/redis/redis-sentinel/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; 大家一定非常熟悉如何利用 Docker &gt; 启动单个 Redis &gt; 容器用于开发环境，本文将介绍如何利用 &gt; Docker Compose &gt; 模板在本机和云端部署基于 &gt; Sentinel 的高可用 Redis &gt; 3 集群。  Redis 集群可以在一组 redis 节点之间实现高可用性和 sharding。今天我们重点围绕 master-slave 的高可用模式来进行讨论，在集群中会有">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648983154309-7449cd0f-c64f-4578-848d-263536a9267d.png#clientId=u8949e708-224a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u099a1b8b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=266&originWidth=660&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=132746&status=done&style=none&taskId=u87031afb-c083-4c11-8d60-f2093d5e8ae&title=">
+<meta property="article:published_time" content="2020-06-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.497Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Cache">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648983154309-7449cd0f-c64f-4578-848d-263536a9267d.png#clientId=u8949e708-224a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u099a1b8b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=266&originWidth=660&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=132746&status=done&style=none&taskId=u87031afb-c083-4c11-8d60-f2093d5e8ae&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Redis（三）部署Sentinel高可用集群</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2020-06-24T00:00:00+08:00">
+            2020-06-24
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/cache/" itemprop="url" rel="index">
+              <span itemprop="name">cache</span>
+            </a>
+        </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/cache/redis/" itemprop="url" rel="index">
+              <span itemprop="name">redis</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p>大家一定非常熟悉如何利用 Docker 启动单个 Redis 容器用于开发环境，本文将介绍如何利用 Docker Compose 模板在本机和云端部署基于 Sentinel 的高可用 Redis 3 集群。</p>
+</blockquote>
+<p>Redis 集群可以在一组 redis 节点之间实现高可用性和 sharding。今天我们重点围绕 master-slave 的高可用模式来进行讨论，在集群中会有 1 个 master 和多个 slave 节点。当 master 节点失效时，应选举出一个 slave 节点作为新的 master。然而 Redis 本身(包括它的很多客户端)没有实现自动故障发现并进行主备切换的能力，需要外部的监控方案来实现自动故障恢复。<br>Redis Sentinel 是官方推荐的高可用性解决方案。它是 Redis 集群的监控管理工具，可以提供节点监控、通知、自动故障恢复和客户端配置发现服务。<br>今天我们的部署模型是 Redis Sentinel 介绍的实例二，也是实战中比较常见的一种部署模式：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648983154309-7449cd0f-c64f-4578-848d-263536a9267d.png#clientId=u8949e708-224a-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u099a1b8b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=266&originWidth=660&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=132746&status=done&style=none&taskId=u87031afb-c083-4c11-8d60-f2093d5e8ae&title=" alt="image.png"><br>本文所有示例代码都可以从 <a target="_blank" rel="noopener" href="https://github.com/AliyunContainerService/redis-cluster">https://github.com/AliyunContainerService/redis-cluster</a> 获得<br>本文采用的 Redis 镜像全部基于 Docker 提供的 Redis 官方镜像 3.2.1</p>
+<h2 id="单机部署-Redis-集群"><a href="#单机部署-Redis-集群" class="headerlink" title="单机部署 Redis 集群"></a>单机部署 Redis 集群</h2><p>下面的测试需要本地环境已经安装 Docker Engine 和 Docker Compose，推荐使用 Docker for Mac&#x2F;Windows。想在云端部署的同学可以直接跳到下一节</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">git clone https:&#x2F;&#x2F;github.com&#x2F;AliyunContainerService&#x2F;redis-cluster
+cd redis-cluster</code></pre>
+
+<p>目录下面的 docker-compose.yml 模板定义 Redis 集群的服务组成</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">master:
+  image: redis:3
+slave:
+  image: redis:3
+  command: redis-server --slaveof redis-master 6379
+  links:
+    - master:redis-master
+sentinel:
+  build: sentinel
+  environment:
+    - SENTINEL_DOWN_AFTER&#x3D;5000
+    - SENTINEL_FAILOVER&#x3D;5000
+  links:
+    - master:redis-master
+    - slave</code></pre>
+
+<p>在模板中定义了下面一系列服务 - master: Redis master - slave: Redis slave - sentinel: Redis Sentinel<br>其中 sentinel 服务的 Docker 镜像是由 “.&#x2F;sentinel” 目录中的 Dockerfile 构建完成，只是在官方 Redis 镜像上添加了 sentinel.conf 配置文件，并以 sentinel 模式启动容器。其配置文件如下，其中包含了 sentinel 对名为”mymaster”的集群的监控配置：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">sentinel monitor mymaster redis-master 6379 2
+sentinel down-after-milliseconds mymaster 5000
+sentinel parallel-syncs mymaster 1
+sentinel failover-timeout mymaster 5000</code></pre>
+
+<p>细节请参见 sentinel.conf 配置自身。<br>注意： - slave 和 sentinel 容器初始化配置的 Redis master 节点主机名为”redis-master”，这里我们利用了 Docker 容器连接的别名机制来连接 master 和 sentinel&#x2F;slave 容器实例 - 由于我们会部署 3 个 Sentinel，我们把 sentinel 的”quorum”设置为 2，只有两个 sentinel 同意故障切换，才会真正切换相应的 redis master 节点。 下面我们先构建 sentinel 服务所需 Docker image</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker-compose build</code></pre>
+
+<p>一键部署并启动 Redis 集群</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker-compose up -d</code></pre>
+
+<p>这时我们可以检查集群状态，应该是包含 3 个容器，1 个 master, 1 个 slave，和 1 个 sentinel</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker-compose ps</code></pre>
+
+<p>显示结果如下</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">  Name                        Command               State          Ports
+--------------------------------------------------------------------------------------
+rediscluster_master_1     docker-entrypoint.sh redis ...   Up      6379&#x2F;tcp
+rediscluster_sentinel_1   docker-entrypoint.sh redis ...   Up      26379&#x2F;tcp, 6379&#x2F;tcp
+rediscluster_slave_1      docker-entrypoint.sh redis ...   Up      6379&#x2F;tcp</code></pre>
+
+<p>我们可以伸缩 sentinel 的实例数量到 3 个</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker-compose scale sentinel&#x3D;3</code></pre>
+
+<p>伸缩 slave 的实例数量到 2 个，这样我们就有 3 个 redis 实例了（包含一个 master)</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker-compose scale slave&#x3D;2</code></pre>
+
+<p>检查集群状态，结果如下</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker-compose ps
+
+         Name                        Command               State          Ports
+--------------------------------------------------------------------------------------
+rediscluster_master_1     docker-entrypoint.sh redis ...   Up      6379&#x2F;tcp
+rediscluster_sentinel_1   docker-entrypoint.sh redis ...   Up      26379&#x2F;tcp, 6379&#x2F;tcp
+rediscluster_sentinel_2   docker-entrypoint.sh redis ...   Up      26379&#x2F;tcp, 6379&#x2F;tcp
+rediscluster_sentinel_3   docker-entrypoint.sh redis ...   Up      26379&#x2F;tcp, 6379&#x2F;tcp
+rediscluster_slave_1      docker-entrypoint.sh redis ...   Up      6379&#x2F;tcp
+rediscluster_slave_2      docker-entrypoint.sh redis ...   Up      6379&#x2F;tcp</code></pre>
+
+<p>我们可以利用下面的测试脚本来模拟 master 节点失效，并验证 Redis 集群的自动主从切换。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">.&#x2F;test.sh</code></pre>
+
+<p>这个测试脚本实际上利用 docker pause 命令将 Redis master 容器暂停，sentinel 会发现这个故障并将 master 切换到其他一个备用的 slave 上面。<br>执行结果如下</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">Redis master: 172.17.0.2
+Redis Slave: 172.17.0.3
+------------------------------------------------
+Initial status of sentinel
+------------------------------------------------
+# Sentinel
+sentinel_masters:1
+sentinel_tilt:0
+sentinel_running_scripts:0
+sentinel_scripts_queue_length:0
+sentinel_simulate_failure_flags:0
+master0:name&#x3D;mymaster,status&#x3D;ok,address&#x3D;172.17.0.2:6379,slaves&#x3D;2,sentinels&#x3D;3
+Current master is
+172.17.0.2
+6379
+------------------------------------------------
+Stop redis master
+rediscluster_master_1
+Wait for 10 seconds
+Current infomation of sentinel
+# Sentinel
+sentinel_masters:1
+sentinel_tilt:0
+sentinel_running_scripts:0
+sentinel_scripts_queue_length:0
+sentinel_simulate_failure_flags:0
+master0:name&#x3D;mymaster,status&#x3D;ok,address&#x3D;172.17.0.3:6379,slaves&#x3D;2,sentinels&#x3D;3
+Current master is
+172.17.0.3
+6379
+------------------------------------------------
+Restart Redis master
+rediscluster_master_1
+Current infomation of sentinel
+# Sentinel
+sentinel_masters:1
+sentinel_tilt:0
+sentinel_running_scripts:0
+sentinel_scripts_queue_length:0
+sentinel_simulate_failure_flags:0
+master0:name&#x3D;mymaster,status&#x3D;ok,address&#x3D;172.17.0.3:6379,slaves&#x3D;2,sentinels&#x3D;3
+Current master is
+172.17.0.3
+6379</code></pre>
+
+<p>我们可以利用 Docker Compose 方便地在本地验证 Redis 集群的部署和故障恢复，但是这还不是一个分布式的高可用部署。我们下面会利用阿里云容器服务来进行验证</p>
+<h2 id="云端部署高可用-Redis-集群"><a href="#云端部署高可用-Redis-集群" class="headerlink" title="云端部署高可用 Redis 集群"></a>云端部署高可用 Redis 集群</h2><p>阿里云容器服务 在兼容 Docker Compose 编排模板的基础上，做了大量的扩展。能够更好地帮助我们在 Docker 集群中部署分布式应用。<br>首先您需要创建一个包含至少三个节点的集群（否则您需要注释掉相应的”affinity:service”部署约束）<br>然后我们利用下面的 docker compose 模板部署高可用 Redis 集群</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">master:
+  image: redis:3
+  environment:
+    - affinity:service!&#x3D;slave
+  restart: always
+slave:
+  image: redis:3
+  command: redis-server --slaveof redis-master 6379
+  environment:
+    - affinity:service!&#x3D;master
+    - affinity:service!&#x3D;slave
+  labels:
+    aliyun.scale: &quot;2&quot;
+  restart: always
+  links:
+    - master:redis-master
+sentinel:
+  image: registry.aliyuncs.com&#x2F;acs-sample&#x2F;redis-sentinel:3
+  environment:
+    - affinity:service!&#x3D;sentinel
+  labels:
+    aliyun.scale: &quot;3&quot;
+  restart: always
+  links:
+    - master:redis-master
+    - slave</code></pre>
+
+<p>这里使用了预编译的 sentinel 镜像”registry.aliyuncs.com&#x2F;acs-sample&#x2F;redis-sentinel:3”<br>更重要是，引入了一些阿里云扩展使得对分布式应用更好地控制容器在宿主机节点的部署<br>aliyun.scale 标签：描述了服务的实例数量 affinity:service 环境变量描述了服务的部署约束：比如对于 Redis slave 而言，我们不希望在一个宿主机节点上同时部署 master 和 slave，或多个 slave，我们可以方便用示例中的方法描述这些约束。 关于这些的详尽解释请参见帮助文档<br>一键部署之后，我们就已经有一个真正高可用的 Redis 集群了</p>
+<ul>
+<li>在这里 master 和 2 个 slave 部署到不同的宿主机节点中</li>
+<li>3 个 sentinel 部署到不同的宿主机节点中</li>
+</ul>
+<p>这样任何一个宿主机节点失效，都不会导致 Redis 集群失败</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>文章介绍了如何在本地部署一个 Redis 集群，并利用 Redis Sentinel 实现自动化的主从切换。并在此基础上利用阿里云容器服务扩展，一键部署一个真正的高可用分布式 Redis 集群。<br>对于 Redis 而言，阿里云提供了云数据库 Redis 版，对于大部分对 SLA 有要求的客户我们建议在生产环境使用 Redis 云服务。但是如果大家对版本、配置有特殊要求的时候，使用 Docker 部署 Redis 也是非常方便的。<br>出于性能考虑，在 Docker 容器中运行 Redis 不建议采用 bridge 网络对外提供访问，如需对外部 VM 或应用提供服务建议采用 host 网络模式，并注意安全保护；如果只是对集群中容器提供 redis 访问，则容器服务默认提供的跨宿主机容器网络会提供优化而安全的网络配置。同时建议在 Docker 容器设置中，给 Redis 容器配置合适的内存设置。<br>本文也给大家提供了一个示例，如何采用 Docker 的方式开发分布式应用并在云端部署生产级别环境。阿里云容器服务不但支持 docker-compose 模板提供的容器功能，使得本地开发的 Docker 镜像和编排模板可以轻松上云；更提供了灵活的部署约束描述，使得对分布式应用的部署和控制变得非常方便。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Docker/" itemprop="url" rel="index">
+                  <span itemprop="name">Docker</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Cache/" itemprop="url" rel="index">
+                  <span itemprop="name">Cache</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Redis/" itemprop="url" rel="index">
+                  <span itemprop="name">Redis</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/redis/redis-introduce/" rel="next" title="Redis（一）基础数据类型">
+            <i class="fa far fa-chevron-left"></i> Redis（一）基础数据类型
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/redis/redis-consistent-hashing/" rel="prev" title="Redis（二）ShardedJedis一致性哈希">
+            Redis（二）ShardedJedis一致性哈希 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2-Redis-%E9%9B%86%E7%BE%A4"><span class="toc-text">单机部署 Redis 集群</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%91%E7%AB%AF%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8-Redis-%E9%9B%86%E7%BE%A4"><span class="toc-text">云端部署高可用 Redis 集群</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Spock 基于BDD测试 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; Spock 测试框架基于 Groovy &gt; 并吸收了 &gt; Junit、TestNG、Mockito &gt; 等测试框架的优点。 Spock &gt; 编写的单元测试层次清晰，代码量少，可读性好，Groovy &gt; 最终会编译为 class &gt; 文件，支持各种集成开发环境（eclipse，Intellij &gt; Ieda）， 尤其是 Intellij &gt; idea 已经集成支持 Groovy &gt; 的插件，也支">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spock 基于BDD测试">
+<meta property="og:url" content="https://www.alicharles.com/article/spock/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; Spock 测试框架基于 Groovy &gt; 并吸收了 &gt; Junit、TestNG、Mockito &gt; 等测试框架的优点。 Spock &gt; 编写的单元测试层次清晰，代码量少，可读性好，Groovy &gt; 最终会编译为 class &gt; 文件，支持各种集成开发环境（eclipse，Intellij &gt; Ieda）， 尤其是 Intellij &gt; idea 已经集成支持 Groovy &gt; 的插件，也支">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649583018000-a421eec4-e140-4dc7-b441-18d73fd6dee8.png#clientId=u8bb98b5c-a46d-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua18a10b6&margin=%5Bobject%20Object%5D&name=image.png&originHeight=338&originWidth=694&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=33048&status=done&style=none&taskId=u04c672d8-be2e-4f25-909f-4cd0c0965e0&title=">
+<meta property="article:published_time" content="2018-07-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.500Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Spock">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1649583018000-a421eec4-e140-4dc7-b441-18d73fd6dee8.png#clientId=u8bb98b5c-a46d-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua18a10b6&margin=%5Bobject%20Object%5D&name=image.png&originHeight=338&originWidth=694&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=33048&status=done&style=none&taskId=u04c672d8-be2e-4f25-909f-4cd0c0965e0&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Spock 基于BDD测试</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2018-07-15T00:00:00+08:00">
+            2018-07-15
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/spock/" itemprop="url" rel="index">
+              <span itemprop="name">spock</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p>Spock 测试框架基于 Groovy 并吸收了 Junit、TestNG、Mockito 等测试框架的优点。 Spock 编写的单元测试层次清晰，代码量少，可读性好，Groovy 最终会编译为 class 文件，支持各种集成开发环境（eclipse，Intellij Ieda）， 尤其是 Intellij idea 已经集成支持 Groovy 的插件，也支持 maven-surefire-plugin、jacoco 等 maven 插件。</p>
+</blockquote>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649583018000-a421eec4-e140-4dc7-b441-18d73fd6dee8.png#clientId=u8bb98b5c-a46d-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua18a10b6&margin=%5Bobject%20Object%5D&name=image.png&originHeight=338&originWidth=694&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=33048&status=done&style=none&taskId=u04c672d8-be2e-4f25-909f-4cd0c0965e0&title=" alt="image.png"><br><a target="_blank" rel="noopener" href="http://spockframework.org/">Spock 官网</a>，必读书籍《Java Testing with Spock》, 如要速成只需要阅读以下两篇文章</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://learnxinyminutes.com/docs/groovy/">5 分钟入门 Groovy</a></li>
+<li><a target="_blank" rel="noopener" href="https://semaphoreci.com/community/tutorials/stubbing-and-mocking-in-java-with-the-spock-testing-framework">一篇非常详尽的介绍 Spock 的英文教程</a></li>
+</ul>
+<h2 id="Spock-实例"><a href="#Spock-实例" class="headerlink" title="Spock 实例"></a>Spock 实例</h2><p>大多数遵循 TDD 的 Java 开发者均会使用 mockito 或 powermock，但 mockito 和 powermock 均包含了许多样本代码，导致测试代码变得冗长而难以维护。 在测试中引入 Groovy&#x2F;Spock 后，我完全被它们吸引，并转向使用 Groovy&#x2F;Spock 来替代原有的测试框架。</p>
+<h3 id="定义-Domain，DAO，Service"><a href="#定义-Domain，DAO，Service" class="headerlink" title="定义 Domain，DAO，Service"></a>定义 Domain，DAO，Service</h3><p>下面将围绕一个简单例子来讲解 Groovy&#x2F;Spock，例子中将包含一个 service 类，负责处理 domain 对象，以及一个数据访问层。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public class User &#123;
+    private int id;
+    private String name;
+    private int age;
+    &#x2F;&#x2F; Accessors omitted
+&#125;
+
+public interface UserDao &#123;
+    public User get(int id);
+&#125;
+
+public class UserService &#123;
+    private UserDao userDao;
+
+    public UserService(UserDao userDao) &#123;
+        this.userDao &#x3D; userDao;
+    &#125;
+
+    public User findUser(int id)&#123;
+        return userDao.get(id);;
+    &#125;
+&#125;</code></pre>
+
+<h3 id="采用-Groovy-x2F-Spock-针对-UserService-编写测试"><a href="#采用-Groovy-x2F-Spock-针对-UserService-编写测试" class="headerlink" title="采用 Groovy&#x2F;Spock 针对 UserService 编写测试"></a>采用 Groovy&#x2F;Spock 针对 UserService 编写测试</h3><pre class="line-numbers language-java" data-language="java"><code class="language-java">class UserTest extends Specification &#123;
+    UserDao dao &#x3D; Mock(UserDao)
+    UserService service &#x3D; new UserService(dao)
+
+    def &quot;it gets a user by id&quot;() &#123;
+        given:
+        1 * dao.get(id) &gt;&gt; new User(id: id, name: name, age: age)
+
+        when:
+        def result &#x3D; service.findUser(id)
+
+        then:
+        result.id &#x3D;&#x3D; userId
+        result.name &#x3D;&#x3D; userName
+        result.age &#x3D;&#x3D; userAge
+
+        where:
+        id | name      | age || userId | userName  | userAge
+        1  | &quot;zhang&quot;   | 18  || 1      | &quot;zhang&quot;   | 18
+        2  | &quot;charles&quot; | 28  || 2      | &quot;charles&quot; | 28
+    &#125;
+&#125;</code></pre>
+
+<p>在 Spock 中创建 mock 对象非常容易，只需要使用 Mock(Class)这样的语句即可。如上所述，mock 后的 DAO 对象被传入 userService 中。 Setup 方法会在每个测试方法运行前被执行。<br>Spock 是一个 BDD 测试框架，因此对于 Spock 中涉及的 given，when，then 样式最简单的理解就是：</p>
+<ul>
+<li>given 给定一些条件</li>
+<li>when 当执行一些操作时</li>
+<li>then 期望得到某个结果</li>
+<li>where 多套测试数据的检测和验证<table><thead><tr>
+<th><strong>分块</strong></th>
+<th><strong>替换</strong></th>
+<th><strong>功能</strong></th>
+<th><strong>限制</strong></th>
+</tr>
+</thead><tbody><tr>
+<td>given</td>
+<td>setup</td>
+<td>初始化函数，mock</td>
+<td>非必要</td>
+</tr>
+<tr>
+<td>when</td>
+<td>expect</td>
+<td>执行待测试的函数</td>
+<td>when 和 then 必须对成出现</td>
+</tr>
+<tr>
+<td>then</td>
+<td>expect</td>
+<td>验证函数结果</td>
+<td>when 和 then 可以被 expect 替换</td>
+</tr>
+<tr>
+<td>where</td>
+<td></td>
+<td>多套测试数据的检测</td>
+<td>spock 的特性功能</td>
+</tr>
+<tr>
+<td>and</td>
+<td></td>
+<td>对其余块进行分隔说明</td>
+<td>非必要</td>
+</tr>
+</tbody></table></li>
+</ul>
+<p>如上述测试方法中 Given，给定 id&#x3D;1，即测试的变量；而在 When 中则是被测试方法，如在上述代码中调用 findUser()； Then 中则是断言，即检查被测试方法的输出结果。<br>上述 Then 中的第一句语句虽然看上去可怕，但实际上却非常容易理解：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">1 * dao.get(id) &gt;&gt; new User(id:id, name:&quot;James&quot;, age:27)</code></pre>
+
+<p>该行表示了对于 mock 对象 dao 的期望值，即期望调用 dao.get()方法 1 次，而“&gt;&gt;”是 spock 的特色，表示“then return”含义。 因此该句翻译过来的意思是：期望调用 1 次 dao.get()方法，当执行该方法后，请返回一个新的 User 对象。 此外在构造方法中使用具名参数也是 groovy 的另一特点。Then 中剩余的代码对 result 对象进行检查。<br>由此测试代码驱动产生的产品代码非常简单，如下所示：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public class UserService &#123;
+    private UserDao userDao;
+
+    public UserService(UserDao userDao) &#123;
+        this.userDao &#x3D; userDao;
+    &#125;
+
+    public User findUser(int id)&#123;
+        return userDao.get(id);
+    &#125;
+&#125;</code></pre>
+
+<p>接下来实现创建用户功能，在 UserService 中添加如下代码：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public void createUser(User user) &#123;
+    &#x2F;&#x2F; check name
+    &#x2F;&#x2F; if exists, throw exception
+    &#x2F;&#x2F; if !exists, create user
+&#125;</code></pre>
+
+<p>在 UserDao 中添加如下方法：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public User findByName(String name);
+public void createUser(User user);</code></pre>
+
+<p>相应的测试方法如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">def &quot;it saves a new user&quot;() &#123;
+    given:
+        def user &#x3D; new User(id: 1, name: &#39;James&#39;, age:27)
+
+    when:
+        service.createUser(user)
+
+    then:
+        1 * dao.findByName(user.name) &gt;&gt; null
+
+    then:
+        1 * dao.createUser(user)
+&#125;</code></pre>
+
+<p>在上述代码中出现了两处 Then，这是因为当所有断言放在一个 then 块中，Spock 会认为这些断言是同时发生的。 如果期望断言按顺序执行，则需要将断言分割到多个 then 块中，spock 会按顺序执行断言。 如上述所示，首先需要判断用户是否存在，然后再去创建用户。产品代码实现如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public void createUser(User user)&#123;
+    User existing &#x3D; userDao.findByName(user.getName());
+
+    if(existing &#x3D;&#x3D; null)&#123;
+        userDao.createUser(user);
+    &#125;
+&#125;</code></pre>
+
+<p>上述代码针对用户不存在场景，而对于用户存在的场景，测试代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">def &quot;it fails to create a user because one already exists with that name&quot;() &#123;
+    given:
+        def user &#x3D; new User(id: 1, name: &#39;James&#39;, age:27)
+
+    when:
+        service.createUser(user)
+
+    then:
+        1 * dao.findByName(user.name) &gt;&gt; user
+
+    then:
+        0 * dao.createUser(user)
+
+    then:
+        def exception &#x3D; thrown(RuntimeException)
+        exception.message &#x3D;&#x3D; &quot;User with name $&#123;user.name&#125; already exists!&quot;
+&#125;</code></pre>
+
+<p>上述代码当调用 findByName 时，返回一个存在的用户，然后不调用 createUser()，第三个 Then 块捕获方法抛出的异常。 注意 groovy 拥有一个称之为 GStrings 的特征，该特征可以在引用的字符串中插入参数，如${user.name}。相应产品代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public void createUser(User user)&#123;
+    User existing &#x3D; userDao.findByName(user.getName());
+
+    if(existing &#x3D;&#x3D; null)&#123;
+        userDao.createUser(user);
+    &#125; else&#123;
+        throw new RuntimeException(String.format(&quot;User with name %s already exists!&quot;, user.getName()));
+    &#125;
+&#125;</code></pre>
+
+<h3 id="结合-PowerMock-mock-静态方法"><a href="#结合-PowerMock-mock-静态方法" class="headerlink" title="结合 PowerMock mock 静态方法"></a>结合 PowerMock mock 静态方法</h3><pre class="line-numbers language-java" data-language="java"><code class="language-java">@RunWith(PowerMockRunner)
+@PowerMockRunnerDelegate(Sputnik)
+@PowerMockIgnore(&#123;
+        &quot;javax.net.ssl.*&quot;,
+        &quot;javax.management.*&quot;,
+        &quot;com.sun.crypto.*&quot;,
+        &quot;javax.crypto.*&quot;&#125;)
+@PrepareForTest([BizEngine.class])
+class BaseSimpleTest extends Specification &#123;
+    def &quot;test engine&quot;() &#123;
+        setup:
+        BizEngine mockStatic &#x3D; PowerMockito.mock(BizEngine.class)
+        Whitebox.setInternalState(BizEngine.class, &quot;bizEngine&quot;, mockStatic)
+
+        when:
+        Mockito.when(mockStatic.getPoint(Point.class, null, null)).thenReturn(new LocationPoint())
+
+        then:
+        println &quot;test engine end&quot;
+    &#125;
+&#125;</code></pre>
+
+<h2 id="其他提示"><a href="#其他提示" class="headerlink" title="其他提示"></a>其他提示</h2><ul>
+<li>最重要也是最容易被遗忘的提示，阅读 spock 文档</li>
+<li>可以命名 spock 块，例如将 given 命名为“Some variables”，有助于开发者在测试代码中更加清楚的表达含义</li>
+<li>当对 mock 对象方法调用次数不关心时，可以使用_ * mock.method()</li>
+<li>在 then 块中可使用下划线来通配方法及类，例如，0 _ mock._ 表示期望 mock 对象的任何方法都未被调用，或 0 _ . 表示期望任何对象的任何方法都未被调用</li>
+<li>通常按 given，when，then 编写测试，但实际上从 when 开始编写测试会更加容易发现测试需要的 given 和测试的输出结果(then)</li>
+<li>expect 块对于测试不需要对 mock 对象进行断言的简单方法更加有效</li>
+<li>当对于传递给 mock 对象的参数不关注时，可以使用通配符参数</li>
+<li>拥抱 groovy 闭包 Embrace groovy closures! They can be you’re best friend in assertions!</li>
+<li>当希望在整个测试类中只运行一次，可以复写 setupSpec 和 cleanupSpec</li>
+</ul>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Spock/" itemprop="url" rel="index">
+                  <span itemprop="name">Spock</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/docker/docker-warm-mode/" rel="next" title="Docker（二）使用Swarm Mode创建集群">
+            <i class="fa far fa-chevron-left"></i> Docker（二）使用Swarm Mode创建集群
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/spring/spring-bean-lifecycle/" rel="prev" title="Spring Bean的生命周期">
+            Spring Bean的生命周期 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Spock-%E5%AE%9E%E4%BE%8B"><span class="toc-text">Spock 实例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-Domain%EF%BC%8CDAO%EF%BC%8CService"><span class="toc-text">定义 Domain，DAO，Service</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%87%E7%94%A8-Groovy-x2F-Spock-%E9%92%88%E5%AF%B9-UserService-%E7%BC%96%E5%86%99%E6%B5%8B%E8%AF%95"><span class="toc-text">采用 Groovy&#x2F;Spock 针对 UserService 编写测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E5%90%88-PowerMock-mock-%E9%9D%99%E6%80%81%E6%96%B9%E6%B3%95"><span class="toc-text">结合 PowerMock mock 静态方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E6%8F%90%E7%A4%BA"><span class="toc-text">其他提示</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

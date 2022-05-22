@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        JVM（七）深入理解java内存模型 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; java &gt; 线程之间的通信对程序员完全透明，内存可见性问题很容易困扰 &gt; java 程序员，本文试图揭开 java &gt; 内存模型神秘的面纱。  本文大致分三部分： 重排序与顺序一致性； 三个同步原语（lock，volatile，final）的内存语义，重排序规则及在处理器中的实现； java 内存模型的设计目标，及其与处理器内存模型和顺序一致性内存模型的关系。   * 深入理解 java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM（七）深入理解java内存模型">
+<meta property="og:url" content="https://www.alicharles.com/article/jvm/java-memory-model/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; java &gt; 线程之间的通信对程序员完全透明，内存可见性问题很容易困扰 &gt; java 程序员，本文试图揭开 java &gt; 内存模型神秘的面纱。  本文大致分三部分： 重排序与顺序一致性； 三个同步原语（lock，volatile，final）的内存语义，重排序规则及在处理器中的实现； java 内存模型的设计目标，及其与处理器内存模型和顺序一致性内存模型的关系。   * 深入理解 java">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-08-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.489Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>JVM（七）深入理解java内存模型</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2016-08-07T00:00:00+08:00">
+            2016-08-07
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/jvm/" itemprop="url" rel="index">
+              <span itemprop="name">jvm</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p>java 线程之间的通信对程序员完全透明，内存可见性问题很容易困扰 java 程序员，本文试图揭开 java 内存模型神秘的面纱。</p>
+</blockquote>
+<p>本文大致分三部分：<br>重排序与顺序一致性；<br>三个同步原语（lock，volatile，final）的内存语义，重排序规则及在处理器中的实现；<br>java 内存模型的设计目标，及其与处理器内存模型和顺序一致性内存模型的关系。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/java-memory-model-1">深入理解 java 内存模型（一）——基础</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/java-memory-model-2">深入理解 java 内存模型（二）——重排序</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/java-memory-model-3">深入理解 java 内存模型（三）——顺序一致性</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/java-memory-model-4">深入理解 java 内存模型（四）——volatile</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/java-memory-model-5">深入理解 java 内存模型（五）——锁</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/java-memory-model-6">深入理解 java 内存模型（六）——final</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/java-memory-model-7">深入理解 java 内存模型（七）——总结</a></li>
+</ul>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/JVM/" itemprop="url" rel="index">
+                  <span itemprop="name">JVM</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/jvm/jvm-classloader-delegate/" rel="next" title="JVM（六）虚拟机类加载委派模型">
+            <i class="fa far fa-chevron-left"></i> JVM（六）虚拟机类加载委派模型
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/netty/netty-io-basic/" rel="prev" title="Netty（一）网络IO基础">
+            Netty（一）网络IO基础 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

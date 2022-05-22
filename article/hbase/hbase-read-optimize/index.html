@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        HBase 读优化 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; https:&#x2F;&#x2F;blog.csdn.net&#x2F;weixin_40954192&#x2F;article&#x2F;details&#x2F;106942029  LSM 存储引擎是在 B+树的基础上衍生过来的，目的就是为了在读和写之间，提高写的性能。所以，LSM 树的弊端也由此可见，对读并不是很友好，所以，针对 LSM 树，有后续 compact，布隆过滤器，blockCache 等优化方式。来弥补对读的查询。 LSM 树的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HBase 读优化">
+<meta property="og:url" content="https://www.alicharles.com/article/hbase/hbase-read-optimize/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; https:&#x2F;&#x2F;blog.csdn.net&#x2F;weixin_40954192&#x2F;article&#x2F;details&#x2F;106942029  LSM 存储引擎是在 B+树的基础上衍生过来的，目的就是为了在读和写之间，提高写的性能。所以，LSM 树的弊端也由此可见，对读并不是很友好，所以，针对 LSM 树，有后续 compact，布隆过滤器，blockCache 等优化方式。来弥补对读的查询。 LSM 树的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647915437003-ca220200-1508-4b7f-9a2e-65f702f2d1e9.png#clientId=uc658cd9c-7178-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=263&id=uf54582c0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=263&originWidth=1165&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=37515&status=done&style=none&taskId=ue4a68932-475c-49b0-9604-0ec8205fec1&title=&width=1165">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647915452495-be03b890-a16f-4960-9043-b7a11fcf17ec.png#clientId=uc658cd9c-7178-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=740&id=u1c1b950f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=740&originWidth=1006&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=90458&status=done&style=none&taskId=ueac0d2b5-5c06-43c2-af65-786d4db2922&title=&width=1006">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647915475324-aaf3a59d-f6fe-4944-9012-5e22fc9149da.png#clientId=uc658cd9c-7178-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=791&id=u06632d08&margin=%5Bobject%20Object%5D&name=image.png&originHeight=791&originWidth=742&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=70335&status=done&style=none&taskId=u585d56ee-4dad-479e-b1dc-eb44883e88f&title=&width=742">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647915498955-975c2bea-6ff2-4e5d-af75-1169d740f0ce.png#clientId=uc658cd9c-7178-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=699&id=u7296dd92&margin=%5Bobject%20Object%5D&name=image.png&originHeight=699&originWidth=886&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=99911&status=done&style=none&taskId=u6465223c-5d78-4432-9628-51e703954a2&title=&width=886">
+<meta property="article:published_time" content="2021-06-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-04-02T16:49:05.358Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="HBase">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647915437003-ca220200-1508-4b7f-9a2e-65f702f2d1e9.png#clientId=uc658cd9c-7178-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=263&id=uf54582c0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=263&originWidth=1165&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=37515&status=done&style=none&taskId=ue4a68932-475c-49b0-9604-0ec8205fec1&title=&width=1165">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>HBase 读优化</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2021-06-21T00:00:00+08:00">
+            2021-06-21
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/hbase/" itemprop="url" rel="index">
+              <span itemprop="name">hbase</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_40954192/article/details/106942029">https://blog.csdn.net/weixin_40954192&#x2F;article&#x2F;details&#x2F;106942029</a></p>
+</blockquote>
+<p>LSM 存储引擎是在 B+树的基础上衍生过来的，目的就是为了在读和写之间，提高写的性能。所以，LSM 树的弊端也由此可见，对读并不是很友好，所以，针对 LSM 树，有后续 compact，布隆过滤器，blockCache 等优化方式。来弥补对读的查询。<br>LSM 树的索引一般由 2 部分构成，一部分是内存部分，一部分是磁盘部分。内存部分采用跳跃表来维护一个有序的 KV 集合,也就是 memstore.随着内存不断数据写入，一旦内存占用超过一定的阈值，就把内存部分数据进行导出（这里的 flush 操作实则是通过两个跳跃表来完成的），形成一个有序的数据文件，存储在磁盘上，磁盘部分则是对应的 hFile。</p>
+<h2 id="keyValue-存储格式"><a href="#keyValue-存储格式" class="headerlink" title="keyValue 存储格式"></a>keyValue 存储格式</h2><p>LSM 树中存储的是多个 keyValue 组成的集合。每一个 KeyValue 由一个字节数组来表示。如图<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647915437003-ca220200-1508-4b7f-9a2e-65f702f2d1e9.png#clientId=uc658cd9c-7178-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=263&id=uf54582c0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=263&originWidth=1165&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=37515&status=done&style=none&taskId=ue4a68932-475c-49b0-9604-0ec8205fec1&title=&width=1165" alt="image.png"></p>
+<h2 id="LSM-索引结构"><a href="#LSM-索引结构" class="headerlink" title="LSM 索引结构"></a>LSM 索引结构</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647915452495-be03b890-a16f-4960-9043-b7a11fcf17ec.png#clientId=uc658cd9c-7178-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=740&id=u1c1b950f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=740&originWidth=1006&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=90458&status=done&style=none&taskId=ueac0d2b5-5c06-43c2-af65-786d4db2922&title=&width=1006" alt="image.png">在 hbase 实现中，memstore 的数据达到某个级别的阈值之后，都会进行 flush 到 disk 中，形成一个 file。（前提为了怕 memstore 内存数据丢失，会先将数据写入到所属 regionServer 的 WAL 预写日志中）这个 file 的存储也就是一个小的 B+树，因为 hbase 一般是部署在 hdfs 上，hdfs 不支持对文件的 update 操作，而且最终随着磁盘文件越来越多，对读的影响很大。所以内存 flush 到磁盘上的小树，定期也会合并成一个大树。来增强读操作的性能，整体上 hbase 就是用了 lsm tree 的思路。</p>
+<h2 id="多路归并"><a href="#多路归并" class="headerlink" title="多路归并"></a>多路归并</h2><p>为了优化读取操作的性能，hbase 会进行两种类型的 compact。<br><strong>一种是 major Compact，是将所有的 HFile 一次性多路归并成一个文件</strong>。这种方式的好处是，合并之后只有一个文件，这样读取的性能肯定是最高的。但它的问题是合并所有的文件可能需要很长的时间并消耗大量的 IO 贷款，所以 major Compact 不宜使用太频繁，适合周期性的跑。或者我们手动设置在闲时合并。<br><strong>另一种是 minor Compact，即选中少数几个 Hfile，将他们多路归并成一个文件</strong>。这种方式的有点是可以进行局部的 Compact，通过少量的 IO 减少文件个数，提高读取操作的性能。适合较高频率的跑。但它的缺点是只合并了局部的数据，对于那些全局删除操作，无法在合并过程中完全删除。</p>
+<h2 id="多路归并原理"><a href="#多路归并原理" class="headerlink" title="多路归并原理"></a>多路归并原理</h2><p>比如现在我们有 K 个文件，其中第 i 个文件内存存储有 N 个正整数（这些整数在文件内按照从小到大的顺序排序）<br>多路归并的算法原理就是对每个文件设计一个指针，取出 K 个指针中数值最小的一个（对应的 K 个文件），然后把最小的那个指针后移，接着继续找 K 个指针中数值最小的一个，继续后移指针…直到文件全部读完为止。如图<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647915475324-aaf3a59d-f6fe-4944-9012-5e22fc9149da.png#clientId=uc658cd9c-7178-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=791&id=u06632d08&margin=%5Bobject%20Object%5D&name=image.png&originHeight=791&originWidth=742&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=70335&status=done&style=none&taskId=u585d56ee-4dad-479e-b1dc-eb44883e88f&title=&width=742" alt="image.png"><br>针对读取操作，还涉及到了布隆过滤器。<br>布隆过滤器是由一个长度为 N 的 01 数组组成的。首先将数组 array 每个元素初始设为 0，对集合 A 中的每个元素 w，做 K 次哈希，第 i 次哈希值对 N 取模得到一个 index(i).即 index(i) &#x3D; Hash_i（w） % N,将 array 数组中的 array[index(i)] 置为 1.最终变为一个这些元素为 1 的 01 数组。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647915498955-975c2bea-6ff2-4e5d-af75-1169d740f0ce.png#clientId=uc658cd9c-7178-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=699&id=u7296dd92&margin=%5Bobject%20Object%5D&name=image.png&originHeight=699&originWidth=886&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=99911&status=done&style=none&taskId=u6465223c-5d78-4432-9628-51e703954a2&title=&width=886" alt="image.png">正是由于布隆过滤器只需占用极小的空间，便可给出 “可能存在” 和 “肯定不存在”的存在性判断。因此可以提前过滤掉很多不必要的数据块，从而节省了大量的磁盘 IO。hbase 的 get 操作就是通过运用低成本高效率的布隆过滤器来过滤大量无效数据块的，从而节省了大量磁盘 IO。</p>
+<p>如果在表中设置了 Bloomfilter，那么 HBase 会在生成 StoreFile 时包含一份 bloomfilter 结构的数据，称其为 MetaBlock；MetaBlock 与 DataBlock（真实的 KeyValue 数据）一起由 LRUBlockCache 维护。所以，开启 bloomfilter 会有一定的存储及内存 cache 开销。</p>
+<p>布隆过滤器的 3 中类型：</p>
+<ul>
+<li>none，关闭布隆过滤器功能</li>
+<li>row，按照 rowkey 计算布隆过滤器的二进制串并存储。get 查询时，必须带 rowkey.</li>
+<li>rowcol，按照 rowkey+family+qualifier 这 3 个字段拼出 byte[]来计算布隆过滤器值并存储。如果查询时，get 可以指定到这 3 个字段，则肯定可以通过布隆过滤器提高性能。</li>
+</ul>
+<p>任何类型的 get（基于 rowkey 或 row+col）Bloom Filter 的优化都能生效，关键是 get 的类型要匹配 Bloom Filter 的类型<br>基于 row 的 scan 是没办法走 Bloom Filter 的。因为<strong>Bloom Filter</strong>是需要事先知道过滤项的。对于顺序 scan 是没有事先办法知道 rowkey 的。而 get 是指明了 rowkey 所以可以用 Bloom Filter，scan 指明 column 同理。</p>
+<p>一般意义上的 scan 操作，是没法使用布隆过滤器提升性能的，因为布隆过滤器的 key 不确定。但是 row+col+qualify 的 scan 可以借助布隆过滤器去掉不存在此 qualify 的 storefile，也算是不错的优化了，而且指明 qualify 也能减少流量，因此 scan 尽量指明 qualify<br>关于<strong>BlockCache</strong>的内容较多，在后续文章补充。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/HBase/" itemprop="url" rel="index">
+                  <span itemprop="name">HBase</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/hbase/hbase-architecture/" rel="next" title="HBase 系统架构">
+            <i class="fa far fa-chevron-left"></i> HBase 系统架构
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/cache/redis-storage-structure/" rel="prev" title="Redis存储结构">
+            Redis存储结构 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#keyValue-%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F"><span class="toc-text">keyValue 存储格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LSM-%E7%B4%A2%E5%BC%95%E7%BB%93%E6%9E%84"><span class="toc-text">LSM 索引结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E5%BD%92%E5%B9%B6"><span class="toc-text">多路归并</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E5%BD%92%E5%B9%B6%E5%8E%9F%E7%90%86"><span class="toc-text">多路归并原理</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

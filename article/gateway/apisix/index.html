@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        APISIX |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="1、概述  APISIX 是基于 OpenResty + etcd 实现的云原生、高性能、可扩展的微服务 API 网关。它是国人开源，目前已经进入 Apache 进行孵化。   * OpenResty：通过 Lua 扩展    Nginx 实现的可伸缩的 Web    平台。  * etcd：Key&#x2F;Value 存储系统。  Apache APISIX 是一个动态、实时、高性能的 API 网关，提">
+<meta property="og:type" content="article">
+<meta property="og:title" content="APISIX">
+<meta property="og:url" content="https://www.alicharles.com/article/gateway/apisix/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="1、概述  APISIX 是基于 OpenResty + etcd 实现的云原生、高性能、可扩展的微服务 API 网关。它是国人开源，目前已经进入 Apache 进行孵化。   * OpenResty：通过 Lua 扩展    Nginx 实现的可伸缩的 Web    平台。  * etcd：Key&#x2F;Value 存储系统。  Apache APISIX 是一个动态、实时、高性能的 API 网关，提">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647155726611-f9cab74d-4ad9-4d47-9d05-6fcc1a719707.png#clientId=u1b21c1b5-5289-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=371&id=u340fb91b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=913&originWidth=1280&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=119938&status=done&style=none&taskId=u81026da1-86c3-4b1a-b7fd-014fcc40863&title=&width=520">
+<meta property="article:published_time" content="2021-07-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.495Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Gateway">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647155726611-f9cab74d-4ad9-4d47-9d05-6fcc1a719707.png#clientId=u1b21c1b5-5289-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=371&id=u340fb91b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=913&originWidth=1280&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=119938&status=done&style=none&taskId=u81026da1-86c3-4b1a-b7fd-014fcc40863&title=&width=520">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>APISIX</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2021-08-01T00:00:00+08:00">
+            2021-08-01
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/gateway/" itemprop="url" rel="index">
+              <span itemprop="name">gateway</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<h2 id="1、概述"><a href="#1、概述" class="headerlink" title="1、概述"></a>1、概述</h2><p><a target="_blank" rel="noopener" href="https://github.com/apache/apisix">APISIX</a> 是基于 <a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://github.com/openresty/">OpenResty</a> + <a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://github.com/etcd-io/etcd">etcd</a> 实现的云原生、高性能、可扩展的微服务 API 网关。它是国人开源，目前已经进入 Apache 进行孵化。</p>
+<ul>
+<li>OpenResty：通过 Lua 扩展 Nginx 实现的可伸缩的 Web 平台。</li>
+<li>etcd：Key&#x2F;Value 存储系统。</li>
+</ul>
+<p>Apache APISIX 是一个动态、实时、高性能的 API 网关，提供负载均衡、动态上游、灰度发布、服务熔断、身份认证、可观测性等丰富的流量管理功能。Apache APISIX 不仅拥有众多实用的插件，而且支持插件动态变更和热插拔。APISIX 通过<a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://github.com/apache/incubator-apisix/blob/master/doc/README_CN.md%23%25E6%258F%2592%25E4%25BB%25B6">插件机制</a>，提供了动态负载平衡、身份验证、限流限速等等功能，当然我们也可以自己开发插件进行拓展。<br><a target="_blank" rel="noopener" href="https://nacos.io/zh-cn/blog/apisix.html">https://nacos.io/zh-cn/blog/apisix.html</a></p>
+<h2 id="2、应用场景"><a href="#2、应用场景" class="headerlink" title="2、应用场景"></a>2、应用场景</h2><p>Apache APISIX + Nacos 可以将各个微服务节点中与业务无关的各项控制，集中在 Apache APISIX 中进行统一管理，即通过 Apache APISIX 实现接口服务的代理和路由转发的能力。各个微服务在 Nacos 上注册后，Apache APISIX 可以通过 Nacos 的服务发现功能获取服务列表，查找对应的服务地址从而实现动态代理。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647155726611-f9cab74d-4ad9-4d47-9d05-6fcc1a719707.png#clientId=u1b21c1b5-5289-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=371&id=u340fb91b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=913&originWidth=1280&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=119938&status=done&style=none&taskId=u81026da1-86c3-4b1a-b7fd-014fcc40863&title=&width=520" alt="image.png"></p>
+<h2 id="3、服务发现"><a href="#3、服务发现" class="headerlink" title="3、服务发现"></a>3、服务发现</h2><p>Apache APISIX 基于 Nacos 实现服务返现</p>
+<h3 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h3><p>本文操作基于以下环境进行。</p>
+<ul>
+<li>操作系统 Centos 7.9。</li>
+<li>已安装 Apache APISIX 12.1.0，详情请参考：<a target="_blank" rel="noopener" href="https://apisix.apache.org/zh/docs/apisix/how-to-buildhttps://apisix.apache.org/zh/docs/apisix/how-to-build">Apache APISIX how-to-bulid</a>。</li>
+<li>已安装 Nacos 2.0.4 及以上版本，详情请参考：<a target="_blank" rel="noopener" href="https://nacos.io/zh-cn/docs/quick-start.html">quick start</a>。</li>
+<li>已安装 Node.js，详情请参考：<a target="_blank" rel="noopener" href="https://github.com/nodejs/help/wiki/Installation">node.js Installation</a>。</li>
+</ul>
+<h3 id="步骤一：服务注册"><a href="#步骤一：服务注册" class="headerlink" title="步骤一：服务注册"></a>步骤一：服务注册</h3><p>1、使用 Node.js 的 Koa 框架在 3005 端口启动一个简单的测试服务作为<a target="_blank" rel="noopener" href="https://apisix.apache.org/zh/docs/apisix/admin-api#upstream">上游（Upstream）</a>。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">const Koa &#x3D; require(&#39;koa&#39;);
+const app &#x3D; new Koa();
+
+app.use(async ctx &#x3D;&gt; &#123;
+  ctx.body &#x3D; &#39;Hello World&#39;;
+&#125;);
+
+app.listen(3005);</code></pre>
+
+<p>2、在命令行中通过请求 Nacos Open API 的方式进行服务注册。<br><code>curl -X POST &#39;http://127.0.0.1:8848/nacos/v1/ns/instance?serviceName=APISIX-NACOS&amp;ip=127.0.0.1&amp;port=3005&amp;ephemeral=false&#39; </code><br>3、执行服务注册后使用以下命令查询当前服务情况。<br><code>curl -X GET &#39;http://127.0.0.1:8848/nacos/v1/ns/instance/list?serviceName=APISIX-NACOS&#39; </code><br>正确返回结果示例如下：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">&#123;
+  &quot;name&quot;: &quot;DEFAULT_GROUP@@APISIX-NACOS&quot;,
+  &quot;groupName&quot;: &quot;DEFAULT_GROUP&quot;,
+  &quot;clusters&quot;: &quot;&quot;,
+  &quot;cacheMillis&quot;: 10000,
+  &quot;hosts&quot;: [
+    &#123;
+      &quot;instanceId&quot;: &quot;127.0.0.1#3005#DEFAULT#DEFAULT_GROUP@@APISIX-NACOS&quot;,
+      &quot;ip&quot;: &quot;127.0.0.1&quot;,
+      &quot;port&quot;: 3005,
+      &quot;weight&quot;: 1.0,
+      &quot;healthy&quot;: true,
+      &quot;enabled&quot;: true,
+      &quot;ephemeral&quot;: true,
+      &quot;clusterName&quot;: &quot;DEFAULT&quot;,
+      &quot;serviceName&quot;: &quot;DEFAULT_GROUP@@APISIX-NACOS&quot;,
+      &quot;metadata&quot;: &#123;&#125;,
+      &quot;instanceHeartBeatInterval&quot;: 5000,
+      &quot;instanceHeartBeatTimeOut&quot;: 15000,
+      &quot;ipDeleteTimeout&quot;: 30000,
+      &quot;instanceIdGenerator&quot;: &quot;simple&quot;
+    &#125;
+  ],
+  &quot;lastRefTime&quot;: 1643191399694,
+  &quot;checksum&quot;: &quot;&quot;,
+  &quot;allIPs&quot;: false,
+  &quot;reachProtectionThreshold&quot;: false,
+  &quot;valid&quot;: true
+&#125;</code></pre>
+
+<h3 id="步骤二：新增-Nacos-路由"><a href="#步骤二：新增-Nacos-路由" class="headerlink" title="步骤二：新增 Nacos 路由"></a>步骤二：新增 Nacos 路由</h3><p>使用 Apache APISIX 提供的 Admin API 创建一个新的<a target="_blank" rel="noopener" href="https://apisix.apache.org/zh/docs/apisix/admin-api#route">路由（Route）</a>，APISIX 通过 upstream.discovery_type 字段选择使用的服务发现类型，upstream.service_name 需要与注册中心的对应服务名进行关联，因此创建路由时指定服务发现类型为 nacos 。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">curl http:&#x2F;&#x2F;127.0.0.1:9080&#x2F;apisix&#x2F;admin&#x2F;routes&#x2F;1 -H &#39;X-API-KEY: edd1c9f034335f136f87ad84b625c8f1&#39; -X PUT -i -d &#39;
+&#123;
+    &quot;uri&quot;: &quot;&#x2F;nacos&#x2F;*&quot;,
+    &quot;upstream&quot;: &#123;
+        &quot;service_name&quot;: &quot;APISIX-NACOS&quot;,
+        &quot;type&quot;: &quot;roundrobin&quot;,
+        &quot;discovery_type&quot;: &quot;nacos&quot;
+    &#125;
+&#125;&#39;</code></pre>
+
+<p>在上述命令中，请求头 X-API-KEY 是 Admin API 的访问 token，可以在 conf&#x2F;config.yaml 文件中的 apisix.admin_key.key 查看。<br>添加成功后，正确返回结果示例如下：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">&#123;
+  &quot;action&quot;: &quot;set&quot;,
+  &quot;node&quot;: &#123;
+    &quot;key&quot;: &quot;\&#x2F;apisix\&#x2F;routes\&#x2F;1&quot;,
+    &quot;value&quot;: &#123;
+      &quot;update_time&quot;: 1643191044,
+      &quot;create_time&quot;: 1643176603,
+      &quot;priority&quot;: 0,
+      &quot;uri&quot;: &quot;\&#x2F;nacos\&#x2F;*&quot;,
+      &quot;upstream&quot;: &#123;
+        &quot;hash_on&quot;: &quot;vars&quot;,
+        &quot;discovery_type&quot;: &quot;nacos&quot;,
+        &quot;scheme&quot;: &quot;http&quot;,
+        &quot;pass_host&quot;: &quot;pass&quot;,
+        &quot;type&quot;: &quot;roundrobin&quot;,
+        &quot;service_name&quot;: &quot;APISIX-NACOS&quot;
+      &#125;,
+      &quot;id&quot;: &quot;1&quot;,
+      &quot;status&quot;: 1
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+<p>除此之外，您还可以在 upstream.discovery_args 中传递其他服务相关参数用于指定服务所在的命名空间或组别，具体内容可参考下表：</p>
+<table><thead><tr>
+<th>名字</th>
+<th>类型</th>
+<th>可选项</th>
+<th>默认值</th>
+<th>有效值</th>
+<th>说明</th>
+</tr>
+</thead><tbody><tr>
+<td>namespace_id</td>
+<td>string</td>
+<td>可选</td>
+<td>public</td>
+<td></td>
+<td>服务所在的命名空间</td>
+</tr>
+<tr>
+<td>group_name</td>
+<td>string</td>
+<td>可选</td>
+<td>DEFAULT_GROUP</td>
+<td></td>
+<td>服务所在的组</td>
+</tr>
+</tbody></table><h3 id="步骤三：验证配置结果"><a href="#步骤三：验证配置结果" class="headerlink" title="步骤三：验证配置结果"></a>步骤三：验证配置结果</h3><p>使用以下命令发送请求至需要配置的路由。<br><code>curl -i http://127.0.0.1:9080/nacos/ </code><br>正常返回结果示例如下：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">HTTP&#x2F;1.1 200 OK
+Content-Type: text&#x2F;plain; charset&#x3D;utf-8
+Content-Length: 11
+Connection: keep-alive
+Date: Thu, 27 Jan 2022 00:48:26 GMT
+Server: APISIX&#x2F;2.12.0
+
+Hello World</code></pre>
+
+<p>通过示例看到，Apache APISIX 中新增的路由已经可以通过 Nacos 服务发现找到正确的服务地址，并正常响应。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文为大家介绍了注册中心的概念以及 Apache APISIX 如何配合 Nacos 实现基于服务发现的路由代理。实际场景中如何进行 Apache APISIX 与 Nacos 的配合使用，您需要看具体的业务需求和过往技术架构。关于 nacos 插件的更多说明和完整配置信息，可参考官网文档：<a target="_blank" rel="noopener" href="https://apisix.apache.org/zh/docs/apisix/discovery/nacos">nacos</a>。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Gateway/" itemprop="url" rel="index">
+                  <span itemprop="name">Gateway</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/cache/tmc/" rel="next" title="TMC多级缓存">
+            <i class="fa far fa-chevron-left"></i> TMC多级缓存
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/stability/stability-diff/" rel="prev" title="限流熔断降级区别">
+            限流熔断降级区别 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E6%A6%82%E8%BF%B0"><span class="toc-text">1、概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">2、应用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0"><span class="toc-text">3、服务发现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6"><span class="toc-text">前提条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4%E4%B8%80%EF%BC%9A%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C"><span class="toc-text">步骤一：服务注册</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4%E4%BA%8C%EF%BC%9A%E6%96%B0%E5%A2%9E-Nacos-%E8%B7%AF%E7%94%B1"><span class="toc-text">步骤二：新增 Nacos 路由</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A4%E4%B8%89%EF%BC%9A%E9%AA%8C%E8%AF%81%E9%85%8D%E7%BD%AE%E7%BB%93%E6%9E%9C"><span class="toc-text">步骤三：验证配置结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

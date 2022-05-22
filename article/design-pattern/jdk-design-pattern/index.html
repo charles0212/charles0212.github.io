@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        JDK中的设计模式 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="本文主要是归纳了 JDK 中所包含的设计模式，包括作用和其设计类图。   一、设计模式的作用   1. 反复出现问题的解决方案  2. 增强软件的灵活性  3. 适应软件不断变化   二、设计模式的七大原则   1. 开闭原则 OCP（Open Close     Principle），一个软件实体如类、模块和函数应该对扩展开放，对修改关闭。  2. 里氏代换原则 LSP（Liskov     S">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JDK中的设计模式">
+<meta property="og:url" content="https://www.alicharles.com/article/design-pattern/jdk-design-pattern/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="本文主要是归纳了 JDK 中所包含的设计模式，包括作用和其设计类图。   一、设计模式的作用   1. 反复出现问题的解决方案  2. 增强软件的灵活性  3. 适应软件不断变化   二、设计模式的七大原则   1. 开闭原则 OCP（Open Close     Principle），一个软件实体如类、模块和函数应该对扩展开放，对修改关闭。  2. 里氏代换原则 LSP（Liskov     S">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-01-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.493Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>JDK中的设计模式</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2015-01-03T00:00:00+08:00">
+            2015-01-03
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/design-pattern/" itemprop="url" rel="index">
+              <span itemprop="name">design-pattern</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>本文主要是归纳了 JDK 中所包含的设计模式，包括作用和其设计类图。</p>
+<h2 id="一、设计模式的作用"><a href="#一、设计模式的作用" class="headerlink" title="一、设计模式的作用"></a>一、设计模式的作用</h2><ol>
+<li>反复出现问题的解决方案</li>
+<li>增强软件的灵活性</li>
+<li>适应软件不断变化</li>
+</ol>
+<h2 id="二、设计模式的七大原则"><a href="#二、设计模式的七大原则" class="headerlink" title="二、设计模式的七大原则"></a>二、设计模式的七大原则</h2><ol>
+<li><strong>开闭原则 OCP</strong>（Open Close Principle），一个软件实体如类、模块和函数应该对扩展开放，对修改关闭。</li>
+<li><strong>里氏代换原则 LSP</strong>（Liskov Substitution Principle），子类可以扩展父类的功能，但不能改变父类原有的功能</li>
+<li><strong>依赖倒转原则 DIP</strong>（Dependence Inversion Principle），面向接口编程，依赖于抽象而不依赖于具体。</li>
+<li><strong>接口隔离原则 ISP</strong>（Interface Segregation Principle），建立单一接口，不要建立庞大臃肿的接口，尽量细化接口，接口中的方法尽量少。</li>
+<li><strong>合成复用原则 CRP</strong>（Composite Reuse Principle），要尽量的使用合成和聚合，而不是继承关系达到复用的目的</li>
+<li><strong>迪米特法则 LOD</strong>（Law Of Demeter），也叫最少知识原则 LKP(Least Knowledge Principle)，一个对象应该对其他对象保持最少的了解。</li>
+<li><strong>单一职责原则 SRP</strong>（Single Responsibility Principle），一个类只负责一项职责，应该仅有一个引起它变化的原因</li>
+</ol>
+<h2 id="三、JDK-中使用到的设计模式以及分析"><a href="#三、JDK-中使用到的设计模式以及分析" class="headerlink" title="三、JDK 中使用到的设计模式以及分析"></a>三、JDK 中使用到的设计模式以及分析</h2><h3 id="创建型模式"><a href="#创建型模式" class="headerlink" title="创建型模式"></a><strong>创建型模式</strong></h3><ol>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-singleton-pattern/">单例模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-factory-pattern/">简单工厂、工厂方法、抽象工厂模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-builder-pattern/">建造者模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-prototype-pattern/">原型模式</a></li>
+</ol>
+<h3 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a><strong>结构型模式</strong></h3><ol>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-adapter-pattern/">适配器模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-bridge-pattern/">桥接模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-composite-pattern/">组合模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-decorator-pattern/">装饰模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-facade-pattern/">外观模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-flyweight-pattern/">享元模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-proxy-pattern/">代理模式</a></li>
+</ol>
+<h3 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a><strong>行为型模式</strong></h3><ol>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-strategy-pattern/">策略模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-template-method-pattern/">模板方法模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-observer-pattern/">观察者模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-iterator-pattern/">迭代器模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-responsibility-pattern/">责任链模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-command-pattern/">命令模式</a></li>
+<li>访问者模式</li>
+<li>状态模式</li>
+<li>备忘录模式</li>
+<li>中介者模式</li>
+<li>解释器模式</li>
+</ol>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/design-pattern/jdk-singleton-pattern/" rel="prev" title="JDK设计模式（一）单例模式">
+            JDK设计模式（一）单例模式 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">一、设计模式的作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E4%B8%83%E5%A4%A7%E5%8E%9F%E5%88%99"><span class="toc-text">二、设计模式的七大原则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81JDK-%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%BB%A5%E5%8F%8A%E5%88%86%E6%9E%90"><span class="toc-text">三、JDK 中使用到的设计模式以及分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F"><span class="toc-text">创建型模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E5%9E%8B%E6%A8%A1%E5%BC%8F"><span class="toc-text">结构型模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F"><span class="toc-text">行为型模式</span></a></li></ol></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

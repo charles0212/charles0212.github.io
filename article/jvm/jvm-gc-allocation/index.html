@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        JVM（三）内存分配与回收策略 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="对象的分配的细节取决于当前使用哪一种垃圾收集器组合，以及和内存相关参数有关，本文主要讨论 Serial&#x2F;SerialOld 收集器的内存分配和回收的策略，其他几种垃圾收集器可以自己去探讨。 先介绍下 MinorGC 和 FullGC 的概念。 新生代 GC（MinorGC）: 发生在新生代，Java 对象大多都有朝生夕死的特性，MinorGC 非常频繁，回收速度也比较快。 老年代 GC（Major">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM（三）内存分配与回收策略">
+<meta property="og:url" content="https://www.alicharles.com/article/jvm/jvm-gc-allocation/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="对象的分配的细节取决于当前使用哪一种垃圾收集器组合，以及和内存相关参数有关，本文主要讨论 Serial&#x2F;SerialOld 收集器的内存分配和回收的策略，其他几种垃圾收集器可以自己去探讨。 先介绍下 MinorGC 和 FullGC 的概念。 新生代 GC（MinorGC）: 发生在新生代，Java 对象大多都有朝生夕死的特性，MinorGC 非常频繁，回收速度也比较快。 老年代 GC（Major">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648398550331-f66fe7ce-115e-4b49-bdcc-f17ee4cc2a0b.png#clientId=uc6b6d1e2-f7d5-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u3769d526&margin=%5Bobject%20Object%5D&name=image.png&originHeight=269&originWidth=626&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=15172&status=done&style=none&taskId=u60ea5eca-8ee0-4d4c-b13f-2a9271bd3b0&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648398550385-d0b55dea-87c7-4f39-8f90-b57013c543bf.png#clientId=uc6b6d1e2-f7d5-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u59b841d2&margin=%5Bobject%20Object%5D&name=image.png&originHeight=357&originWidth=723&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=31084&status=done&style=none&taskId=ub70f10b6-edf4-40a0-9701-0aaa3ad6b09&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648398550299-cad9a607-6e9f-4ab8-a9ef-04dee9a81e74.png#clientId=uc6b6d1e2-f7d5-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u30b7ea0d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=151&originWidth=726&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=14065&status=done&style=none&taskId=u27f99744-0684-4846-a839-f4a029094c2&title=">
+<meta property="article:published_time" content="2016-07-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.489Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648398550331-f66fe7ce-115e-4b49-bdcc-f17ee4cc2a0b.png#clientId=uc6b6d1e2-f7d5-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u3769d526&margin=%5Bobject%20Object%5D&name=image.png&originHeight=269&originWidth=626&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=15172&status=done&style=none&taskId=u60ea5eca-8ee0-4d4c-b13f-2a9271bd3b0&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>JVM（三）内存分配与回收策略</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2016-07-25T00:00:00+08:00">
+            2016-07-25
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/jvm/" itemprop="url" rel="index">
+              <span itemprop="name">jvm</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>对象的分配的细节取决于当前使用哪一种垃圾收集器组合，以及和内存相关参数有关，本文主要讨论 Serial&#x2F;SerialOld 收集器的内存分配和回收的策略，其他几种垃圾收集器可以自己去探讨。<br>先介绍下 MinorGC 和 FullGC 的概念。<br><strong>新生代 GC（MinorGC</strong>）: 发生在新生代，Java 对象大多都有朝生夕死的特性，MinorGC 非常频繁，回收速度也比较快。<br><strong>老年代 GC（MajorGC&#x2F;FullGC）</strong>: 发生在老年代，出现 MajorGC 经常至少伴随一次的 MinorGC，但非绝对。MajorGC 的速度一般比 MinorGC 慢 10 倍以上。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648398550331-f66fe7ce-115e-4b49-bdcc-f17ee4cc2a0b.png#clientId=uc6b6d1e2-f7d5-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u3769d526&margin=%5Bobject%20Object%5D&name=image.png&originHeight=269&originWidth=626&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=15172&status=done&style=none&taskId=u60ea5eca-8ee0-4d4c-b13f-2a9271bd3b0&title=" alt="image.png"><br>下面是最普遍的内存分配规则。</p>
+<h2 id="1、对象优先在-eden-分配"><a href="#1、对象优先在-eden-分配" class="headerlink" title="1、对象优先在 eden 分配"></a>1、对象优先在 eden 分配</h2><pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 对象优先在Eden分配
+ * vm参数，新生代10M, eden区8M，surivior区1M(from,to)
+ * -Xms20M -Xmx20M -Xmn10M -XX:SurvivorRatio&#x3D;8 -XX:+UseSerialGC -XX:+PrintGCDetails
+ *&#x2F;
+public static void testAllocation() &#123;
+    byte[] allocation1, allocation2 ,allocation3 ,allocation4;
+    allocation1 &#x3D; new byte[2 * _1MB];
+    allocation2 &#x3D; new byte[2 * _1MB];
+    allocation3 &#x3D; new byte[2 * _1MB];
+    allocation4 &#x3D; new byte[4 * _1MB]; &#x2F;&#x2F;出现一次Minor GC
+&#125;</code></pre>
+
+<p>使用串行垃圾回收，新生代 10M, eden 区 8M，surivior 区 1M(from,to)<br>从输出结果看 执行 allocation4 &#x3D; new byte[4 * _1MB];会发生一次 GC，GC 的结果是 7458K→601K，而总内存占用量几乎没有减少，因为 allocation1，allocation2，allocation3 都是存活，发现 Eden 区已经占用了 6M，剩余空间不足以分配 allocation4 的 4M 的空间，因此发生 MinorGC，GC 期间发现已有的 3 个 2MB 大小的对象无法放入到 Survivor 空间（只有 1M 大小），所以只好通过分配担保机制提前转移到老年代中去。<br>GC 结束后， eden 被占用 4M（allocation4），survivor 空闲，老年代占用 6M （allocation1，allocation2，allocation3） 。</p>
+<h2 id="2、大对象直接进入老年代"><a href="#2、大对象直接进入老年代" class="headerlink" title="2、大对象直接进入老年代"></a>2、大对象直接进入老年代</h2><p>虚拟机提供-XX:PretenureSizeThreshold 参数，令大于这个设置值的对象直接在老年代分配，这样做可以避免在 Eden 和两个 Survivor 区域之间发生大量的内存复制操作</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 大对象直接进入老年代
+ * vm参数，新生代10M, eden区8M，surivior区1M(from,to)
+ * -XX:PretenureSizeThreshold&#x3D;3145728 -XX:+PrintGCDetails -Xms20M -Xmx20M -Xmn10M -XX:SurvivorRatio&#x3D;8 -XX:+UseSerialGC
+ *&#x2F;
+public static void testPretenureSizeThreshold() &#123;
+    byte[] allocation;
+    allocation &#x3D; new byte[4 * _1MB]; &#x2F;&#x2F;直接分配在老年代(大于3M)
+&#125;</code></pre>
+
+<p>PretenureSizeThreshold 参数在 UseParallelGC 或者 UseG1GC 的时候都是不起作用的，只在 Serial 和 ParNew 新生代收集器中有效。</p>
+<h2 id="3、长期存活对象将进入老年代"><a href="#3、长期存活对象将进入老年代" class="headerlink" title="3、长期存活对象将进入老年代"></a>3、长期存活对象将进入老年代</h2><p>对象晋升老年代的年龄阈值，可以通过参数-XX:MaxTenuringThreshold 设置，当对象达到这个年龄后就将进入老年代。<br>如果对象在 Eden 出生并且经过第一次 MinorGC 后仍然存活，并且能够被 Survivor 容纳的话，被移动到 Survivor 空间中，并将对象年龄设置成 1，对象在 Survivor 中每熬过一次 MinorGC，年龄就增加 1 岁。年龄到一定程度（默认为 15 岁），就会被晋升到到老年代中。可以通过参数-XX:MaxTenuringThreshold 设置。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 长期存活的对象进入老年代
+ * vm参数，新生代10M, eden区16M，surivior区2M(from,to)
+ * -XX:MaxTenuringThreshold&#x3D;1 -Xms40M -Xmx40M -Xmn20M -XX:SurvivorRatio&#x3D;8 -XX:+UseSerialGC  -XX:+PrintTenuringDistribution -XX:+PrintGCDetails
+ *&#x2F;
+public static void testTenuringThreshold() &#123;
+    byte[] allocation1, allocation2 ,allocation3;
+    allocation1 &#x3D; new byte[1&#x2F;2 * _1MB];
+    &#x2F;&#x2F; 什么时候进入老年代取决于MaxTenuringThreshold的设置
+    allocation2 &#x3D; new byte[8 * _1MB];
+    allocation3 &#x3D; new byte[8 * _1MB];
+    allocation3 &#x3D; null;
+    allocation3 &#x3D; new byte[8 * _1MB];
+&#125;</code></pre>
+
+<p>-XX:MaxTenuringThreshold&#x3D;1 -XX:MaxTenuringThreshold&#x3D;15 发生了两次 Minor GC，第一次是在给 allocation3 进行分配的时候会出现一次 Minor GC，此时 survivor 区域不能容纳 allocation2，但是可以容纳 allocation1，所以 allocation1 将会进入 survivor 区域并且年龄为 1，达到了阈值，将在下一次 GC 时晋升到老年代，而 allocation2 则会通过担保机制进入老年代。第二次发生 GC 是在第二次给 allocation3 分配空间时，这时，allocation1 的年龄加 1，晋升到老年代，此次 GC 也可以清理出原来 allocation3 占据的 4MB 空间，将 allocation3 分配在 Eden 区。所以，最后的结果是 allocation1、allocation2 在老年代，allocation3 在 Eden 区。</p>
+<h2 id="4、动态对象年龄判定"><a href="#4、动态对象年龄判定" class="headerlink" title="4、动态对象年龄判定"></a>4、动态对象年龄判定</h2><p>为了更好地适应不同程序的内存状况，虚拟机并不是永远的要求对象的年龄必须达到了 MaxTenuringThreshold 才能晋升老年代；如果在 Survivor 空间中相同年龄所有对象的大小总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需等到 MaxTenuringThreshold 中要求的年龄。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 动态对象年龄判断
+ * vm参数，新生代10M, eden区16M，surivior区2M(from,to)
+ * -Xms40M -Xmx40M -Xmn20M -XX:SurvivorRatio&#x3D;8 -XX:+UseSerialGC -XX:+PrintTenuringDistribution -XX:+PrintGCDetails
+ *&#x2F;
+public static void testDynamicTenuringThreshold() &#123;
+    byte[] allocation1, allocation2 ,allocation3,allocation4;
+    allocation1 &#x3D; new byte[_1MB &#x2F; 2];
+    allocation2 &#x3D; new byte[_1MB &#x2F; 2];
+    &#x2F;&#x2F; allocation1 + allocation2 大于surivior空间的一半
+    allocation3 &#x3D; new byte[8 * _1MB];
+    allocation4 &#x3D; new byte[8 * _1MB];
+    allocation4 &#x3D; null;
+    allocation4 &#x3D; new byte[8 * _1MB];
+&#125;</code></pre>
+
+<p>发生了两次 Minor GC，第一次发生在给 allocation4 分配内存时，此时 allocation1、allocation2 将会进入 survivor 区，而 allocation3 通过担保机制将会进入老年代。第二次发生在给 allocation4 分配内存时，此时，survivor 区的 allocation1、allocation2 达到了 survivor 区容量的一半，将会进入老年代，此次 GC 可以清理出 allocation4 原来的 4MB 空间，并将 allocation4 分配在 Eden 区。最终，allocation1、allocation2、allocation3 在老年代，allocation4 在 Eden 区。</p>
+<h2 id="5、空间分配担保"><a href="#5、空间分配担保" class="headerlink" title="5、空间分配担保"></a>5、空间分配担保</h2><h3 id="jdk1-6-update24-之前的担保流程"><a href="#jdk1-6-update24-之前的担保流程" class="headerlink" title="jdk1.6 update24 之前的担保流程"></a>jdk1.6 update24 之前的担保流程</h3><p>在发生 Minor GC 之前，虚拟机会先检查老年代最大可用连续空间是否大于新生代所有对象总空间，如果这个条件成立，那么 Minor GC 可以确保是安全的。如果不成立，则虚拟机会查看 HandlePromotionFailure 设置值是否允许担保失败。如果允许，那么会继续检查老年代最大可用连续空间是否大于历次晋升到老年代对象的平均大小，如果大于则进行一次 Minor GC。如果小于或者没有设置 HandlePromotionFailure，则要进行一次 Full GC。<br>取平均值进行比较其实仍然是一种动态概率的手段，如果某次 Minor GC 存活后的对象突增，远远高于平均值的话，依然会导致担保失败。如果出现了 HandlePromotionFailure 失败，则会重新发起一次 Full GC，大部分情况都会将 HandlePromotionFailure 打开，避免过于频繁的 Full GC。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648398550385-d0b55dea-87c7-4f39-8f90-b57013c543bf.png#clientId=uc6b6d1e2-f7d5-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u59b841d2&margin=%5Bobject%20Object%5D&name=image.png&originHeight=357&originWidth=723&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=31084&status=done&style=none&taskId=ub70f10b6-edf4-40a0-9701-0aaa3ad6b09&title=" alt="image.png"></p>
+<h3 id="jdk1-6-update24-之后的担保流程"><a href="#jdk1-6-update24-之后的担保流程" class="headerlink" title="jdk1.6 update24 之后的担保流程"></a>jdk1.6 update24 之后的担保流程</h3><p>在 jdk1.6 update24 之后，HandlePromotionFailure 参数不会影响虚拟机空间分配担保策略，虚拟机改为，只要老年代最大连续空间大于新生代对象总和或者大于历次晋升平均大小，都将进行 minor gc，否则将进行 Full gc。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648398550299-cad9a607-6e9f-4ab8-a9ef-04dee9a81e74.png#clientId=uc6b6d1e2-f7d5-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u30b7ea0d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=151&originWidth=726&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=14065&status=done&style=none&taskId=u27f99744-0684-4846-a839-f4a029094c2&title=" alt="image.png"></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 空间分配担保
+ * vm参数，新生代10M, eden区8M，surivior区1M(from,to)
+ * -XX:HandlePromotionFailure
+ * -XX:+PrintGCDetails -Xms20M -Xmx20M -Xmn10M -XX:+UseSerialGC -XX:+PrintTenuringDistribution -XX:SurvivorRatio&#x3D;8
+ *&#x2F;
+public static void testHandlePromotionFailure() &#123;
+    byte[] allocation1, allocation2 ,allocation3,allocation4, allocation5, allocation6 ,allocation7;
+    allocation1 &#x3D; new byte[2 * _1MB];
+    allocation2 &#x3D; new byte[2 * _1MB];
+    allocation3 &#x3D; new byte[2 * _1MB];
+    allocation1 &#x3D; null;
+    allocation4 &#x3D; new byte[2 * _1MB];
+    allocation5 &#x3D; new byte[2 * _1MB];
+    allocation6 &#x3D; new byte[2 * _1MB];
+    allocation4 &#x3D; null;
+    allocation5 &#x3D; null;
+    allocation6 &#x3D; null;
+    allocation7 &#x3D; new byte[2 * _1MB];
+&#125;</code></pre>
+
+<p>发生了两次 GC，第一次发生在给 allocation4 分配内存空间时，由于老年代的连续可用空间大于存活的对象总和， 所以 allocation2、allocation3 将会进入老年代，allocation1 的空间将被回收，allocation4 分配在新生代；第二次发生在给 allocation7 分配内存空间时，此次 GC 将 allocation4、allocation5、allocation6 所占的内存全部回收。最后，allocation2、allocation3 在老年代，allocation7 在新生代。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/JVM/" itemprop="url" rel="index">
+                  <span itemprop="name">JVM</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/cncf/service-mesh/" rel="next" title="Service Mesh概述">
+            <i class="fa far fa-chevron-left"></i> Service Mesh概述
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/jvm/jvm-class/" rel="prev" title="JVM（四）类文件结构解析">
+            JVM（四）类文件结构解析 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%85%88%E5%9C%A8-eden-%E5%88%86%E9%85%8D"><span class="toc-text">1、对象优先在 eden 分配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E5%A4%A7%E5%AF%B9%E8%B1%A1%E7%9B%B4%E6%8E%A5%E8%BF%9B%E5%85%A5%E8%80%81%E5%B9%B4%E4%BB%A3"><span class="toc-text">2、大对象直接进入老年代</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E9%95%BF%E6%9C%9F%E5%AD%98%E6%B4%BB%E5%AF%B9%E8%B1%A1%E5%B0%86%E8%BF%9B%E5%85%A5%E8%80%81%E5%B9%B4%E4%BB%A3"><span class="toc-text">3、长期存活对象将进入老年代</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E5%8A%A8%E6%80%81%E5%AF%B9%E8%B1%A1%E5%B9%B4%E9%BE%84%E5%88%A4%E5%AE%9A"><span class="toc-text">4、动态对象年龄判定</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81%E7%A9%BA%E9%97%B4%E5%88%86%E9%85%8D%E6%8B%85%E4%BF%9D"><span class="toc-text">5、空间分配担保</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#jdk1-6-update24-%E4%B9%8B%E5%89%8D%E7%9A%84%E6%8B%85%E4%BF%9D%E6%B5%81%E7%A8%8B"><span class="toc-text">jdk1.6 update24 之前的担保流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jdk1-6-update24-%E4%B9%8B%E5%90%8E%E7%9A%84%E6%8B%85%E4%BF%9D%E6%B5%81%E7%A8%8B"><span class="toc-text">jdk1.6 update24 之后的担保流程</span></a></li></ol></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

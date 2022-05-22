@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        HBase LSM树 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;181498475  LSM 树(Log-Structured-Merge-Tree)的名字往往会给初识者一个错误的印象，事实上，LSM 树并不像 B+树、红黑树一样是一颗严格的树状数据结构，它其实是一种存储结构，目前HBase、LevelDB、RocksDB 这些 NoSQL 存储都是采用的 LSM 树。 LSM 树的核心特点是利用顺">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HBase LSM树">
+<meta property="og:url" content="https://www.alicharles.com/article/hbase/hbase-lsm/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;181498475  LSM 树(Log-Structured-Merge-Tree)的名字往往会给初识者一个错误的印象，事实上，LSM 树并不像 B+树、红黑树一样是一颗严格的树状数据结构，它其实是一种存储结构，目前HBase、LevelDB、RocksDB 这些 NoSQL 存储都是采用的 LSM 树。 LSM 树的核心特点是利用顺">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648782774822-e07bae96-e83e-45d9-9c48-88500f652b40.png#clientId=u2acb4bb6-2979-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=511&id=u09414e6c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=511&originWidth=879&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=204654&status=done&style=none&taskId=u846292cb-eb66-4a68-81ac-2585241568f&title=&width=879">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881152629-31cc029c-b053-4c4a-8b43-942de4a48509.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u972f3a25&margin=%5Bobject%20Object%5D&name=image.png&originHeight=658&originWidth=1200&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=386575&status=done&style=none&taskId=ucf8d5271-fc9c-4832-9e79-91b6a6f1164&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881152281-96ed0749-fbd8-4a16-9d45-5732d2ed7fe3.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u58026748&margin=%5Bobject%20Object%5D&name=image.png&originHeight=232&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=88602&status=done&style=none&taskId=ua10f98a5-34fb-43d8-a2db-b9f33da7459&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881152721-e76596d5-0080-4b6e-9151-9cfab81e195b.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ucf78aa97&margin=%5Bobject%20Object%5D&name=image.png&originHeight=580&originWidth=1200&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=341829&status=done&style=none&taskId=u026339dc-3aa2-4024-bc4e-562e51f9a72&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881152613-d422f605-292d-417b-87bc-8293944590ad.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u284ea5cc&margin=%5Bobject%20Object%5D&name=image.png&originHeight=499&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=330444&status=done&style=none&taskId=u502a56c4-3097-4817-a916-1aed1559928&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881152744-2b567574-b5e3-4ffb-a230-7cf04ae15775.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u4940d6eb&margin=%5Bobject%20Object%5D&name=image.png&originHeight=720&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=363231&status=done&style=none&taskId=u66e495e6-8efd-4697-8afe-a41167577ea&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881153366-fc8a14ae-e81a-4315-a823-aa9301034a63.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u7305f53a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=585&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=304750&status=done&style=none&taskId=u8e4a79e9-6fac-4129-87dd-70f98c97b19&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881154456-8eafca00-e9c2-4d81-9297-7515721d5176.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uf2d62342&margin=%5Bobject%20Object%5D&name=image.png&originHeight=702&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=374127&status=done&style=none&taskId=u2847075c-c596-4828-a44b-16f31687308&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881154356-0f57d4a5-8b6a-426c-b06e-0337b9cebaf6.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uacf7f33c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=585&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=336026&status=done&style=none&taskId=u058e9f79-1f83-428d-9016-ce1bd31b84c&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881154543-74fc0e7a-d5dd-42a5-b761-e6653799f498.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u75b8bce7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=741&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=492133&status=done&style=none&taskId=u9267fc93-dbcf-4cbf-8cdf-506e6bbab99&title=">
+<meta property="article:published_time" content="2021-06-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-04-02T16:49:05.359Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="HBase">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648782774822-e07bae96-e83e-45d9-9c48-88500f652b40.png#clientId=u2acb4bb6-2979-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=511&id=u09414e6c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=511&originWidth=879&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=204654&status=done&style=none&taskId=u846292cb-eb66-4a68-81ac-2585241568f&title=&width=879">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>HBase LSM树</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2021-06-20T00:00:00+08:00">
+            2021-06-20
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/hbase/" itemprop="url" rel="index">
+              <span itemprop="name">hbase</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/181498475">https://zhuanlan.zhihu.com/p/181498475</a></p>
+</blockquote>
+<p>LSM 树(Log-Structured-Merge-Tree)的名字往往会给初识者一个错误的印象，事实上，LSM 树并不像 B+树、红黑树一样是一颗严格的树状数据结构，它其实是一种存储结构，目前<strong>HBase、LevelDB、RocksDB 这些 NoSQL 存储都是采用的 LSM 树</strong>。<br>LSM 树的核心特点是<strong>利用顺序写来提高写性能</strong>，但因为分层(此处分层是指的<strong>分为内存和文件两部分</strong>)的设计会稍微降低读性能，但是<strong>通过牺牲小部分读性能换来高性能写</strong>，使得 LSM 树成为非常流行的存储结构。</p>
+<p>数据库存储有两种数据结构，一种 B+树，另外一种是 LSM。数据库，我们知道是用 B+树，但是对于 LSM，就不是所有人都知道。因为这种数据结构适用大数据的存储场景，适用于写多读少的场景。</p>
+<h1 id="LSM-数据结构"><a href="#LSM-数据结构" class="headerlink" title="LSM 数据结构"></a>LSM 数据结构</h1><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648782774822-e07bae96-e83e-45d9-9c48-88500f652b40.png#clientId=u2acb4bb6-2979-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=511&id=u09414e6c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=511&originWidth=879&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=204654&status=done&style=none&taskId=u846292cb-eb66-4a68-81ac-2585241568f&title=&width=879" alt="image.png"><br>LSM 数据结构如上图，写入数据时：</p>
+<ul>
+<li>先写入 WAL，用于故障恢复，如果断电，由于有 WAL Log 的存在，不会导致数据丢失。</li>
+<li>再写入 MemTable 中，如果 MemTable 满，则数据被迁移到 Imutable Memtable 中。</li>
+<li>后台线程发现有 Imutable Memtable，就写入到 SStable， SStable 的 key 都是有序的。</li>
+<li>当 level0 的 ssTbale 满，就把数据迁移到 level1，并且和 level1 的数据进行归并排序，依次类推</li>
+</ul>
+<h1 id="各种操作"><a href="#各种操作" class="headerlink" title="各种操作"></a>各种操作</h1><ul>
+<li>写入操作，写入 WAL Log 和 Memtable 就认为成功</li>
+<li>读取，先到 Memtable 和 Imutable memtable 查找，如果查不到就到 SSTable 中查找，查找每个 SStable，使用布隆过滤器进行加速，指导找到数据。</li>
+<li>删除，只进行标记，在合并 SSTable 时才会被真正删除</li>
+<li>修改，知识插入数据，合并数据时，才会将旧值删除。数据读取时，新数据位置总是比旧数据位置高，因此总能读到最新值。</li>
+</ul>
+<h1 id="LSM-存储引擎"><a href="#LSM-存储引擎" class="headerlink" title="LSM 存储引擎"></a>LSM 存储引擎</h1><table><thead><tr>
+<th>名称</th>
+<th>语言</th>
+</tr>
+</thead><tbody><tr>
+<td>levelDB</td>
+<td>C++</td>
+</tr>
+<tr>
+<td>RocksDB</td>
+<td>C++</td>
+</tr>
+<tr>
+<td>Pebble</td>
+<td>go</td>
+</tr>
+<tr>
+<td>BadgerDB</td>
+<td>go</td>
+</tr>
+<tr>
+<td>WiredTiger</td>
+<td>C++</td>
+</tr>
+</tbody></table><h2 id="1、LSM-树的核心思想"><a href="#1、LSM-树的核心思想" class="headerlink" title="1、LSM 树的核心思想"></a>1、LSM 树的核心思想</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881152629-31cc029c-b053-4c4a-8b43-942de4a48509.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u972f3a25&margin=%5Bobject%20Object%5D&name=image.png&originHeight=658&originWidth=1200&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=386575&status=done&style=none&taskId=ucf8d5271-fc9c-4832-9e79-91b6a6f1164&title=" alt="image.png"><br>如上图所示，LSM 树有以下三个重要组成部分：<br><strong>1、MemTable</strong><br>MemTable 是在内存中的数据结构，用于保存最近更新的数据，会按照 Key 有序地组织这些数据，LSM 树对于具体如何组织有序地组织数据并没有明确的数据结构定义，例如<strong>Hbase 使跳跃表来保证内存中 key 的有序。</strong><br>因为数据暂时保存在内存中，内存并不是可靠存储，如果断电会丢失数据，因此通常会通过 WAL(Write-ahead logging，预写式日志)的方式来保证数据的可靠性。<br><strong>2、Immutable MemTable</strong><br>当 MemTable 达到一定大小后，会转化成 Immutable MemTable。Immutable MemTable 是将转 MemTable 变为 SSTable 的一种中间状态。写操作由新的 MemTable 处理，在转存过程中不阻塞数据更新操作。<br><strong>3、SSTable(Sorted String Table)</strong><br>有序键值对集合，是 LSM 树组在磁盘中的数据结构。为了加快 SSTable 的读取，<strong>可以通过建立 key 的索引以及布隆过滤器来加快 key 的查找。</strong><br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881152281-96ed0749-fbd8-4a16-9d45-5732d2ed7fe3.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u58026748&margin=%5Bobject%20Object%5D&name=image.png&originHeight=232&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=88602&status=done&style=none&taskId=ua10f98a5-34fb-43d8-a2db-b9f33da7459&title=" alt="image.png"><br>这里需要关注一个重点，LSM 树(Log-Structured-Merge-Tree)正如它的名字一样，<strong>LSM 树会将所有的数据插入、修改、删除等操作记录(注意是操作记录)保存在内存之中，当此类操作达到一定的数据量后，再批量地顺序写入到磁盘当中</strong>。这与 B+树不同，B+树数据的更新会直接在原数据所在处修改对应的值，但是 LSM 数的数据更新是日志式的，当一条数据更新是直接 append 一条更新记录完成的。这样设计的目的就是为了顺序写，不断地将 Immutable MemTable flush 到持久化存储即可，而不用去修改之前的 SSTable 中的 key，保证了顺序写。<br>因此当 MemTable 达到一定大小 flush 到持久化存储变成 SSTable 后，在不同的 SSTable 中，可能存在相同 Key 的记录，当然最新的那条记录才是准确的。这样设计的虽然大大提高了写性能，但同时也会带来一些问题：<br>1）<strong>冗余存储</strong>，对于某个 key，<strong>实际上除了最新的那条记录外，其他的记录都是冗余无用的，但是仍然占用了存储空间</strong>。因此需要进行<strong>Compact</strong>操作(合并多个 SSTable)来清除冗余的记录。<br>2）<strong>读取时需要从最新的倒着查询，直到找到某个 key 的记录</strong>。最坏情况需要查询完所有的 SSTable，这里可以通过前面提到的<strong>索引&#x2F;布隆过滤器来优化查找速度</strong>。</p>
+<h2 id="2、LSM-树的-Compact-策略"><a href="#2、LSM-树的-Compact-策略" class="headerlink" title="2、LSM 树的 Compact 策略"></a>2、LSM 树的 Compact 策略</h2><p>从上面可以看出，Compact 操作是十分关键的操作，否则 SSTable 数量会不断膨胀。在 Compact 策略上，主要介绍两种基本策略：size-tiered 和 leveled。<br>不过在介绍这两种策略之前，先介绍三个比较重要的概念，事实上不同的策略就是围绕这三个概念之间做出权衡和取舍。<br>1）读放大:读取数据时实际读取的数据量大于真正的数据量。例如在 LSM 树中需要先在 MemTable 查看当前 key 是否存在，不存在继续从 SSTable 中寻找。<br>2）写放大:写入数据时实际写入的数据量大于真正的数据量。例如在 LSM 树中写入时可能触发 Compact 操作，导致实际写入的数据量远大于该 key 的数据量。<br>3）空间放大:数据实际占用的磁盘空间比数据的真正大小更多。上面提到的冗余存储，对于一个 key 来说，只有最新的那条记录是有效的，而之前的记录都是可以被清理回收的。</p>
+<ol>
+<li>size-tiered 策略<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881152721-e76596d5-0080-4b6e-9151-9cfab81e195b.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ucf78aa97&margin=%5Bobject%20Object%5D&name=image.png&originHeight=580&originWidth=1200&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=341829&status=done&style=none&taskId=u026339dc-3aa2-4024-bc4e-562e51f9a72&title=" alt="image.png"><br>size-tiered 策略保证每层 SSTable 的大小相近，同时限制每一层 SSTable 的数量。如上图，每层限制 SSTable 为 N，当每层 SSTable 达到 N 后，则触发 Compact 操作合并这些 SSTable，并将合并后的结果写入到下一层成为一个更大的 sstable。<br>由此可以看出，当层数达到一定数量时，最底层的单个 SSTable 的大小会变得非常大。并且 size-tiered 策略会导致空间放大比较严重。即使对于同一层的 SSTable，每个 key 的记录是可能存在多份的，只有当该层的 SSTable 执行 compact 操作才会消除这些 key 的冗余记录。</li>
+<li>leveled 策略<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881152613-d422f605-292d-417b-87bc-8293944590ad.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u284ea5cc&margin=%5Bobject%20Object%5D&name=image.png&originHeight=499&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=330444&status=done&style=none&taskId=u502a56c4-3097-4817-a916-1aed1559928&title=" alt="image.png"><br>每一层的总大小固定，从上到下逐渐变大<br>leveled 策略也是采用分层的思想，每一层限制总文件的大小。<br>但是跟 size-tiered 策略不同的是，leveled 会将每一层切分成多个大小相近的 SSTable。这些 SSTable 是这一层是全局有序的，意味着一个 key 在每一层至多只有 1 条记录，不存在冗余记录。之所以可以保证全局有序，是因为合并策略和 size-tiered 不同，接下来会详细提到。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881152744-2b567574-b5e3-4ffb-a230-7cf04ae15775.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u4940d6eb&margin=%5Bobject%20Object%5D&name=image.png&originHeight=720&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=363231&status=done&style=none&taskId=u66e495e6-8efd-4697-8afe-a41167577ea&title=" alt="image.png"><br>每一层的 SSTable 是全局有序的<br>假设存在以下这样的场景:</li>
+<li>L1 的总大小超过 L1 本身大小限制：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881153366-fc8a14ae-e81a-4315-a823-aa9301034a63.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u7305f53a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=585&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=304750&status=done&style=none&taskId=u8e4a79e9-6fac-4129-87dd-70f98c97b19&title=" alt="image.png"><br>此时 L1 超过了最大阈值限制</li>
+<li>此时会从 L1 中选择至少一个文件，然后把它跟 L2 有交集的部分(非常关键)进行合并。生成的文件会放在 L2:<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881154456-8eafca00-e9c2-4d81-9297-7515721d5176.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uf2d62342&margin=%5Bobject%20Object%5D&name=image.png&originHeight=702&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=374127&status=done&style=none&taskId=u2847075c-c596-4828-a44b-16f31687308&title=" alt="image.png"><br>如上图所示，此时 L1 第二 SSTable 的 key 的范围覆盖了 L2 中前三个 SSTable，那么就需要将 L1 中第二个 SSTable 与 L2 中前三个 SSTable 执行 Compact 操作。</li>
+<li>如果 L2 合并后的结果仍旧超出 L5 的阈值大小，需要重复之前的操作 —— 选至少一个文件然后把它合并到下一层:<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881154356-0f57d4a5-8b6a-426c-b06e-0337b9cebaf6.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uacf7f33c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=585&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=336026&status=done&style=none&taskId=u058e9f79-1f83-428d-9016-ce1bd31b84c&title=" alt="image.png"><br>需要注意的是，多个不相干的合并是可以并发进行的：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647881154543-74fc0e7a-d5dd-42a5-b761-e6653799f498.png#clientId=u8b7829c3-cff1-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u75b8bce7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=741&originWidth=1440&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=492133&status=done&style=none&taskId=u9267fc93-dbcf-4cbf-8cdf-506e6bbab99&title=" alt="image.png"><br>leveled 策略相较于 size-tiered 策略来说，每层内 key 是不会重复的，即使是最坏的情况，除开最底层外，其余层都是重复 key，按照相邻层大小比例为 10 来算，冗余占比也很小。因此空间放大问题得到缓解。但是写放大问题会更加突出。举一个最坏场景，如果 LevelN 层某个 SSTable 的 key 的范围跨度非常大，覆盖了 LevelN+1 层所有 key 的范围，那么进行 Compact 时将涉及 LevelN+1 层的全部数据。</li>
+</ol>
+<h2 id="3、总结"><a href="#3、总结" class="headerlink" title="3、总结"></a>3、总结</h2><p>LSM 树是非常值得了解的知识，理解了 LSM 树可以很自然地理解 Hbase，LevelDb 等存储组件的架构设计。<strong>ClickHouse 中的 MergeTree 也是 LSM 树的思想，Log-Structured 还可以联想到 Kafka 的存储方式</strong>。<br>虽然介绍了上面两种策略，但是各个存储都在自己的 Compact 策略上面做了很多特定的优化，例如<strong>Hbase 分为 Major 和 Minor 两种 Compact</strong>，这里不再做过多介绍，推荐阅读文末的 RocksDb 合并策略介绍。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/HBase/" itemprop="url" rel="index">
+                  <span itemprop="name">HBase</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/hive/hive-file-format/" rel="next" title="Hive文件格式">
+            <i class="fa far fa-chevron-left"></i> Hive文件格式
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/cache/redis-lock/" rel="prev" title="Redis分布式锁">
+            Redis分布式锁 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#LSM-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-text">LSM 数据结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%90%84%E7%A7%8D%E6%93%8D%E4%BD%9C"><span class="toc-text">各种操作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#LSM-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="toc-text">LSM 存储引擎</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81LSM-%E6%A0%91%E7%9A%84%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3"><span class="toc-text">1、LSM 树的核心思想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81LSM-%E6%A0%91%E7%9A%84-Compact-%E7%AD%96%E7%95%A5"><span class="toc-text">2、LSM 树的 Compact 策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-text">3、总结</span></a></li></ol></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

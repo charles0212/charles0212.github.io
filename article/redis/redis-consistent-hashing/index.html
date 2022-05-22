@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Redis（二）ShardedJedis一致性哈希 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="本文主要介绍一致性哈希的概念，以及在 Redis 中的 ShardedJedis 一致性哈希实现原理   1、非一致性哈希  在讨论一致性哈希之前，先认识下”非一致性哈希”，例如 HashMap。 当使用 HashMap 时，key 被均匀地映射到数组之上，映射方法就是利用 key 的 hash 与数组长度取模(通过&amp;运算)。 当 put 的数据超过负载因子 loadFactor×2Len 时，H">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis（二）ShardedJedis一致性哈希">
+<meta property="og:url" content="https://www.alicharles.com/article/redis/redis-consistent-hashing/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="本文主要介绍一致性哈希的概念，以及在 Redis 中的 ShardedJedis 一致性哈希实现原理   1、非一致性哈希  在讨论一致性哈希之前，先认识下”非一致性哈希”，例如 HashMap。 当使用 HashMap 时，key 被均匀地映射到数组之上，映射方法就是利用 key 的 hash 与数组长度取模(通过&amp;运算)。 当 put 的数据超过负载因子 loadFactor×2Len 时，H">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648982930385-16ad72be-62d7-4f89-a727-d5e14dfb9ca2.png#clientId=u019c0c6b-a681-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ub18ca8ff&margin=%5Bobject%20Object%5D&name=image.png&originHeight=410&originWidth=688&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=38474&status=done&style=none&taskId=u747618ef-6aa3-4345-b95e-8c3dcb18635&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648982930200-543d6cdd-b007-4653-afdc-3de50a477aae.png#clientId=u019c0c6b-a681-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ud990d154&margin=%5Bobject%20Object%5D&name=image.png&originHeight=371&originWidth=569&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=19894&status=done&style=none&taskId=ue4304c8e-087b-48f0-95eb-2c81cb47c88&title=">
+<meta property="article:published_time" content="2020-06-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.498Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Cache">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648982930385-16ad72be-62d7-4f89-a727-d5e14dfb9ca2.png#clientId=u019c0c6b-a681-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ub18ca8ff&margin=%5Bobject%20Object%5D&name=image.png&originHeight=410&originWidth=688&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=38474&status=done&style=none&taskId=u747618ef-6aa3-4345-b95e-8c3dcb18635&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Redis（二）ShardedJedis一致性哈希</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2020-06-24T00:00:00+08:00">
+            2020-06-24
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/cache/" itemprop="url" rel="index">
+              <span itemprop="name">cache</span>
+            </a>
+        </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/cache/redis/" itemprop="url" rel="index">
+              <span itemprop="name">redis</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>本文主要介绍一致性哈希的概念，以及在 Redis 中的 ShardedJedis 一致性哈希实现原理</p>
+<h2 id="1、非一致性哈希"><a href="#1、非一致性哈希" class="headerlink" title="1、非一致性哈希"></a>1、非一致性哈希</h2><p>在讨论一致性哈希之前，先认识下”非一致性哈希”，例如 HashMap。<br>当使用 HashMap 时，key 被均匀地映射到数组之上，映射方法就是利用 key 的 hash 与数组长度取模(通过&amp;运算)。<br>当 put 的数据超过负载因子 loadFactor×2Len 时，HashMap 会按照 2 被的容量扩容。<br>新 put 进来的数据会通过与新数组的长度取模的方式进行映射。那之前已经映射的数据该怎么办？<br>通过查看 HashMap 代码的 resize 方法会发现，每次扩容都会把之前的 key 重新映射。<br>所以对 HashMap 而言要想获得较好的性能必须要提前估计所放数据集合的大小，以设计合适的初始化容量和负载因子。</p>
+<h2 id="2、一致性哈希"><a href="#2、一致性哈希" class="headerlink" title="2、一致性哈希"></a>2、一致性哈希</h2><p>不是每个场景都像 HashMap 这么简单，比如在大型的 P2P 网络中存在上百万台 Server，资源与 Server 的关系是以 Key 的形式映射而成，也就是说是一个大的 HashMap，维护着每个 Key 在哪个 Server 之上，如果有新的节点加入或退出 P2P 网络，跟 HashMap 一样，也会导致映射关系的变化，显然不可能把所有的 Key 与 Server 的映射关系都调整一遍。这就需要一种方法，在哈希项发生变化是，不需要调整所有的节点，而达到继续维护哈希映射的关系。下面来看下<a href="%5Bhttp://en.wikipedia.org/wiki/Consistent_hashing">一致性</a>的定义。](<a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Consistent_hashing)%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%82">http://en.wikipedia.org/wiki/Consistent_hashing)%E7%9A%84%E5%AE%9A%E4%B9%89%E3%80%82</a>)</p>
+<blockquote>
+<p>Consistent hashing is a special kind of hashing such that when a hash table is resized, only K&#x2F;n keys need to be remapped on average, where K is the number of keys, and n is the number of slots. In contrast, in most traditional hash tables, a change in the number of array slots causes nearly all keys to be remapped because the mapping between the keys and the slots is defined by a modular operation.</p>
+</blockquote>
+<p>一致性哈希是一种特殊类型的的哈希，当哈希表改变大小的时候，平均只有 K&#x2F;n 的 keys 需要被重新映射，其中 k 为 keys 的数量，n 为槽 slots 的数量。相比之下，在传统的哈希表中，因为 key 和 slot 的映射是通过取模操作定义的，槽 slot 的数量改变会引起几乎所有的 key 都被重新映射。一致性哈希当节点加入、退出时，只影响加入退出的节点和其邻居节点或者其他节点只有少量的 Key 受影响，需要满足下面几个条件：</p>
+<ul>
+<li>平衡性(Balance)：就是指哈希算法要均匀分布，不能有明显的映射规律，这对一般的哈希实现也是必须的；</li>
+<li>单调性(Monotonicity)：就是指有新节点加入时，已经存在的映射关系不能发生变化；</li>
+<li>分散性(Spread)：就是避免不同的内容映射到相同的位置和相同的内容映射到不同的位置。</li>
+</ul>
+<p>其实一致性哈希（哈希）有个明显的优点就是负载均衡，只要哈希函数设计得当，每个点就是对等的可以均匀地分布系统负载。</p>
+<h2 id="3、ShardedJedis-一致性哈希"><a href="#3、ShardedJedis-一致性哈希" class="headerlink" title="3、ShardedJedis 一致性哈希"></a>3、ShardedJedis 一致性哈希</h2><p>Shared 一致性哈希采用以下方案：</p>
+<ol>
+<li>Redis 服务器节点划分：将每台服务器节点采用 hash 算法划分为 160 个虚拟节点(可以配置划分权重)</li>
+<li>将划分虚拟节点采用 TreeMap 存储</li>
+<li>对每个 Redis 服务器的物理连接采用 LinkedHashMap 存储</li>
+<li>对 Key or KeyTag 采用同样的 hash 算法，然后从 TreeMap 获取大于等于键 hash 值得节点，取最邻近节点存储；</li>
+</ol>
+<p>当 key 的 hash 值大于虚拟节点 hash 值得最大值时，存入第一个虚拟节点。<br>Sharded 采用的 hash 算法：MD5 和 MurmurHash 两种；默认采用 64 位的 MurmurHash 算法，<br>Sharded 类维护了一致性哈希后的物理机器和虚拟节点的映射关系。<img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648982930385-16ad72be-62d7-4f89-a727-d5e14dfb9ca2.png#clientId=u019c0c6b-a681-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ub18ca8ff&margin=%5Bobject%20Object%5D&name=image.png&originHeight=410&originWidth=688&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=38474&status=done&style=none&taskId=u747618ef-6aa3-4345-b95e-8c3dcb18635&title=" alt="image.png"></p>
+<h3 id="3-1-Sharded-的实现定义"><a href="#3-1-Sharded-的实现定义" class="headerlink" title="3.1 Sharded 的实现定义"></a>3.1 Sharded 的实现定义</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">public class Sharded&lt;R, S extends ShardInfo&lt;R&gt;&gt; &#123;
+
+    public static final int DEFAULT_WEIGHT &#x3D; 1;
+    private TreeMap&lt;Long, S&gt; nodes;
+    private final Hashing algo;
+    private final Map&lt;ShardInfo&lt;R&gt;, R&gt; resources &#x3D; new LinkedHashMap&lt;ShardInfo&lt;R&gt;, R&gt;();
+
+    &#x2F;**
+     * The default pattern used for extracting a key tag. The pattern must have a group (between
+     * parenthesis), which delimits the tag to be hashed. A null pattern avoids applying the regular
+     * expression for each lookup, improving performance a little bit is key tags aren&#39;t being used.
+     *&#x2F;
+    private Pattern tagPattern &#x3D; null;
+    &#x2F;&#x2F; the tag is anything between &#123;&#125;
+    public static final Pattern DEFAULT_KEY_TAG_PATTERN &#x3D; Pattern.compile(&quot;\\&#123;(.+?)\\&#125;&quot;);
+    ......
+
+&#125;</code></pre>
+
+<p>其中 TreeMap&lt;Long, S&gt; nodes，存储的是虚拟节点和 key 的映射关系。有了虚拟节点，还要找到真正的存储位置。<br>Map&lt;ShardInfo<R>, R&gt; resources 维护了虚拟节点和真正的存储位置的映射关系。<br>也是说，hash(key) → virtual node → real node;<br>jedis 划分虚拟节点的逻辑代码，在 Sharded 类中，方法是 initialize。这是在实例化对象池 ShardedJedisPool 过程中执行的划分虚拟节点。<br>其中 ShardedJedis、BinaryShardedJedis 和 Sharded 的关系如下图所示。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648982930200-543d6cdd-b007-4653-afdc-3de50a477aae.png#clientId=u019c0c6b-a681-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ud990d154&margin=%5Bobject%20Object%5D&name=image.png&originHeight=371&originWidth=569&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=19894&status=done&style=none&taskId=ue4304c8e-087b-48f0-95eb-2c81cb47c88&title=" alt="image.png"></div></p>
+<h3 id="3-2-ShardedJedis-初始化"><a href="#3-2-ShardedJedis-初始化" class="headerlink" title="3.2 ShardedJedis 初始化"></a>3.2 ShardedJedis 初始化</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">public ShardedJedis(List&lt;JedisShardInfo&gt; shards) &#123;
+    super(shards);
+&#125;
+
+public BinaryShardedJedis(List&lt;JedisShardInfo&gt; shards, Hashing algo) &#123;
+    super(shards, algo);
+&#125;
+
+public Sharded(List&lt;S&gt; shards) &#123;
+    this(shards, Hashing.MURMUR_HASH); &#x2F;&#x2F; MD5 is really not good as we works
+    &#x2F;&#x2F; with 64-bits not 128
+&#125;
+
+public Sharded(List&lt;S&gt; shards, Hashing algo) &#123;
+    this.algo &#x3D; algo;
+    initialize(shards);
+&#125;</code></pre>
+
+<p>通过 initialize 来看，节点的划分和初始化</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">private void initialize(List&lt;S&gt; shards) &#123;
+    nodes &#x3D; new TreeMap&lt;Long, S&gt;();
+
+    for (int i &#x3D; 0; i !&#x3D; shards.size(); ++i) &#123;
+        final S shardInfo &#x3D; shards.get(i);
+        if (shardInfo.getName() &#x3D;&#x3D; null) for (int n &#x3D; 0; n &lt;160 * shardInfo.getWeight(); n++) &#123;
+            nodes.put(this.algo.hash(&quot;SHARD-&quot; + i + &quot;-NODE-&quot; + n), shardInfo);
+        &#125;
+        else for (int n &#x3D; 0; n &lt;160 * shardInfo.getWeight(); n++) &#123;
+            nodes.put(this.algo.hash(shardInfo.getName() + &quot;*&quot; + shardInfo.getWeight() + n), shardInfo);
+        &#125;
+        resources.put(shardInfo, shardInfo.createResource());
+    &#125;
+&#125;</code></pre>
+
+<p>以上代码就是 Sharded 划分虚拟节点的逻辑，初始化 TreeMap&lt;Long, S&gt; nodes 虚拟节点和 key 的映射关系，以及 Map&lt;ShardInfo<R>, R&gt; resources 虚拟节点和真正的存储位置的映射关系。</p>
+<h3 id="3-3-ShardedJedis-中的-set-和-get-操作"><a href="#3-3-ShardedJedis-中的-set-和-get-操作" class="headerlink" title="3.3 ShardedJedis 中的 set 和 get 操作"></a>3.3 ShardedJedis 中的 set 和 get 操作</h3><p>先看 ShardedJedis 的 set 操作（get 操作类似）</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">public String set(String key, String value) &#123;
+    &#x2F;&#x2F; 1、获取ShardedJedis的实例
+    Jedis j &#x3D; getShard(key);
+    return j.set(key, value);
+&#125;
+
+public R getShard(String key) &#123;
+    &#x2F;&#x2F; 2、首先需要通过getShardInfo(key)的获取到JedisShardInfo信息，通过resources.get获取到ShardedJedis实例
+    return resources.get(getShardInfo(key));
+&#125;
+
+public S getShardInfo(String key) &#123;
+    &#x2F;&#x2F; 3、SafeEncoder.encode(getKeyTag(key))获取hash后的byte[]
+    &#x2F;&#x2F; 4、通过getShardInfo(byte[] key)获取到JedisShardInfo信息
+    return getShardInfo(SafeEncoder.encode(getKeyTag(key)));
+&#125;
+
+public S getShardInfo(byte[] key) &#123;
+    &#x2F;&#x2F; 5、获取大于等于当前algo.hash(key)的升序SortedMap
+    SortedMap&lt;Long, S&gt; tail &#x3D; nodes.tailMap(algo.hash(key));
+    if (tail.isEmpty()) &#123;
+        &#x2F;&#x2F; 6、为空，说明当前的hash值比所有的都大，返回nodes的第一个ShardInfo
+        return nodes.get(nodes.firstKey());
+    &#125;
+    &#x2F;&#x2F; 7、否则返回大于等于当前hash值的第一个ShardInfo
+    return tail.get(tail.firstKey());
+&#125;</code></pre>
+
+<p>上面的代码中大体的逻辑，首先通过 key 得到 ShardInfo，然后通过 ShardInfo 得到泛型 Jedis 客户端实例，进行 set 和 get 操作。通过上面的代码保证了 redis 的哈希一致性。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Cache/" itemprop="url" rel="index">
+                  <span itemprop="name">Cache</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Redis/" itemprop="url" rel="index">
+                  <span itemprop="name">Redis</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/redis/redis-sentinel/" rel="next" title="Redis（三）部署Sentinel高可用集群">
+            <i class="fa far fa-chevron-left"></i> Redis（三）部署Sentinel高可用集群
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/redis/redis-thread-model/" rel="prev" title="Redis（五）线程模型">
+            Redis（五）线程模型 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E9%9D%9E%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C"><span class="toc-text">1、非一致性哈希</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C"><span class="toc-text">2、一致性哈希</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81ShardedJedis-%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C"><span class="toc-text">3、ShardedJedis 一致性哈希</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Sharded-%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%AE%9A%E4%B9%89"><span class="toc-text">3.1 Sharded 的实现定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-ShardedJedis-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">3.2 ShardedJedis 初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-ShardedJedis-%E4%B8%AD%E7%9A%84-set-%E5%92%8C-get-%E6%93%8D%E4%BD%9C"><span class="toc-text">3.3 ShardedJedis 中的 set 和 get 操作</span></a></li></ol></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

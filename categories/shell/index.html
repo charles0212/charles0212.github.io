@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        分类: shell |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="记录平时的点点滴滴">
+<meta property="og:type" content="website">
+<meta property="og:title" content="启航的蜗牛">
+<meta property="og:url" content="https://www.alicharles.com/categories/shell/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="记录平时的点点滴滴">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="charles">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-2">
+    <div class="row mx-0">
+        <div class="col-sm-12 col-lg-9 charles-border-right px-lg-5 py-lg-2">
+            <section id="posts" class="posts-collapse">
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/shell/jar-diff/">
+                Shell（二）分支和主干jar差异
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        分支和主干 jar 差异脚本文件见附件，可以快速了解本次分支修改，便于发布前比对当前的开发分支和主干 jar 差异情况。 将 jar-diff.sh 放在根目录文件下面。
+#!&amp;#x2F;bin&amp;#x2F;bash
+
+# 获取当前git分支
+CURRENT_BRANCH&amp;#x3D;&amp;#96;sh -c &amp;#39;git branch --no-color 2&amp;gt;&amp;#x2F;dev&amp;#x2F;null&amp;#39; | sed -e &amp;#39;&amp;#x2F;^[^*]&amp;#x2F;d&amp;#39; -e &amp;#39;s&amp;#x2F;* \(.*\)&amp;#x2F;\1&amp;#x2F;&amp;#39;&amp;#96;
+
+if [
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-07-21T00:00:00+08:00">
+                2019-07-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/shell/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">shell</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Shell/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Shell</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/shell/jar-diff/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/shell/shell-command/">
+                Shell常用命令
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        find + xargs将当前目录下.bak 的文件，移动到临时&amp;#x2F;tmp 下面
+find . -name &amp;quot;*.bak&amp;quot; | xargs -I &amp;#39;&amp;#123;&amp;#125;&amp;#39; mv &amp;#123;&amp;#125; &amp;#x2F;tmp
+
+移动到&amp;#x2F;tmp 临时目录下，不要使用 rm -rf 命令防止误删，其中-I ‘{}’标识占位符
+awk分隔字符串，排序
+grep charles &amp;#x2F;home&amp;#x2F;zhangcheng.log | awk &amp;#39;&amp;#123;split($0,a,&amp;quot;,&amp;quot;);if (index(a
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-06-21T00:00:00+08:00">
+                2019-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/shell/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">shell</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Shell/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Shell</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/shell/shell-command/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/shell/shell-command/">
+                Shell（一）常用命令
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        find + xargs将当前目录下.bak 的文件，移动到临时&amp;#x2F;tmp 下面
+find . -name &amp;quot;*.bak&amp;quot; | xargs -I &amp;#39;&amp;#123;&amp;#125;&amp;#39; mv &amp;#123;&amp;#125; &amp;#x2F;tmp
+
+移动到&amp;#x2F;tmp 临时目录下，不要使用 rm -rf 命令防止误删，其中-I ‘{}’标识占位符
+awk分隔字符串，排序
+grep charles &amp;#x2F;home&amp;#x2F;zhangcheng.log | awk &amp;#39;&amp;#123;split($0,a,&amp;quot;,&amp;quot;);if (index(a
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-06-21T00:00:00+08:00">
+                2019-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/shell/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">shell</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Shell/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Shell</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/shell/shell-command/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+            </section>
+        </div>
+        <div class="col px-lg-3 py-lg-2">
+            <div class="sidebar">
+    <div class="widget-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+    <div class="author">
+        <!--个人信息-->
+        
+        <img class="author-image" itemprop="image"
+             src="/images/logo.jpg"
+             alt=""/>
+        
+        <p class="author-name" itemprop="name"></p>
+        <p class="description" itemprop="description">
+            
+        </p>
+    </div>
+
+    <nav class="state">
+        <!--文章-->
+        
+        <div class="state-item state-posts">
+            <a href="/archives">
+                <span class="state-item-count">98</span>
+                <span class="state-item-name">文章</span>
+            </a>
+        </div>
+        
+
+        <!--类目-->
+        
+        <div class="state-item state-categories">
+            <a href="/categories">
+                <span class="state-item-count">25</span>
+                <span class="state-item-name">分类</span>
+            </a>
+        </div>
+        
+
+        <!--标签-->
+        
+        <div class="state-item state-tags">
+            <a href="/tags">
+                <span class="state-item-count">36</span>
+                <span class="state-item-name">标签</span>
+            </a>
+        </div>
+        
+    </nav>
+
+    <!--社交链接-->
+    
+    
+    <nav class="links-of-author">
+        
+        <div class="links-of-author-row row px-4">
+            <span class="links-of-author-item col-2" style="padding:0;"></span>
+            <span class="links-of-author-item col-4 " style="padding:0;">
+                <a href="https://weibo.com/charles0212" target="_blank" title="微博">
+                    <i class="fab fa-weibo "></i>
+                    微博
+                </a>
+            </span>
+            
+            <span class="links-of-author-item col-6" style="padding:0;">
+                <a href="https://www.facebook.com/cheng.zhang.charles" target="_blank" title="facebook">
+                    <i class="fab fa-facebook "></i>
+                    facebook
+                </a>
+            </span>
+            
+        </div>
+        
+        <div class="links-of-author-row row px-4">
+            <span class="links-of-author-item col-2" style="padding:0;"></span>
+            <span class="links-of-author-item col-4 " style="padding:0;">
+                <a href="https://zhihu.com/people/charles0212" target="_blank" title="知乎">
+                    <i class="fab fa-dribbble "></i>
+                    知乎
+                </a>
+            </span>
+            
+            <span class="links-of-author-item col-6" style="padding:0;">
+                <a href="https://github.com/charles0212" target="_blank" title="github">
+                    <i class="fab fa-github "></i>
+                    github
+                </a>
+            </span>
+            
+        </div>
+        
+    </nav>
+    
+
+</div>
+</div>
+        </div>
+    </div>
+    <div class="row mx-0">
+        <div class="col-sm-12 col-lg-9 px-lg-5">
+            <div class="pagination justify-content-center my-4">
+                <span class="page-number current">1</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

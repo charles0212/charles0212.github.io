@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Disruptor（五）DSL相关实战 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="本文主要讲解使用 Disruptor 的 DSL 演示生产者和消费者的数据交换，和以往的线程间通信不同，disruptor 使用消息传递的方式，通过 RingBuffer 进行线程间的数据传递和通信，下面分别从一对一和多对一的模型进行讲解。 下面主要通过计算区间[0 , 100000000)中的所有数值相加为例子讲解 Disruptor 中的 dsl 使用。   1、一对一  一个生产者和一个消费">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Disruptor（五）DSL相关实战">
+<meta property="og:url" content="https://www.alicharles.com/article/disruptor/disruptor-practise/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="本文主要讲解使用 Disruptor 的 DSL 演示生产者和消费者的数据交换，和以往的线程间通信不同，disruptor 使用消息传递的方式，通过 RingBuffer 进行线程间的数据传递和通信，下面分别从一对一和多对一的模型进行讲解。 下面主要通过计算区间[0 , 100000000)中的所有数值相加为例子讲解 Disruptor 中的 dsl 使用。   1、一对一  一个生产者和一个消费">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-03-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.490Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Disruptor">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Disruptor（五）DSL相关实战</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2017-03-10T00:00:00+08:00">
+            2017-03-10
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/disruptor/" itemprop="url" rel="index">
+              <span itemprop="name">disruptor</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>本文主要讲解使用 Disruptor 的 DSL 演示生产者和消费者的数据交换，和以往的线程间通信不同，disruptor 使用消息传递的方式，通过 RingBuffer 进行线程间的数据传递和通信，下面分别从一对一和多对一的模型进行讲解。<br>下面主要通过计算区间[0 , 100000000)中的所有数值相加为例子讲解 Disruptor 中的 dsl 使用。</p>
+<h2 id="1、一对一"><a href="#1、一对一" class="headerlink" title="1、一对一"></a>1、一对一</h2><p>一个生产者和一个消费者之间进行数据传递，使用 disruptor 主要涉及到 RingBuffer 中的 ValueEvent 定义，ValueAdditionEventHandler 消费者处理，以及生产者发布。</p>
+<h3 id="1-1-RingBuffer-中-ValueEvent-定义"><a href="#1-1-RingBuffer-中-ValueEvent-定义" class="headerlink" title="1.1 RingBuffer 中 ValueEvent 定义"></a>1.1 RingBuffer 中 ValueEvent 定义</h3><pre class="line-numbers language-java" data-language="java"><code class="language-java">package com.lmax.disruptor.charles;
+
+import com.lmax.disruptor.EventFactory;
+
+public final class ValueEvent &#123;
+
+    private long value;
+    public long getValue() &#123;
+        return value;
+    &#125;
+
+    public void setValue(final long value) &#123;
+        this.value &#x3D; value;
+    &#125;
+
+    public static final EventFactory&lt;ValueEvent&gt; EVENT_FACTORY &#x3D; new EventFactory&lt;ValueEvent&gt;() &#123;
+        public ValueEvent newInstance() &#123;
+            return new ValueEvent();
+        &#125;
+    &#125;;
+
+&#125;</code></pre>
+
+<h3 id="1-2-ValueAdditionEventHandler-消费者数据处理"><a href="#1-2-ValueAdditionEventHandler-消费者数据处理" class="headerlink" title="1.2 ValueAdditionEventHandler 消费者数据处理"></a>1.2 ValueAdditionEventHandler 消费者数据处理</h3><pre class="line-numbers language-java" data-language="java"><code class="language-java">package com.lmax.disruptor.charles;
+
+import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.util.PaddedLong;
+
+import java.util.concurrent.CountDownLatch;
+
+public final class ValueAdditionEventHandler implements EventHandler&lt;ValueEvent&gt; &#123;
+
+    private final PaddedLong value &#x3D; new PaddedLong();
+    private long count;
+    private CountDownLatch latch;
+
+    public long getValue() &#123;
+        return value.get();
+    &#125;
+
+    public void reset(final CountDownLatch latch, final long expectedCount) &#123;
+        value.set(0L);
+        this.latch &#x3D; latch;
+        count &#x3D; expectedCount;
+    &#125;
+
+    @Override
+    public void onEvent(final ValueEvent event, final long sequence, final boolean endOfBatch) throws Exception &#123;
+        value.set(value.get() + event.getValue());
+
+        if (count &#x3D;&#x3D; sequence) &#123;
+            latch.countDown();
+        &#125;
+    &#125;
+
+&#125;</code></pre>
+
+<p>使用 CountDownLatch 保证在处理完消费者数据后在退出，保证结果的正确性，其中 ValueAdditionEventHandler.value 为计算结果，每次增加事件中的数值。</p>
+<h3 id="1-3-数据发布"><a href="#1-3-数据发布" class="headerlink" title="1.3 数据发布"></a>1.3 数据发布</h3><pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ *
+ * UniCast a series of items between 1 publisher and 1 event processor.
+ *
+ * +----+    +-----+
+ * | P1 |---&gt;| EP1 |
+ * +----+    +-----+
+ *
+ * Disruptor:
+ * &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;
+ *              track to prevent wrap
+ *              +------------------+
+ *              |                  |
+ *              |                  v
+ * +----+    +&#x3D;&#x3D;&#x3D;&#x3D;+    +&#x3D;&#x3D;&#x3D;&#x3D;+   +-----+
+ * | P1 |---&gt;| RB |&lt;---| SB |   | EP1 |
+ * +----+    +&#x3D;&#x3D;&#x3D;&#x3D;+    +&#x3D;&#x3D;&#x3D;&#x3D;+   +-----+
+ *      claim      get    ^        |
+ *                        |        |
+ *                        +--------+
+ *                          waitFor
+ *
+ * P1  - Publisher 1
+ * RB  - RingBuffer
+ * SB  - SequenceBarrier
+ * EP1 - EventProcessor 1
+ *
+ *&#x2F;
+public class OneToOneDisruptor &#123;
+
+    private static int RING_BUFFER_SIZE &#x3D; 1024 * 16;
+    private static long ITERATIONS      &#x3D; 1000L * 1000L * 100L;
+
+    public static void main(String[] args) throws InterruptedException &#123;
+        &#x2F;&#x2F; 单个生产者ProducerType.SINGLE，消费者的等待策略为YieldingWaitStrategy
+        Disruptor&lt;ValueEvent&gt; disruptor &#x3D;
+                new Disruptor&lt;ValueEvent&gt;(ValueEvent.EVENT_FACTORY,
+                        RING_BUFFER_SIZE,
+                        DaemonThreadFactory.INSTANCE,
+                        ProducerType.SINGLE,
+                        new YieldingWaitStrategy());
+
+        ValueAdditionEventHandler handler &#x3D; new ValueAdditionEventHandler();
+        &#x2F;&#x2F; 设置处理者
+        disruptor.handleEventsWith(handler);
+        &#x2F;&#x2F; 启动disruptor
+        disruptor.start();
+
+        &#x2F;&#x2F; CountDownLatch是为了保证发布的数据被处理完后，才输出结果
+        CountDownLatch latch &#x3D; new CountDownLatch(1);
+        long expectedCount &#x3D; ITERATIONS - 1;
+        handler.reset(latch, expectedCount);
+
+        &#x2F;&#x2F; 生产者生产消息，暂时不用translator
+        for (int i &#x3D; 0; i &lt;ITERATIONS; i++) &#123;
+            &#x2F;&#x2F; 生产者设置数据并发布
+            long next &#x3D; disruptor.getRingBuffer().next();
+            disruptor.getRingBuffer().get(next).setValue(i);
+            disruptor.getRingBuffer().publish(next);
+        &#125;
+
+        &#x2F;&#x2F; 闭锁，等所有的发布的数据被处理完成后，向下执行
+        latch.await();
+        System.out.println(&quot;mutiProcess: &quot; + handler.getValue());
+        disruptor.shutdown();
+        &#x2F;&#x2F; 单个线程本地计算结果
+        locoalCaculate();
+    &#125;
+
+    &#x2F;**
+     * 单个线程本地计算
+     *&#x2F;
+    private static void locoalCaculate() &#123;
+        long total &#x3D; 0l;
+        for (int i &#x3D; 0; i &lt;ITERATIONS; i++) &#123;
+            total +&#x3D; i;
+        &#125;
+        System.out.println(&quot;local: &quot; + total);
+    &#125;
+
+&#125;</code></pre>
+
+<h2 id="2、多对一"><a href="#2、多对一" class="headerlink" title="2、多对一"></a>2、多对一</h2><p>多个生产者和一个消费者之间进行数据传递，和一对一不同的是，涉及到生产者 ValuePublisher 定义。和单生产者不同的时，需要让多个生产者同时工作，并且每个生产者处理其中的某个区间，在本例子中将分为 2 个区间，2 个生产者每个发布各自区间中的数据。首先看下 ValuePublisher 的定义</p>
+<h3 id="2-1-生产者-ValuePublisher-定义"><a href="#2-1-生产者-ValuePublisher-定义" class="headerlink" title="2.1 生产者 ValuePublisher 定义"></a>2.1 生产者 ValuePublisher 定义</h3><pre class="line-numbers language-java" data-language="java"><code class="language-java">package com.lmax.disruptor.charles;
+
+import java.util.concurrent.CyclicBarrier;
+
+import com.lmax.disruptor.RingBuffer;
+
+public final class ValuePublisher implements Runnable &#123;
+    private final CyclicBarrier cyclicBarrier;
+    private final RingBuffer&lt;ValueEvent&gt; ringBuffer;
+    private final long start;
+    private final long end;
+
+    public ValuePublisher(
+            final CyclicBarrier cyclicBarrier,
+            final RingBuffer&lt;ValueEvent&gt; ringBuffer,
+            final long start,
+            final long end) &#123;
+        this.cyclicBarrier &#x3D; cyclicBarrier;
+        this.ringBuffer &#x3D; ringBuffer;
+        this.start &#x3D; start;
+        this.end &#x3D; end;
+    &#125;
+
+    @Override
+    public void run() &#123;
+        try &#123;
+            cyclicBarrier.await();
+            for (long i &#x3D; start; i &lt;end; i++) &#123;
+                long sequence &#x3D; ringBuffer.next();
+                ValueEvent event &#x3D; ringBuffer.get(sequence);
+                event.setValue(i);
+                ringBuffer.publish(sequence);
+            &#125;
+        &#125; catch (Exception ex) &#123;
+            throw new RuntimeException(ex);
+        &#125;
+    &#125;
+
+&#125;</code></pre>
+
+<p>CyclicBarrier 确保两个生产者同时生产数据，每个生产者处理[start, end)中数据的发布。</p>
+<h3 id="2-2-多生产者数据发布"><a href="#2-2-多生产者数据发布" class="headerlink" title="2.2 多生产者数据发布"></a>2.2 多生产者数据发布</h3><pre class="line-numbers language-java" data-language="java"><code class="language-java">package com.lmax.disruptor.charles;
+
+import com.lmax.disruptor.YieldingWaitStrategy;
+import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.dsl.ProducerType;
+import com.lmax.disruptor.util.DaemonThreadFactory;
+
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
+
+&#x2F;**
+ *
+ *
+ * Sequence a series of events from multiple publishers going to one event processor.
+ *
+ * +----+
+ * | P1 |------+
+ * +----+      |
+ *             v
+ * +----+    +-----+
+ * | P2 |---&gt;| EP1 |
+ * +----+    +-----+
+ *
+ * Disruptor:
+ * &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;
+ *             track to prevent wrap
+ *             +--------------------+
+ *             |                    |
+ *             |                    v
+ * +----+    +&#x3D;&#x3D;&#x3D;&#x3D;+    +&#x3D;&#x3D;&#x3D;&#x3D;+    +-----+
+ * | P1 |---&gt;| RB |&lt;---| SB |    | EP1 |
+ * +----+    +&#x3D;&#x3D;&#x3D;&#x3D;+    +&#x3D;&#x3D;&#x3D;&#x3D;+    +-----+
+ *             ^   get    ^         |
+ * +----+      |          |         |
+ * | P2 |------+          +---------+
+ * +----+                   waitFor
+ *
+ *
+ * P1  - Publisher 1
+ * P2  - Publisher 2
+ * RB  - RingBuffer
+ * SB  - SequenceBarrier
+ * EP1 - EventProcessor 1
+ *
+ *
+ *&#x2F;
+public class ManyToOneDisruptor &#123;
+
+    private static int RING_BUFFER_SIZE &#x3D; 1024 * 16;
+    private static long ITERATIONS      &#x3D; 1000L * 1000L * 100L;
+
+    public static void main(String[] args) throws InterruptedException, BrokenBarrierException &#123;
+
+        &#x2F;&#x2F; 单个生产者ProducerType.MULTI，消费者的等待策略为YieldingWaitStrategy
+        Disruptor&lt;ValueEvent&gt; disruptor &#x3D;
+                new Disruptor&lt;ValueEvent&gt;(ValueEvent.EVENT_FACTORY,
+                        RING_BUFFER_SIZE,
+                        DaemonThreadFactory.INSTANCE,
+                        ProducerType.MULTI,
+                        new YieldingWaitStrategy());
+
+        ValueAdditionEventHandler handler &#x3D; new ValueAdditionEventHandler();
+        &#x2F;&#x2F; 设置处理者
+        disruptor.handleEventsWith(handler);
+        &#x2F;&#x2F; 启动disruptor
+        disruptor.start();
+
+        &#x2F;&#x2F; CountDownLatch是为了保证发布的数据被处理完后，才输出结果
+        CountDownLatch latch &#x3D; new CountDownLatch(1);
+        handler.reset(latch, ITERATIONS - 1);
+
+        &#x2F;&#x2F; 保证2个生产者同时生产数据
+        CyclicBarrier cyclicBarrier &#x3D; new CyclicBarrier(3);
+
+        &#x2F;&#x2F; 定义生产者，以及生产的数据区间[start, end)
+        ValuePublisher publisher1 &#x3D; new ValuePublisher(cyclicBarrier,
+                disruptor.getRingBuffer(),
+                0,
+                ITERATIONS &#x2F; 2);
+        new Thread(publisher1).start();
+
+        ValuePublisher publisher2 &#x3D; new ValuePublisher(cyclicBarrier,
+                disruptor.getRingBuffer(),
+                ITERATIONS &#x2F; 2,
+                ITERATIONS);
+        new Thread(publisher2).start();
+
+        &#x2F;&#x2F; 所有的生产者线程都同时运行
+        cyclicBarrier.await();
+        &#x2F;&#x2F; 等待计算完成
+        latch.await();
+        System.out.println(&quot;mutiProcess: &quot; + handler.getValue());
+        disruptor.shutdown();
+        &#x2F;&#x2F; 单个线程本地计算
+        locoalCaculate();
+    &#125;
+
+    &#x2F;**
+     * 单个线程本地计算
+     *&#x2F;
+    private static void locoalCaculate() &#123;
+        long total &#x3D; 0l;
+        for (int i &#x3D; 0; i &lt;ITERATIONS; i++) &#123;
+            total +&#x3D; i;
+        &#125;
+        System.out.println(&quot;localProcess: &quot; + total);
+    &#125;
+
+&#125;</code></pre>
+
+<p>上面主要演示了一对一和多对一的使用，关于其他的使用方式，可以访问 <a href="%5Bhttps://github.com/LMAX-Exchange/disruptor%5D(https://github.com/LMAX-Exchange/disruptor)">Disruptor</a> 进行查看其他的官方例子。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Disruptor/" itemprop="url" rel="index">
+                  <span itemprop="name">Disruptor</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/disruptor/disruptor-ringbuffer-muti-write/" rel="next" title="Disruptor（四）RingBuffer多生产者写入">
+            <i class="fa far fa-chevron-left"></i> Disruptor（四）RingBuffer多生产者写入
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/mysql/mysql-transaction/" rel="prev" title="MySQL事务和隔离级别">
+            MySQL事务和隔离级别 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E4%B8%80%E5%AF%B9%E4%B8%80"><span class="toc-text">1、一对一</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-RingBuffer-%E4%B8%AD-ValueEvent-%E5%AE%9A%E4%B9%89"><span class="toc-text">1.1 RingBuffer 中 ValueEvent 定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-ValueAdditionEventHandler-%E6%B6%88%E8%B4%B9%E8%80%85%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="toc-text">1.2 ValueAdditionEventHandler 消费者数据处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E6%95%B0%E6%8D%AE%E5%8F%91%E5%B8%83"><span class="toc-text">1.3 数据发布</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E5%A4%9A%E5%AF%B9%E4%B8%80"><span class="toc-text">2、多对一</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E7%94%9F%E4%BA%A7%E8%80%85-ValuePublisher-%E5%AE%9A%E4%B9%89"><span class="toc-text">2.1 生产者 ValuePublisher 定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%A4%9A%E7%94%9F%E4%BA%A7%E8%80%85%E6%95%B0%E6%8D%AE%E5%8F%91%E5%B8%83"><span class="toc-text">2.2 多生产者数据发布</span></a></li></ol></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

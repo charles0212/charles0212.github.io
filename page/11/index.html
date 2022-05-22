@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="记录平时的点点滴滴">
+<meta property="og:type" content="website">
+<meta property="og:title" content="启航的蜗牛">
+<meta property="og:url" content="https://www.alicharles.com/page/11/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="记录平时的点点滴滴">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="charles">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  
+
+<div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+    <!-- 指示符 -->
+    <div class="carousel-indicators">
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0"  class="active" ></button>
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" ></button>
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" ></button>
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="3" ></button>
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="4" ></button>
+        
+    </div>
+
+    <!-- 轮播图片 -->
+    <div class="carousel-inner">
+        
+        <div class="carousel-item  active ">
+            <img src="/images/c2.jpg" alt="常用架构分析" >
+            <a class="container" href="/article/architecture/architecture/">
+                <div class="carousel-caption text-start">
+                    <h3>常用架构分析</h3>
+                    <p class="excerpt">常用经典架构分析，了解设计思路和注意问题，主要以电商架构为主，设计到秒杀、商品、用户、库存、交易等相关通用解决方案，解析业务过程中的难点和解决方式。</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="carousel-item ">
+            <img src="/images/c1.jpg" alt="深入理解Disruptor" >
+            <a class="container" href="/article/disruptor/understanding-disruptor/">
+                <div class="carousel-caption text-start">
+                    <h3>深入理解Disruptor</h3>
+                    <p class="excerpt">Disruptor是LMAX公司开源的一个高效的内存无锁队列，一个高性能的异步处理框架，或者可以认为是最快的消息框架(轻量的JMS)，也可以认为是一个观察者模式实现，或者事件-监听模式的实现，直接称disruptor模式。disruptor最大特点是高性能，其LMAX架构可以获得每秒6百万订单，用1微秒的延迟获得吞吐量为100K+。理解Disruptor的原理，可以帮助我们更好的理解内存无锁，CAS，volatile，缓冲行等并发原理。</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="carousel-item ">
+            <img src="/images/c2.jpg" alt="深入理解jvm虚拟机" >
+            <a class="container" href="/article/jvm/understanding-jvm/">
+                <div class="carousel-caption text-start">
+                    <h3>深入理解jvm虚拟机</h3>
+                    <p class="excerpt">每个Java开发者都知道Java字节码是执行在JRE(（Java Runtime Environment Java运行时环境）上的。JRE中最重要的部分是Java虚拟机（JVM），JVM负责分析和执行Java字节码。Java开发人员并不需要去关心JVM是如何运行的。在没有深入理解JVM的情况下，许多开发者已经开发出了非常多的优秀的应用以及Java类库。不过，如果你了解JVM的话，你会更加了解Java的，并且你会轻松解决那些看似简单但是无从下手的问题。</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="carousel-item ">
+            <img src="/images/c3.jpg" alt="JDK中的设计模式" >
+            <a class="container" href="/article/design-pattern/jdk-design-pattern/">
+                <div class="carousel-caption text-start">
+                    <h3>JDK中的设计模式</h3>
+                    <p class="excerpt">本文主要是归纳了JDK中所包含的设计模式，包括作用和其设计类图。 一、设计模式的作用 反复出现问题的解决方案 增强软件的灵活性 适应软件不断变化 二、设计模式的七大原则 开闭原则OCP（Open Close Principle），一个软件实体如类、模块和函数应该对扩展开放，对修改关闭。 里氏代换原则LSP（Liskov Substitution Principle），子类可以扩展父类的功能，但不能</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="carousel-item ">
+            <img src="/images/c2.jpg" alt="Java并发编程之锁" >
+            <a class="container" href="/article/java/java-lock/">
+                <div class="carousel-caption text-start">
+                    <h3>Java并发编程之锁</h3>
+                    <p class="excerpt">作为一个java开发者，并发编程是不可或缺的，在并发的过程，Lock是并发的关键， 本文主要从排它锁和共享锁的实例来讲解锁的机制。 本文主要从以下方面来讲解锁的原理以及使用： 1、AbstractQueuedSynchronizer分析 2、ReentrantLock独占锁分析 3、CountDownLatch共享锁分析 4、ConditionObject分析 5、CyclicBarrier分析</p>
+                </div>
+            </a>
+        </div>
+        
+    </div>
+
+    <!-- 左右切换按钮 -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
+
+
+<div class="container bg-white my-2">
+    <div class="row mx-0">
+        <div class="col-sm-12 col-lg-9 charles-border-right px-lg-5 py-lg-2">
+            <section id="posts" class="posts-collapse">
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-flyweight-pattern/">
+                JDK设计模式（十）享元模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        1、定义采用一个共享来避免大量拥有相同内容对象的开销。
+2、解决的问题使用共享物件，用来尽可能减少内存使用量，以及分享资讯给尽可能多的相似物件；适合用于只是因重复而导致使用无法令人接受的大量内存的大量物件。
+3、模式中的角色内蕴状态存储在享元内部，不会随环境的改变而有所不同，是可以共享的；外蕴状态是不可以共享的，它随环境的改变而改变的，因此外蕴状态是由客户端来保持（因为环境的变化是由客户端引起的）。在每个具体的环境下，客户端将外蕴状态传递给享元，从而创建不同的对象出来。享元模式可分为：单纯享元模式和复合享元模式。1、 抽象享元角色(Flyweight)：为具体享元角色规定了必须实现的方法，而外
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-04-13T00:00:00+08:00">
+                2015-04-13
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-flyweight-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-facade-pattern/">
+                JDK设计模式（九）外观模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        1、定义提供一个统一的接口，用来访问子系统中的一群接口。外观定义了一个高层接口，让子系统更容易访问。
+2、解决的问题通过外观的包装，使应用程序只能看到外观对象，而不会看到具体的细节对象，降低应用程序的复杂度，并且提高了程序的可维护性。封装一组交互类，一致地对外提供接口，简化子系统调用。
+3、模式中的角色1、外观角色（Facade）：是模式的核心，他被客户 client 角色调用，知道各个子系统的功能。同时根据客户角色已有的需求预订几种功能组合。2、子系统角色（Subsystem classes）：实现子系统的功能，并处理由 Facade 对象指派的任务。对子系统而言，facade 和 clie
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-04-12T11:00:00+08:00">
+                2015-04-12
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-facade-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-decorator-pattern/">
+                JDK设计模式（八）装饰模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        1、定义动态地将责任附加到对象上，若要扩展功能，装饰者提供了比继承更有弹性的替代方案。
+2、解决的问题在不必改变原类文件和使用继承的情况下，动态的扩展一个对象的功能。它是通过创建一个包装对象，也就是装饰来包裹真实的对象，防止类继承带来的爆炸式增长。
+3、模式中的角色1、抽象构件(Component)角色：给出一个抽象接口，以规范准备接收附加责任的对象。2、具体构件(ConcreteComponent)角色：定义一个将要接收附加责任的类。3、装饰(Decorator)角色：持有一个构件(Component)对象的实例，并定义一个与抽象构件接口一致的接口。4、具体装饰(ConcreteDecora
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-04-12T10:00:00+08:00">
+                2015-04-12
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-decorator-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-composite-pattern/">
+                JDK设计模式（七）组合模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        1、定义将对象组合成树形结构以表示“部分整体”的层次结构。组合模式使得用户对单个对象和组合对象的使用具有一致性。
+2、解决的问题组合模式解耦了客户程序与复杂元素内部结构，从而使客户程序可以像处理简单元素一样来处理复杂元素。
+3、模式中的角色1、抽象构件（component）:是组合中对象的接口，适当情况下，实现所有类共有方法的默认行为，声明一个接口，用于管理和访问 component 子部件2、 树枝构件（composite）：定义具有叶节点的组件的行为3、 叶子构件（leaf）：定义叶节点的行为4、 客户角色（client）：使用 component 接口操作组件行为
+4、模式解读组合模式类
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-04-12T09:00:00+08:00">
+                2015-04-12
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-composite-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-bridge-pattern/">
+                JDK设计模式（六）桥接模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        1、定义将抽象部分与实现部分分离，使它们都可以独立的变化
+2、解决的问题某个类具有两个或两个以上的维度变化，如果只是用继承将无法实现这种需要，或者使得设计变得相当臃肿，把变化部分抽象出来，使变化部分与主类分离开来，从而将多个维度的变化彻底分离，提供一个管理类来组合不同维度上的变化，通过这种组合来满足业务的需要，从达到抽象化、实现化和脱耦。
+3、模式中的角色1、抽象化(Abstraction)角色：抽象化给出的定义，并保存一个对实现化对象的引用。2、修正抽象化(RefinedAbstraction)角色：扩展抽象化角色，改变和修正父类对抽象化的定义。3、实现化(Implementor)角色：这个
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-04-12T09:00:00+08:00">
+                2015-04-12
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-bridge-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-adapter-pattern/">
+                JDK设计模式（五）适配器模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        1、定义将一个类的接口转换成客户希望的另外一个接口。Adapter 模式使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。
+2、解决的问题即 Adapter 模式使得原本由于接口不兼容而不能一起工作的那些类可以在一起工作。
+3、模式中的角色目标接口（Target）：客户所期待的接口。目标可以是具体的或抽象的类，也可以是接口。需要适配的类（Adaptee）：需要适配的类或适配者类。适配器（Adapter）：通过包装一个需要适配的对象，把原接口转换成目标接口。
+4、模式解读在 GoF 的设计模式中，对适配器模式讲了两种类型，类适配器模式和对象适配器模式。由于类适配器模式通过多重继承对一个接
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-04-12T08:00:00+08:00">
+                2015-04-12
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-adapter-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-prototype-pattern/">
+                JDK设计模式（四）原型模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        用原型实例指定创建对象的种类，并且通过复制这些原型创建新的对象。在原型模式中，所发动创建的对象通过请求原型对象来拷贝原型对象自己来实现创建过程，当然所发动创建的对象需要知道原型对象的类型。这里也就是说所发动创建的对象只需要知道原型对象的类型就可以获得更多的原型实例对象，至于这些原型对象时如何创建的根本不需要关心，其类图如下所示。原型模式主要包含如下三个角色：
+
+Prototype：抽象原型类。声明克隆自身的接口。
+ConcretePrototype：具体原型类。实现克隆的具体操作。
+Client：客户类。让一个原型克隆自身，从而获得一个新的对象。
+
+讲到原型模式，我们就不得不区分两个概念：深拷
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-03-08T08:00:00+08:00">
+                2015-03-08
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-prototype-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/java/java-reference/">
+                Java引用类型
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        内存回收每一个 Java 程序中的对象都会占用一定的计算机资源，最常见的，如：每个对象都会在堆空间上申请一定的内存空间。但是除了内存之外，对象还会占用其它资源，如文件句柄，端口，socket 等等。当你创建一个对象的时候，必须保证它在销毁的时候会释放它占用的资源。否则程序将会在 OOM 中结束它的使命。在 Java 中数据内存分配发生在栈和堆中，对于栈中的变量（引用类型，基本类型）会在方法的退出时自动释放，对于 new 出来对象分配到堆中，不需要程序员来管理内存的分配和释放，Java 有自动进行内存管理的神器——垃圾回收器，垃圾回收器会自动回收那些不再使用的对象。那如何判断对象不再使用呢？就是
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-03-01T00:00:00+08:00">
+                2015-03-01
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/java/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">java</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/java/java-reference/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+            </section>
+        </div>
+        <div class="col px-lg-3 py-lg-2">
+            <div class="sidebar">
+    <div class="widget-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+    <div class="author">
+        <!--个人信息-->
+        
+        <img class="author-image" itemprop="image"
+             src="/images/logo.jpg"
+             alt=""/>
+        
+        <p class="author-name" itemprop="name"></p>
+        <p class="description" itemprop="description">
+            
+        </p>
+    </div>
+
+    <nav class="state">
+        <!--文章-->
+        
+        <div class="state-item state-posts">
+            <a href="/archives">
+                <span class="state-item-count">98</span>
+                <span class="state-item-name">文章</span>
+            </a>
+        </div>
+        
+
+        <!--类目-->
+        
+        <div class="state-item state-categories">
+            <a href="/categories">
+                <span class="state-item-count">25</span>
+                <span class="state-item-name">分类</span>
+            </a>
+        </div>
+        
+
+        <!--标签-->
+        
+        <div class="state-item state-tags">
+            <a href="/tags">
+                <span class="state-item-count">36</span>
+                <span class="state-item-name">标签</span>
+            </a>
+        </div>
+        
+    </nav>
+
+    <!--社交链接-->
+    
+    
+    <nav class="links-of-author">
+        
+        <div class="links-of-author-row row px-4">
+            <span class="links-of-author-item col-2" style="padding:0;"></span>
+            <span class="links-of-author-item col-4 " style="padding:0;">
+                <a href="https://weibo.com/charles0212" target="_blank" title="微博">
+                    <i class="fab fa-weibo "></i>
+                    微博
+                </a>
+            </span>
+            
+            <span class="links-of-author-item col-6" style="padding:0;">
+                <a href="https://www.facebook.com/cheng.zhang.charles" target="_blank" title="facebook">
+                    <i class="fab fa-facebook "></i>
+                    facebook
+                </a>
+            </span>
+            
+        </div>
+        
+        <div class="links-of-author-row row px-4">
+            <span class="links-of-author-item col-2" style="padding:0;"></span>
+            <span class="links-of-author-item col-4 " style="padding:0;">
+                <a href="https://zhihu.com/people/charles0212" target="_blank" title="知乎">
+                    <i class="fab fa-dribbble "></i>
+                    知乎
+                </a>
+            </span>
+            
+            <span class="links-of-author-item col-6" style="padding:0;">
+                <a href="https://github.com/charles0212" target="_blank" title="github">
+                    <i class="fab fa-github "></i>
+                    github
+                </a>
+            </span>
+            
+        </div>
+        
+    </nav>
+    
+
+</div>
+</div>
+        </div>
+    </div>
+    <div class="row mx-0">
+        <div class="col-sm-12 col-lg-9 px-lg-5">
+            <div class="pagination justify-content-center my-4">
+                <a class="extend prev" rel="prev" href="/page/10/">上一页</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/12/">下一页</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

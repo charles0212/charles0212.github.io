@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        JDK设计模式（六）桥接模式 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="1、定义  将抽象部分与实现部分分离，使它们都可以独立的变化   2、解决的问题  某个类具有两个或两个以上的维度变化，如果只是用继承将无法实现这种需要，或者使得设计变得相当臃肿，把变化部分抽象出来，使变化部分与主类分离开来，从而将多个维度的变化彻底分离，提供一个管理类来组合不同维度上的变化，通过这种组合来满足业务的需要，从达到抽象化、实现化和脱耦。   3、模式中的角色  1、抽象化(Abstr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JDK设计模式（六）桥接模式">
+<meta property="og:url" content="https://www.alicharles.com/article/design-pattern/jdk-bridge-pattern/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="1、定义  将抽象部分与实现部分分离，使它们都可以独立的变化   2、解决的问题  某个类具有两个或两个以上的维度变化，如果只是用继承将无法实现这种需要，或者使得设计变得相当臃肿，把变化部分抽象出来，使变化部分与主类分离开来，从而将多个维度的变化彻底分离，提供一个管理类来组合不同维度上的变化，通过这种组合来满足业务的需要，从达到抽象化、实现化和脱耦。   3、模式中的角色  1、抽象化(Abstr">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648394568658-023fec66-64dd-40b0-a92d-465abcdeb612.png#clientId=u4e992676-b736-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u0a35916d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=276&originWidth=671&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=24309&status=done&style=none&taskId=u7766f2c5-8a49-443b-896f-439f0dd0ba1&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648394568695-03ac0b72-df9d-4086-9ba4-3b1abcf8e828.png#clientId=u4e992676-b736-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ud0e38123&margin=%5Bobject%20Object%5D&name=image.png&originHeight=380&originWidth=947&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=39579&status=done&style=none&taskId=u058aea6c-7c2b-443f-802d-153506e4e43&title=">
+<meta property="article:published_time" content="2015-04-12T01:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.493Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648394568658-023fec66-64dd-40b0-a92d-465abcdeb612.png#clientId=u4e992676-b736-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u0a35916d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=276&originWidth=671&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=24309&status=done&style=none&taskId=u7766f2c5-8a49-443b-896f-439f0dd0ba1&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>JDK设计模式（六）桥接模式</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2015-04-12T09:00:00+08:00">
+            2015-04-12
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/design-pattern/" itemprop="url" rel="index">
+              <span itemprop="name">design-pattern</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<h2 id="1、定义"><a href="#1、定义" class="headerlink" title="1、定义"></a>1、定义</h2><p>将抽象部分与实现部分分离，使它们都可以独立的变化</p>
+<h2 id="2、解决的问题"><a href="#2、解决的问题" class="headerlink" title="2、解决的问题"></a>2、解决的问题</h2><p>某个类具有两个或两个以上的维度变化，如果只是用继承将无法实现这种需要，或者使得设计变得相当臃肿，把变化部分抽象出来，使变化部分与主类分离开来，从而将多个维度的变化彻底分离，提供一个管理类来组合不同维度上的变化，通过这种组合来满足业务的需要，从达到抽象化、实现化和脱耦。</p>
+<h2 id="3、模式中的角色"><a href="#3、模式中的角色" class="headerlink" title="3、模式中的角色"></a>3、模式中的角色</h2><p>1、抽象化(Abstraction)角色：抽象化给出的定义，并保存一个对实现化对象的引用。<br>2、修正抽象化(RefinedAbstraction)角色：扩展抽象化角色，改变和修正父类对抽象化的定义。<br>3、实现化(Implementor)角色：这个角色给出实现化角色的接口，但不给出具体的实现。必须指出的是，这个接口不一定和抽象化角色的接口定义相同，实际上，这两个接口可以非常不一样。实现化角色应当只给出底层操作，而抽象化角色应当只给出基于底层操作的更高一层的操作。<br>4、具体实现化(ConcreteImplementor)角色：这个角色给出实现化角色接口的具体实现。</p>
+<h2 id="4、模式解读"><a href="#4、模式解读" class="headerlink" title="4、模式解读"></a>4、模式解读</h2><p>通过对象组合的方式，Bridge 模式把两个角色之间的继承关系改为了耦合的关系，从而使这两者可以从容自若的各自独立的变化。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648394568658-023fec66-64dd-40b0-a92d-465abcdeb612.png#clientId=u4e992676-b736-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u0a35916d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=276&originWidth=671&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=24309&status=done&style=none&taskId=u7766f2c5-8a49-443b-896f-439f0dd0ba1&title=" alt="image.png"></p>
+<h2 id="5、JDK-涉及到的设计模式"><a href="#5、JDK-涉及到的设计模式" class="headerlink" title="5、JDK 涉及到的设计模式"></a>5、JDK 涉及到的设计模式</h2><p>JDK 中的 java.util.logging 包中的 Handler 和 Formatter，Handler 是一个抽象类，需要根据实际情况创建真正使用的具体 Handler（如 ConsoleHandler、FileHandler 等），实现各自的 publish、flush 以及 close 等方法,负责从 Logger 中取出日志消息并将消息发送出去，比如发送到控制台、文件、网络上的其他日志服务或操作系统日志等。Handler 一个 Handler 具有使用定义好的各种日志级别、自己的过滤器（Filter）、格式化器（Formatter）、错误管理器（ErrorManager）以及编码字符集等。其中 Formatter 也是一个抽象类，可以使用（XMLFormatter，SimpleFormatter）来格式输出日志信息。将 Handler 和 Formatter 通过桥接，将抽象和实现分开。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648394568695-03ac0b72-df9d-4086-9ba4-3b1abcf8e828.png#clientId=u4e992676-b736-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ud0e38123&margin=%5Bobject%20Object%5D&name=image.png&originHeight=380&originWidth=947&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=39579&status=done&style=none&taskId=u058aea6c-7c2b-443f-802d-153506e4e43&title=" alt="image.png"></p>
+<h2 id="6、模式总结"><a href="#6、模式总结" class="headerlink" title="6、模式总结"></a>6、模式总结</h2><p>桥接模式则把原来的基类的实现化细节抽象出来，在构造到一个实现化的结构中，然后再把原来的基类改造成一个抽象化的等级结构，这样就可以实现系统在多个维度上的独立变化，它很好的符合了开放-封闭原则和优先使用对象，而不是继承这两个面向对象原则。</p>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><p>1、分离抽象接口及其实现部分。<br>2、桥接模式有时类似于多继承方案，但是多继承方案违背了类的单一职责原则（即一个类只有一个变化的原因），复用性比较差，而且多继承结构中类的个数非常庞大，桥接模式是比多继承方案更好的解决方法。<br>3、桥接模式提高了系统的可扩充性，在两个变化维度中任意扩展一个维度，都不需要修改原有系统。<br>4、 实现细节对客户透明，可以对用户隐藏实现细节。</p>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><p>1、桥接模式的引入会增加系统的理解与设计难度，由于聚合关联关系建立在抽象层，要求开发者针对抽象进行设计与编程。<br>2、 桥接模式要求正确识别出系统中两个独立变化的维度，因此其使用范围具有一定的局限性。</p>
+<h3 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h3><p>1、如果一个系统需要在构件的抽象化角色和具体化角色之间增加更多的灵活性，避免在两个层次之间建立静态的继承联系，通过桥接模式可以使它们在抽象层建立一个关联关系。<br>2、抽象化角色和实现化角色可以以继承的方式独立扩展而互不影响，在程序运行时可以动态将一个抽象化子类的对象和一个实现化子类的对象进行组合，即系统需要对抽象化角色和实现化角色进行动态耦合。<br>3、 一个类存在两个独立变化的维度，且这两个维度都需要进行扩展。<br>4、虽然在系统中使用继承是没有问题的，但是由于抽象化角色和具体化角色需要独立变化，设计要求需要独立管理这两者。<br>5、 对于那些不希望使用继承或因为多层次继承导致系统类的个数急剧增加的系统，桥接模式尤为适用。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/design-pattern/jdk-adapter-pattern/" rel="next" title="JDK设计模式（五）适配器模式">
+            <i class="fa far fa-chevron-left"></i> JDK设计模式（五）适配器模式
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/design-pattern/jdk-composite-pattern/" rel="prev" title="JDK设计模式（七）组合模式">
+            JDK设计模式（七）组合模式 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%AE%9A%E4%B9%89"><span class="toc-text">1、定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">2、解决的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E6%A8%A1%E5%BC%8F%E4%B8%AD%E7%9A%84%E8%A7%92%E8%89%B2"><span class="toc-text">3、模式中的角色</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E6%A8%A1%E5%BC%8F%E8%A7%A3%E8%AF%BB"><span class="toc-text">4、模式解读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81JDK-%E6%B6%89%E5%8F%8A%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="toc-text">5、JDK 涉及到的设计模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6%E3%80%81%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93"><span class="toc-text">6、模式总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%82%B9"><span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%BA%E7%82%B9"><span class="toc-text">缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">适用场景</span></a></li></ol></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        JDK设计模式（四）原型模式 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="用原型实例指定创建对象的种类，并且通过复制这些原型创建新的对象。 在原型模式中，所发动创建的对象通过请求原型对象来拷贝原型对象自己来实现创建过程，当然所发动创建的对象需要知道原型对象的类型。这里也就是说所发动创建的对象只需要知道原型对象的类型就可以获得更多的原型实例对象，至于这些原型对象时如何创建的根本不需要关心，其类图如下所示。  原型模式主要包含如下三个角色：   * Prototype：抽象">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JDK设计模式（四）原型模式">
+<meta property="og:url" content="https://www.alicharles.com/article/design-pattern/jdk-prototype-pattern/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="用原型实例指定创建对象的种类，并且通过复制这些原型创建新的对象。 在原型模式中，所发动创建的对象通过请求原型对象来拷贝原型对象自己来实现创建过程，当然所发动创建的对象需要知道原型对象的类型。这里也就是说所发动创建的对象只需要知道原型对象的类型就可以获得更多的原型实例对象，至于这些原型对象时如何创建的根本不需要关心，其类图如下所示。  原型模式主要包含如下三个角色：   * Prototype：抽象">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648313188451-9214a6e1-a03e-40c4-a78c-404d85d2228a.png#clientId=u7cda6d28-aff4-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u59b5ea5d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=343&originWidth=483&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=18632&status=done&style=none&taskId=ud21905df-8c79-4a5a-8d62-5863b178258&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648313188444-67fe8954-aec8-42e0-aa2d-cc18c7c00697.png#clientId=u7cda6d28-aff4-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ubfc0d4bc&margin=%5Bobject%20Object%5D&name=image.png&originHeight=255&originWidth=433&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=10391&status=done&style=none&taskId=u68df6cd2-517f-495e-9b05-453dc1d6d53&title=">
+<meta property="article:published_time" content="2015-03-08T00:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.493Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1648313188451-9214a6e1-a03e-40c4-a78c-404d85d2228a.png#clientId=u7cda6d28-aff4-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u59b5ea5d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=343&originWidth=483&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=18632&status=done&style=none&taskId=ud21905df-8c79-4a5a-8d62-5863b178258&title=">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>JDK设计模式（四）原型模式</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2015-03-08T08:00:00+08:00">
+            2015-03-08
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/design-pattern/" itemprop="url" rel="index">
+              <span itemprop="name">design-pattern</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>用原型实例指定创建对象的种类，并且通过复制这些原型创建新的对象。<br>在原型模式中，所发动创建的对象通过请求原型对象来拷贝原型对象自己来实现创建过程，当然所发动创建的对象需要知道原型对象的类型。这里也就是说所发动创建的对象只需要知道原型对象的类型就可以获得更多的原型实例对象，至于这些原型对象时如何创建的根本不需要关心，其类图如下所示。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648313188451-9214a6e1-a03e-40c4-a78c-404d85d2228a.png#clientId=u7cda6d28-aff4-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u59b5ea5d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=343&originWidth=483&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=18632&status=done&style=none&taskId=ud21905df-8c79-4a5a-8d62-5863b178258&title=" alt="image.png"><br>原型模式主要包含如下三个角色：</p>
+<ul>
+<li><strong>Prototype</strong>：抽象原型类。声明克隆自身的接口。</li>
+<li><strong>ConcretePrototype</strong>：具体原型类。实现克隆的具体操作。</li>
+<li><strong>Client</strong>：客户类。让一个原型克隆自身，从而获得一个新的对象。</li>
+</ul>
+<p>讲到原型模式，我们就不得不区分两个概念：深拷贝、浅拷贝。</p>
+<ul>
+<li><strong>浅拷贝</strong>：使用一个已知实例对新创建实例的成员变量逐个赋值，这个方式被称为浅拷贝。</li>
+<li><strong>深拷贝</strong>：当一个类的拷贝构造方法，不仅要复制对象的所有非引用成员变量值，还要为引用类型的成员变量创建新的实例，并且初始化为形式参数实例值。</li>
+</ul>
+<h2 id="JDK-中使用的原型模式"><a href="#JDK-中使用的原型模式" class="headerlink" title="JDK 中使用的原型模式"></a>JDK 中使用的原型模式</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648313188444-67fe8954-aec8-42e0-aa2d-cc18c7c00697.png#clientId=u7cda6d28-aff4-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ubfc0d4bc&margin=%5Bobject%20Object%5D&name=image.png&originHeight=255&originWidth=433&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=10391&status=done&style=none&taskId=u68df6cd2-517f-495e-9b05-453dc1d6d53&title=" alt="image.png"><br>所有的 Java 类都继承至 Object，而 Object 类提供了一个 clone()方法，该方法可以将一个 java 对象复制一份，因此在 java 中可以直接使用 clone()方法来复制一个对象。但是需要实现 clone 的 Java 类必须要实现一个接口:Cloneable.该接口表示该类能够复制且具体复制的能力，如果不实现该接口而直接调用 clone()方法会抛出 CloneNotSupportedException 异常。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public class ObjectClone implements Cloneable&#123;
+    public Object clone()&#123;
+        Object object &#x3D; null;
+        try &#123;
+                object &#x3D; super.clone();
+        &#125; catch (CloneNotSupportedException exception) &#123;
+                System.err.println(&quot;Not support cloneable&quot;);
+        &#125;
+        return object;
+    &#125;
+&#125;</code></pre>
+
+<p>Java 中任何实现了 Cloneable 接口的类都可以通过调用 clone()方法来复制一份自身然后传给调用者。一般而言，clone()方法满足：<br>1）对任何的对象 x，都有 x.clone() !&#x3D;x，即克隆对象与原对象不是同一个对象。<br>2）对任何的对象 x，都有 x.clone().getClass()&#x3D;&#x3D;x.getClass()，即克隆对象与原对象的类型一样。<br>3）如果对象 x 的 equals()方法定义恰当，那么 x.clone().equals(x)应该成立。</p>
+<h2 id="原型模式优点"><a href="#原型模式优点" class="headerlink" title="原型模式优点"></a>原型模式优点</h2><p>1、如果创建新的对象比较复杂时，可以利用原型模式简化对象的创建过程，同时也能够提高效率。<br>2、可以使用深克隆保持对象的状态。<br>3、原型模式提供了简化的创建结构。</p>
+<h2 id="原型模式缺点"><a href="#原型模式缺点" class="headerlink" title="原型模式缺点"></a>原型模式缺点</h2><p>1、在实现深克隆的时候可能需要比较复杂的代码。<br>2、需要为每一个类配备一个克隆方法，而且这个克隆方法需要对类的功能进行通盘考虑，这对全新的类来说不是很难，但对已有的类进行改造时，不一定是件容易的事，必须修改其源代码，违背了“开闭原则”。</p>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>1、如果创建新对象成本较大，我们可以利用已有的对象进行复制来获得。<br>2、如果系统要保存对象的状态，而对象的状态变化很小，或者对象本身占内存不大的时候，也可以使用原型模式配合备忘录模式来应用。相反，如果对象的状态变化很大，或者对象占用的内存很大，那么采用状态模式会比原型模式更好。<br>3、需要避免使用分层次的工厂类来创建分层次的对象，并且类的实例对象只有一个或很少的几个组合状态，通过复制原型对象得到新实例可能比使用构造函数创建一个新实例更加方便。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>1、原型模式向客户隐藏了创建对象的复杂性。客户只需要知道要创建对象的类型，然后通过请求就可以获得和该对象一模一样的新对象，无须知道具体的创建过程。<br>2、克隆分为浅克隆和深克隆两种。<br>3、我们虽然可以利用原型模式来获得一个新对象，但有时对象的复制可能会相当的复杂，比如深克隆。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/java/java-reference/" rel="next" title="Java引用类型">
+            <i class="fa far fa-chevron-left"></i> Java引用类型
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/design-pattern/jdk-adapter-pattern/" rel="prev" title="JDK设计模式（五）适配器模式">
+            JDK设计模式（五）适配器模式 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JDK-%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%9A%84%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F"><span class="toc-text">JDK 中使用的原型模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F%E4%BC%98%E7%82%B9"><span class="toc-text">原型模式优点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F%E7%BC%BA%E7%82%B9"><span class="toc-text">原型模式缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">使用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

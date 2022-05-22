@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Etcd Watch机制 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="watch 是 mvcc 包中的一个功能，之所以拿出来说，是因为它确实有很重的逻辑。watch 是监听一个或一组 key，key 的任何变化都会发出消息。某种意义上讲，这就是发布订阅模式。https:&#x2F;&#x2F;segmentfault.com&#x2F;a&#x2F;1190000021787055   对比  既然 Watch 机制就是发布订阅模式，我们通过对比 Kafka，来更深入了解 Watch。 首先说明结论： E">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Etcd Watch机制">
+<meta property="og:url" content="https://www.alicharles.com/article/etcd/etcd-watch/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="watch 是 mvcc 包中的一个功能，之所以拿出来说，是因为它确实有很重的逻辑。watch 是监听一个或一组 key，key 的任何变化都会发出消息。某种意义上讲，这就是发布订阅模式。https:&#x2F;&#x2F;segmentfault.com&#x2F;a&#x2F;1190000021787055   对比  既然 Watch 机制就是发布订阅模式，我们通过对比 Kafka，来更深入了解 Watch。 首先说明结论： E">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333092046-903c1cad-93f9-4963-bbab-1a8dba9fbe54.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=732&id=ue640269b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=732&originWidth=586&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=55310&status=done&style=none&taskId=ud198c15a-c76d-4b46-83e3-0b5313b4522&title=&width=586">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333110163-e8f57b54-1173-42f6-b70d-4adf39287517.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=634&id=uec73c1c9&margin=%5Bobject%20Object%5D&name=image.png&originHeight=634&originWidth=732&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=77541&status=done&style=none&taskId=u2311c2b1-ed35-427e-b1ba-e50fa3083a0&title=&width=732">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333293445-d3b48322-b865-4d74-9b00-8e1982e2eee1.png#clientId=ub19f4876-2fdf-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=206&id=u4267a929&margin=%5Bobject%20Object%5D&name=image.png&originHeight=206&originWidth=732&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=89993&status=done&style=none&taskId=u97de705b-a4eb-4dca-b35d-3df35111040&title=&width=732">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333319458-12eb50d2-a66b-4a45-baae-d30d91b43345.png#clientId=ub19f4876-2fdf-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=184&id=uaa0d8e6a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=388&originWidth=1576&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=176312&status=done&style=none&taskId=u9921ffac-f9aa-4795-9605-4e207b93f21&title=&width=746">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333367096-914ce175-94f5-427b-86a4-0268ccd89e0f.png#clientId=ub19f4876-2fdf-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=572&id=ue2bb00f1&margin=%5Bobject%20Object%5D&name=image.png&originHeight=677&originWidth=732&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=88626&status=done&style=none&taskId=u1c577aa6-a5be-4130-9323-c2c1d519829&title=&width=618">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333411733-cae3e46b-9a77-4b2a-bdf9-0222d21f2b86.png#clientId=ub19f4876-2fdf-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=597&id=u2bb9d879&margin=%5Bobject%20Object%5D&name=image.png&originHeight=671&originWidth=732&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=106483&status=done&style=none&taskId=u5bb36fec-96e6-4680-ab95-eb5efbe46f3&title=&width=651">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647277142417-43c3a5be-779d-4870-bb85-499c03e0067e.png#clientId=u28b533e9-4247-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=435&id=u5ffdc645&margin=%5Bobject%20Object%5D&name=image.png&originHeight=521&originWidth=988&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=99714&status=done&style=none&taskId=uf3661f8c-dcb1-4d45-94b1-ff9b908e272&title=&width=825">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332451786-6b372b3d-ca74-4561-b162-5ec7ffed94e2.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=584&id=u95342c91&margin=%5Bobject%20Object%5D&name=image.png&originHeight=584&originWidth=570&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=71266&status=done&style=none&taskId=ufa1860ba-7a1b-4c0d-9abc-5cb11fb7e8e&title=&width=570">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332503352-f6b49e7a-6de3-4614-92f2-debfe3ff1cce.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=305&id=u297f15e5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=305&originWidth=708&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=32572&status=done&style=none&taskId=u9a81b0cf-5fb2-4741-ba7d-1000e72a92a&title=&width=708">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332525229-0c0f5fc4-840b-4ddc-b733-b21e7492aeec.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=437&id=ucf1bb072&margin=%5Bobject%20Object%5D&name=image.png&originHeight=437&originWidth=552&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=69198&status=done&style=none&taskId=u82744d60-c170-4971-9638-12c5f178e31&title=&width=552">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332547975-19b4f78e-bf39-4532-b2c3-8ed393fe2f10.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=377&id=u5faab80d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=377&originWidth=933&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=56344&status=done&style=none&taskId=ua87eb265-3aaf-4ad1-a41f-a1e4f463c98&title=&width=933">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332566970-d8ede7bb-955a-4c26-93d6-45b0abf54dfc.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=441&id=u985a830b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=441&originWidth=1200&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=122352&status=done&style=none&taskId=u3ad37cf0-5999-4b67-8ba9-b6a68bce6bd&title=&width=1200">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332591799-b3c946a7-594a-4b5a-b740-bdd1d8b9192d.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=513&id=ueb2ff0a0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=513&originWidth=465&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=47473&status=done&style=none&taskId=u9532c88d-53e0-40bd-b450-3da472863f1&title=&width=465">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332610556-b7d63b91-99e8-4d23-a5d9-d15a7c632e7c.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=199&id=u35c4ca9c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=199&originWidth=503&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=11990&status=done&style=none&taskId=udc7b5f91-34ce-452c-a0ea-47f255421ca&title=&width=503">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332627222-1069364f-fad8-4a14-af9f-37310e26864a.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=341&id=ufefa5f31&margin=%5Bobject%20Object%5D&name=image.png&originHeight=341&originWidth=706&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=41411&status=done&style=none&taskId=u9bfeeb2a-bcc3-400e-8b8e-5481d04e835&title=&width=706">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332704592-0ddff3f7-8abf-4d1d-a895-369366f0af17.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=386&id=u19bc4e5e&margin=%5Bobject%20Object%5D&name=image.png&originHeight=386&originWidth=1053&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=77353&status=done&style=none&taskId=u45e744bf-24f0-431b-8ef1-21e053fb9f3&title=&width=1053">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332720273-bac1820d-f734-482b-98ed-6737d3f9510c.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=315&id=u15a55f4d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=315&originWidth=760&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=69990&status=done&style=none&taskId=u8a1821c8-6301-4c2b-a70d-458dd3a81d0&title=&width=760">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332879811-a20b7de6-a93d-4ea9-9c36-e99d768b5ee0.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=350&id=uff0d3c06&margin=%5Bobject%20Object%5D&name=image.png&originHeight=350&originWidth=431&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=24373&status=done&style=none&taskId=u13b3f945-5ca5-403c-9600-9c716ffc5be&title=&width=431">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332896374-af568760-e22e-4819-9d14-c6bba4cae298.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=475&id=u3a2a1052&margin=%5Bobject%20Object%5D&name=image.png&originHeight=475&originWidth=542&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=38689&status=done&style=none&taskId=u47d1c787-d261-463d-8278-cc4f005b05f&title=&width=542">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332917866-7ad571c9-cd28-41f0-af3c-e368d2f543d5.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=542&id=u44435634&margin=%5Bobject%20Object%5D&name=image.png&originHeight=542&originWidth=625&originalType=binary%E2%88%B6=1&rotation=0&showTitle=true&size=57577&status=done&style=none&taskId=u0e40e03d-620f-423f-be18-d4b75407997&title=api-server%E8%AF%BB%E5%86%99%E4%B8%8D%E4%B8%80%E8%87%B4&width=625">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332930990-4df6d8ac-91d0-4921-973c-2d5fe1a54478.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=454&id=u09529b6d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=454&originWidth=819&originalType=binary%E2%88%B6=1&rotation=0&showTitle=true&size=88670&status=done&style=none&taskId=u76b283a0-5015-4325-81d7-19eb17a5614&title=k8s-api-version&width=819">
+<meta property="article:published_time" content="2020-08-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.496Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Etcd">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333092046-903c1cad-93f9-4963-bbab-1a8dba9fbe54.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=732&id=ue640269b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=732&originWidth=586&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=55310&status=done&style=none&taskId=ud198c15a-c76d-4b46-83e3-0b5313b4522&title=&width=586">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Etcd Watch机制</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2020-08-21T00:00:00+08:00">
+            2020-08-21
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/etcd/" itemprop="url" rel="index">
+              <span itemprop="name">etcd</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>watch 是 mvcc 包中的一个功能，之所以拿出来说，是因为它确实有很重的逻辑。watch 是监听一个或一组 key，key 的任何变化都会发出消息。某种意义上讲，这就是发布订阅模式。<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000021787055">https://segmentfault.com/a/1190000021787055</a></p>
+<h2 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h2><p>既然 Watch 机制就是发布订阅模式，我们通过对比 Kafka，来更深入了解 Watch。<br>首先说明结论：<br>ETCD 没有消费者组的概念，所以不能代替 Kafka<br>对比其他方面呢：</p>
+<table><thead><tr>
+<th></th>
+<th>ETCD</th>
+<th>Kafka</th>
+</tr>
+</thead><tbody><tr>
+<td>消费方式</td>
+<td>监听一个 Key</td>
+<td>订阅一个 Topic</td>
+</tr>
+<tr>
+<td>生产方式</td>
+<td>Put(Key, Value)</td>
+<td>Produce(Topic, Message)</td>
+</tr>
+<tr>
+<td>历史消息是否保留</td>
+<td>保留</td>
+<td>保留</td>
+</tr>
+<tr>
+<td>能否从指定位置消费</td>
+<td>可以从指定 Revision 消费</td>
+<td>可以从指定 offset 消费</td>
+</tr>
+<tr>
+<td>能否保证消息不重放</td>
+<td>不能</td>
+<td>消费者会主动上报 offset，kafka 会保存每个消费者的 offset，消费者重启会从当前进度消费</td>
+</tr>
+</tbody></table><p>对比 Kafka 不是试图用 ETCD 代替 Kafka，是想通过对比了解 Watch 的特性和局限性</p>
+<h2 id="猜想"><a href="#猜想" class="headerlink" title="猜想"></a>猜想</h2><p>在讨论别人是怎么实现的时候，自己总要先猜想下。想的过程中就会发现难点在哪。<br>我的想法：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">type watcher struct &#123;
+    key string &#x2F;&#x2F; 要监听的key
+
+    ch  chan struct&#123;&#125; &#x2F;&#x2F; 通过ch将消息发出来
+&#125;
+
+func loop() &#123;
+    for _, w :&#x3D; range []watchers &#123;
+        ch &lt;- message
+    &#125;
+&#125;</code></pre>
+
+<p>解释下，我的想法中，每一个监听者都是一个 watcher，监听者会自己消费自己的 ch，实现消费功能。在服务端需要维护一个 loop，将消息不断的发送到每一个监听者的 ch 中。<br>我感觉大多数人的最直观想法应该就是这样。<br>这样做我实现了</p>
+<ul>
+<li>订阅发布功能</li>
+</ul>
+<p>但我没有做到</p>
+<ul>
+<li>同时监听一个范围的 key（比如：我可以监听 key&#x3D;foo，但不能监听 key&#x3D;foo ～ fox。这是 ETCD 一个重要的功能）</li>
+<li>消费者消费速率不同（比如：按我的设想，有一个消费者出现阻塞，会导致 loop 阻塞）</li>
+</ul>
+<p>有了这些想法之后，我们来看看 ETCD 中 Watch 是怎么实现的。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>在 MVCC 文章中提到，KV 接口的具体实现是 store 结构体。Watch 的实现是在 store 上封装了一层,叫做：watchableStore，重写了 store 的 Write 方法。<br>通过 MVCC 中介绍，store 的任何写操作，都需要 Write 方法返回的 TxnWrite。所以这里重写 Write 方法意味这任何写操作都会经过 watchableStore。</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">func (tw *watchableStoreTxnWrite) End() &#123;
+   changes :&#x3D; tw.Changes()
+
+   evs :&#x3D; make([]mvccpb.Event, len(changes))
+   for i, change :&#x3D; range changes &#123;
+      evs[i].Kv &#x3D; &amp;changes[i]
+   &#125;
+
+   tw.s.notify(rev, evs)
+   tw.TxnWrite.End()
+&#125;
+
+type watchableStoreTxnWrite struct &#123;
+   TxnWrite
+   s *watchableStore
+&#125;
+
+func (s *watchableStore) Write(trace *traceutil.Trace) TxnWrite &#123;
+   return &amp;watchableStoreTxnWrite&#123;s.store.Write(trace), s&#125;
+&#125;</code></pre>
+
+<p>以上代码只列出了核心的逻辑，不难看出，watchableStoreTxnWrite 在事务提交时，先将本次变更 changes 打包成 Event，然后调用 notify 来将变更通知出去。最后真正提交事务 TxnWrite.End()<br>现在待推送的消息（Event）已经通过 notify 方法进入到了 Watch 机制中，我们看看这个消息是如何流转的。<br>首先需要介绍几个对象：</p>
+<ul>
+<li>Event</li>
+</ul>
+<p>事件。变更的消息是以 Event 的形式发送出去的，Event 包括 KeyValue，同时包括操作类型（Put、Delete 等）</p>
+<ul>
+<li>watcher</li>
+</ul>
+<p>watcher 监听一个或一组 key，如果有变更，watcher 将变更内容通过 chan 发送出去。</p>
+<ul>
+<li>watcherGroup</li>
+</ul>
+<p>顾名思义，一组 watcher。watcherGroup 管理多个 watcher，能够根据 key 快速找到监听该 key 的一个或多个 watcher。</p>
+<ul>
+<li>watchableStore</li>
+</ul>
+<p>继承自 store，在 store 基础上实现了 watch 功能。watchableStore 管理着两个 watcherGroup：synced、unsynced，和一个用于缓存的 victims。victims 是缓存当前未发出去的 Event。</p>
+<ul>
+<li>watchStream</li>
+</ul>
+<p>watchStream 是对 watchableStore 的封装。因为 watchableStore 继承自 store，所以他实现了很多方法，但这些方法并不都是用于 Watch 功能。所以 watchStream 对 watchableStore 再次封装，暴露出与 Watch 有关的方法。<br>在知道这 5 个对象之后，我们是如何使用 Watch 呢？</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">func testWatch() &#123;
+    s :&#x3D; newWatchableStore()
+
+    w :&#x3D; s.NewWatchStream()
+
+    w.Watch(start_key: foo, end_key: nil)
+
+    w.Watch(start_key: bar, end_key: nil)
+
+    for &#123;
+        consume :&#x3D; &lt;- w.Chan()
+    &#125;
+&#125;</code></pre>
+
+<p>解释下，我们先创建了 watchableStore，这是 ETCD 启动后就创建了的。当我们要使用 Watch 功能时，我们创建了一个 watchStream（s.NewWatchStream）。创建出来的 w 可以监听多个 key：foo、bar。之后我们就可以消费 w.Chan()返回的 chan。foo 或 bar 的任何变化，都会通过这个 chan 发送给消费端 consume。<br>于是我们便得到下面这幅图：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333092046-903c1cad-93f9-4963-bbab-1a8dba9fbe54.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=732&id=ue640269b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=732&originWidth=586&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=55310&status=done&style=none&taskId=ud198c15a-c76d-4b46-83e3-0b5313b4522&title=&width=586" alt="image.png"><br>可以看到 watchStream 实现了在一大堆 kv 的变化中，过滤出监听的 key，将 key 的变化输出。<br>紧接着，我们将这幅图补充完整：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333110163-e8f57b54-1173-42f6-b70d-4adf39287517.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=634&id=uec73c1c9&margin=%5Bobject%20Object%5D&name=image.png&originHeight=634&originWidth=732&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=77541&status=done&style=none&taskId=u2311c2b1-ed35-427e-b1ba-e50fa3083a0&title=&width=732" alt="image.png"><br>这幅图是什么意思呢？<br>watchableStore 收到了所有 key 的变更后，将这些 key 交给 synced（watchGroup），synced 能够快速地从所有 key 中找到监听的 key。将这些 key 发送给对应的 watcher，这些 watcher 再通过 chan 将变更信息发送出去。<br>synced 是怎么快速找到符合条件的 key 呢？<br>ETCD 中使用了 map 和 adt（红黑树）来实现。<br>不单独使用 map 是因为 watch 可以监听一个范围的 key。如果只监听一个 key<br><code>watch(start_key: foo, end_key: nil)</code><br>我们可以这样存储<br><code>map[key]*watcher</code><br>这样可以根据 key 快速找到对应的 watcher，ETCD 也是这样做的。<br>但对于一组 key 呢？<br><code>watch(start_key: foo, end_key: fop)</code><br>这里我监听了从 foo-&gt;fop 之间的所有 key，理论上这些 key 的数目是无限的，所以无法再使用 map。<br>比如：key&#x3D;fooac 也属于监听范围。<br>ETCD 用 adt 来存储这种 key。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333293445-d3b48322-b865-4d74-9b00-8e1982e2eee1.png#clientId=ub19f4876-2fdf-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=206&id=u4267a929&margin=%5Bobject%20Object%5D&name=image.png&originHeight=206&originWidth=732&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=89993&status=done&style=none&taskId=u97de705b-a4eb-4dca-b35d-3df35111040&title=&width=732" alt="image.png"><br>adt 的实现这里不做介绍，只用知道 adt 能够根据 key&#x3D;fooac 快速地找到所属范围 foo-&gt;fop。</p>
+<blockquote>
+<p>adt 的原理推荐这篇文章：<a target="_blank" rel="noopener" href="https://link.segmentfault.com/?enc=tBF+NgCKCto5lgP5kXXmWA==.O67spWZrUmB6U9JCJg/j9XFxWIR0u60mv6ztjsgDS34DxqDkYQqkqsjEV+6T0iM1">https://www.jianshu.com/p/e13...</a><br>adt 的 go 实现：go.etcd.io&#x2F;etcd&#x2F;pkg&#x2F;ad</p>
+</blockquote>
+<p>在找到 watcher 后，调用 watcher 的 send()方法，将变更的 Event 发送出去。<br>这就是上述图的意思，也就是正常的 Watch 流程。</p>
+<h3 id="各种场景"><a href="#各种场景" class="headerlink" title="各种场景"></a>各种场景</h3><p>上图所述是正常流程，但是会有很多不正常的情况发生。<br>上图可以看到，消息都是通过一个 Chan 发送出去，但如果消费者消费速度慢，Chan 就容易堆积。Chan 的空间不可能无限大，那就必然会有满的时候，满了后该怎么办呢？<br>接下来就要讨论上图 unsynced、victims 的作用了。<br>Chan 什么时候会满呢？<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333319458-12eb50d2-a66b-4a45-baae-d30d91b43345.png#clientId=ub19f4876-2fdf-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=184&id=uaa0d8e6a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=388&originWidth=1576&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=176312&status=done&style=none&taskId=u9921ffac-f9aa-4795-9605-4e207b93f21&title=&width=746" alt="image.png"><br>代码中 Chan 的长度是 1024。不过这也是一个随机值，只是没有现在更好的选择。<br>一旦满了，会发生以下操作：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">func (s *watchableStore) notify() &#123;
+    var victim watcherBatch
+    ...
+    w.minRev &#x3D; rev + 1           &#x2F;&#x2F; w是当前watcher
+    if victim &#x3D;&#x3D; nil &#123;
+       victim &#x3D; make(watcherBatch)
+    &#125;
+    w.victim &#x3D; true              &#x2F;&#x2F; w被标记为受损的
+    victim[w] &#x3D; eb               &#x2F;&#x2F; eb是当前的变更消息EventBatch
+    s.synced.delete(w)
+    ...
+    s.addVictim(victim)          &#x2F;&#x2F; 将victim添加到s的victims中
+&#125;</code></pre>
+
+<p>watcher 会记录当前的 Revision，并将自身标记为受损的。此次的变更操作会被保存到 watchableStore 的 victims 中。同时该 watcher 会被从 synced 踢出。<br>假设此时有一个写操作：foo&#x3D;f1。而正好 Chan 此时刚满，则监听 foo 的 watcher 将从 synced 中踢出，同时 foo&#x3D;f1 被保存到 victims 中<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333367096-914ce175-94f5-427b-86a4-0268ccd89e0f.png#clientId=ub19f4876-2fdf-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=572&id=ue2bb00f1&margin=%5Bobject%20Object%5D&name=image.png&originHeight=677&originWidth=732&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=88626&status=done&style=none&taskId=u1c577aa6-a5be-4130-9323-c2c1d519829&title=&width=618" alt="image.png"><br>接下来对 foo 的任何变更，该 watcher 都不会记录。那这些消息就都丢掉了吗？当然不是，watcher 变成受损状态时记录下了当时的 Revision，这个很重要。<br>这时要说到两个工作协程了：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;&#x2F; 我们在创建watchableStore时，会同时启动两个工作协程
+go s.syncWatchersLoop()
+go s.syncVictimsLoop()</code></pre>
+
+<p>顾名思义，第一个协程用于将 unsynced 的 watcher 同步为 synced。<br>第二个协程用于循环清除 watchableStore 中的 victims。<br>在上面的场景中，我们知道，队列满时，当时变更的 Event 被放入了 victims 中。这个协程就会试图清除这个 Event。怎么清除呢？协程会不断尝试让 watcher 发送这个 Event，一旦队列不满，watcher 将这个 Event 发出后。该 watcher 就被划入了 unsycned 中，同时不再是受损状态。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647333411733-cae3e46b-9a77-4b2a-bdf9-0222d21f2b86.png#clientId=ub19f4876-2fdf-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=597&id=u2bb9d879&margin=%5Bobject%20Object%5D&name=image.png&originHeight=671&originWidth=732&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=106483&status=done&style=none&taskId=u5bb36fec-96e6-4680-ab95-eb5efbe46f3&title=&width=651" alt="image.png"><br>此时 syncWatchersLoop 协程就开始起作用。由于在受损状态下，这个 watcher 已经错过了很多消息。为了追回进度，协程会根据 watcher 保存的 Revision，找出受损之后所有的消息，将关于 foo 的消息全部给 watcher，当 watcher 将这些消息都发送出去后。watcher 就脱离了 unsynced，成为了 synced。<br>至此就解决了 Chan 满导致的问题。同时也阐明了 Watch 的设计实现。</p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/0c1c462c19d0">https://www.jianshu.com/p/0c1c462c19d0</a></p>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>查询是后台领域经常使用的一种数据同步方式。但是在一些场景，需求方需要针对一些数据变化做出响应。虽然定期轮询也可以满足部分的需求，但在以下场景中就不太合适了。</p>
+<ul>
+<li>存活检测：为了检测低于%1 异常。轮询会一直耗费查询资源。</li>
+<li>实时响应：变化响应时间要尽可能小，但是轮询周期越小，消耗的资源也越多。</li>
+</ul>
+<p>因此数据层往往在“增删改查”这 4 种基本接口之外还会提供一个 watch 接口用来实时推送数据变化事件。</p>
+<h1 id="Watch-机制设计"><a href="#Watch-机制设计" class="headerlink" title="Watch 机制设计"></a>Watch 机制设计</h1><p>watch 机制是一个典型的 CS 架构，其中数据需求方作为 client，数据提供方作为 server。由 client 向 server 发起请求，server 端推送数据给 client。</p>
+<h2 id="版本号"><a href="#版本号" class="headerlink" title="版本号"></a>版本号</h2><p>带有 watch 机制的存储系统往往都是具有版本功能的。具备版本功能的系统可以实现以下两个功能：</p>
+<ul>
+<li>因为某些原因（崩溃、重启）client 可能错失部分历史事件。恢复之后 client 可以利用版本号重新接收这些事件。</li>
+<li>client 可以在请求参数中附带版本号表示该版本号之前的历史数据已经接收。server 可以过滤掉过时事件只发送新的事件给 client。具体如下图所示。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647277142417-43c3a5be-779d-4870-bb85-499c03e0067e.png#clientId=u28b533e9-4247-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=435&id=u5ffdc645&margin=%5Bobject%20Object%5D&name=image.png&originHeight=521&originWidth=988&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=99714&status=done&style=none&taskId=uf3661f8c-dcb1-4d45-94b1-ff9b908e272&title=&width=825" alt="image.png"></p>
+<h2 id="连接层"><a href="#连接层" class="headerlink" title="连接层"></a>连接层</h2><p>连接层讨论的是 client 和 server 之间通信的协议。相较于单机程序之间的 IPC 通信，分布式系统网络通信的 IO 成本是非常大的。下面就连接层实现方式、性能和开发成本展开具体分析。</p>
+<h3 id="http-长轮询"><a href="#http-长轮询" class="headerlink" title="http 长轮询"></a>http 长轮询</h3><p>http 长轮询是一种非常容易实现的 watch 手段，因此也是使用最广泛的。比如 etcd v2、consul 等都使用了 http 长轮询技术来 watch 事件。具体实现原理如下图。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332451786-6b372b3d-ca74-4561-b162-5ec7ffed94e2.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=584&id=u95342c91&margin=%5Bobject%20Object%5D&name=image.png&originHeight=584&originWidth=570&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=71266&status=done&style=none&taskId=ufa1860ba-7a1b-4c0d-9abc-5cb11fb7e8e&title=&width=570" alt="image.png"><br>http 长轮询的优点是实现简单、兼容性好，不需要额外开发客户端程序。但是这样的实现意味每接收一个 event 都需要至少走完一个 http 请求应答流程。这对于 watch key 非常多的系统，负荷是相当大的。假设某个后台系统需要 watch 10W 个 key，每个 http 轮询超时时间为 100s。计算下来即使在空闲的时候系统需要承受并发 10W 个连接和 1K&#x2F;QSP 的请求量。</p>
+<h3 id="长连接"><a href="#长连接" class="headerlink" title="长连接"></a>长连接</h3><p>长连接模式是对 http 长轮询的一种优化。不同于 http 长轮询每个连接都只能处理一个事件，长连接模式一个连接可以接收多个事件，通过减少了 tcp 三次握手的开销，提高了资源利用率。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332503352-f6b49e7a-6de3-4614-92f2-debfe3ff1cce.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=305&id=u297f15e5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=305&originWidth=708&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=32572&status=done&style=none&taskId=u9a81b0cf-5fb2-4741-ba7d-1000e72a92a&title=&width=708" alt="image.png"><br>但相对而言长连接模式开发成本要比 http 长轮询高，主要体现在：</p>
+<ul>
+<li>需要定义事件流的序列化和反序列化协议。目前没有公认的标准，只能私有定制应用于内部系统。</li>
+<li>没有成熟的反向代理组件。需要考虑在大规模部署下的负载均衡问题。</li>
+</ul>
+<p>长连接模式虽然减少了 tcp 握手的开销，但每个 watch key 都需要一个连接。假设某个后台系统需要 watch 10w 个 key，就需要建立 10W 个连接，这很容易消耗光 server 的 socket 和内存资源。</p>
+<h3 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h3><p>多路复用是通信工程上的概念，指的是将多个低速信道整合到一个高速信道进行传输，从而有效地利用了高速信道。通过使用多路复用，可以避免维护多条线路，从而有效地节约运营成本。<br>网络工程上有很多方面借鉴了多路复用的思想。比如 L4 层的 TCP、UDP 就是复用了 L3 层的 IP 层的通道。同理我们也可以在 tcp 上层定义更高层协议来复用 tcp 连接。如下图，虽然端到端之间只有一个 tcp 连接。但在逻辑层上可以抽象出多个双工的 session stream。每个 session stream 负责一个 watch 任务。假设一个客户端需要 watch 1k 个 key，原先按照需要 1k 个连接，但现在只需要一个连接即可。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332525229-0c0f5fc4-840b-4ddc-b733-b21e7492aeec.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=437&id=ucf1bb072&margin=%5Bobject%20Object%5D&name=image.png&originHeight=437&originWidth=552&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=69198&status=done&style=none&taskId=u82744d60-c170-4971-9638-12c5f178e31&title=&width=552" alt="image.png"><br>多路复用核心就是在 tcp 连接上构建一个逻辑层。该逻辑层负责处理一下内容：</p>
+<ul>
+<li>建立、关闭 stream 需要的控制帧。</li>
+<li>接收时将 tcp 连接里的数据流，拆分为一个个 frame，再按照协议封装到对于的 stream 中。</li>
+<li>发送时将 stream 里的数据流分割成 frame，再通过 tcp 层发送出去。</li>
+<li>为了防止 stream 之间相互干扰抢占带宽资源，需要设计流控机制公平调度。</li>
+<li>空闲 stream 保活通信，维持 session 会话心跳。</li>
+<li>封装好类似 socket 的 Read 和 Write 的接口，方便业务调用。</li>
+</ul>
+<p>可以看出，多路复用技术是开发是比较复杂的。但值得庆幸的是，业内已经有了成熟可靠的工具和标准。HTTP&#x2F;2 定义了多路复用的协议，grpc 实现多语言版本的接口。我们完全可以秉着拿来主义的思想直接来用，比如 etcd v3 版本就是使用 grpc stream 模式来处理 watch 的。</p>
+<blockquote>
+<p>The etcd3 API multiplexes watches on a single connection. Instead of opening a new connection, a client registers a watcher on a bidirectional gRPC stream. The stream delivers events tagged with a watcher’s registered ID. Multiple watch streams can even share the same TCP connection. Multiplexing and stream connection sharing reduce etcd3’s memory footprint by at least an order of magnitude.</p>
+</blockquote>
+<p>consul 的 watch 也采用了多路复用技术。它自己实现了一个多路复用库<a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://github.com/hashicorp/yamux">yamux</a>，虽然没有 http&#x2F;2 和 grpc 那么完备，但是还是可以供愿意自己练手的同学参考学习。</p>
+<h3 id="watch-gateway"><a href="#watch-gateway" class="headerlink" title="watch gateway"></a>watch gateway</h3><p>对于一般的场合，多路复用已经有很好的性能表现了。但是 etd v3.2 版本提出一个进一步提高 watch 性能的优化方案 watch gateway。<br>考虑到 k8s 使用场合可能存在有上万个 watcher。一旦事件触发 etcd 需要广播给所有的 watcher，就会带来相当大的性能消耗，甚至会影响的读写性能。但在实际场景，这些 watcher 很有可能监听的资源是重复的，比如每个 api-server 监听的资源都是一样的。为了优化这种大量重复监听 watcher 的场景，etcd v3.2 版本设计了 gateway 组件。gateway 可以聚合 watch 相同范围 key 的 watcher。举例说明如下图，client1、client2、client3 都对事件 a 感兴趣，如果直接请求 server，server 需要负担 3 个 watcher。但如果通过 gateway 聚合，可以合并 3 个 watch 变成 1 个，这样可以降低 server 的压力<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332547975-19b4f78e-bf39-4532-b2c3-8ed393fe2f10.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=377&id=u5faab80d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=377&originWidth=933&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=56344&status=done&style=none&taskId=ua87eb265-3aaf-4ad1-a41f-a1e4f463c98&title=&width=933" alt="image.png"><br>本质上来说，gateway 只是将广播的压力从 server 转移到自己身上去了。但是 server 作为存储服务器，一般都是有状态的。无论是扩容还是迁移都是有一定成本的。但是 gateway 是一个无状态的服务，完全可以根据实际需求横向部署 gateway 服务器来降低存储层的压力。<br>下图是 etcd v3.2 使用 watch-gateway 性能提升的对比图。在不使用 gateway 时，随着 watcher 的增多，写和 watch 速率下降。但是使用了 gateway 之后，watch 数量增加对性能没有影响。详细文档见(<a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://coreos.com/blog/etcd-3.2-announcement">https://coreos.com/blog/etcd-3.2-announcement</a>)<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332566970-d8ede7bb-955a-4c26-93d6-45b0abf54dfc.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=441&id=u985a830b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=441&originWidth=1200&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=122352&status=done&style=none&taskId=u3ad37cf0-5999-4b67-8ba9-b6a68bce6bd&title=&width=1200" alt="image.png">存储<br>watch 机制实现的另一个核心问题就是如何存储数据。按照存储类型来分，可以分为内存和硬盘里两大类。下面会根据具体场景来讨论这两种类型的数据格式的设计。</p>
+<h3 id="历史数据存储"><a href="#历史数据存储" class="headerlink" title="历史数据存储"></a>历史数据存储</h3><p>watch 机制的特点决定了存储系统需要保存历史数据。举例说明，如下图一个数据同步场景。client 向 server watch 同步数据，历史同步数据已经达到 1G。某个时间点网络异常导致 client 和 server 之间通信中断，watch 被迫停止。在网络中断时间内，server 的数据发生了变更。当网络恢复的时候，client 重新发送 watch 请求，希望能够从 version&#x3D;10001 继续获取事件。但此时 server 端的 version&#x3D;10010，并且没有保存历史数据。客户端发现数据丢失，只好作废之前同步的数据，重新同步高达 1G 的数据，等追上之后再继续 watch。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332591799-b3c946a7-594a-4b5a-b740-bdd1d8b9192d.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=513&id=ueb2ff0a0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=513&originWidth=465&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=47473&status=done&style=none&taskId=u9532c88d-53e0-40bd-b450-3da472863f1&title=&width=465" alt="image.png"><br>保留历史数据可以简化客户端的工作，但是这也给存储方带来了极大的压力。</p>
+<h4 id="滑动事件窗口"><a href="#滑动事件窗口" class="headerlink" title="滑动事件窗口"></a>滑动事件窗口</h4><p>内存型数据库一个缺点是容量相对有限。如果在数据更改频繁的情况下保留历史数据的话，有可能导致内存溢出。因此内存型数据库往往采用滑动事件窗口来作为妥协方案。<br>滑动事件窗口就是一个简单的回环数组。不断的插入新事件、淘汰掉超过大小的旧事件。因为窗口的大小是固定的，因此不会出现内存溢出。<br>如果 watch 的版本命中了滑动事件窗口里的事件版本，就可以返回给 client。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332610556-b7d63b91-99e8-4d23-a5d9-d15a7c632e7c.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=199&id=u35c4ca9c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=199&originWidth=503&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=11990&status=done&style=none&taskId=udc7b5f91-34ce-452c-a0ea-47f255421ca&title=&width=503" alt="image.png"><br>滑动事件窗口的缺点是显而易见的。对于修改频繁的系统，滑动事件窗口可以保存的事件时间非常短，很有可能丢失事件。这个是内存型存储系统的硬伤，没办法根本解决。目前 etcd v2、consul 和 k8s api server 都是采用这样的机制。</p>
+<h4 id="多版本存储"><a href="#多版本存储" class="headerlink" title="多版本存储"></a>多版本存储</h4><p>相较于受限容量的内存型数据库，磁盘数据库的空间就大很多了。有能力存储足够旧的历史版本数据。比如<strong>etcd v3</strong>就是存储了多个版本的数据。<br>简单来说，<strong>etcd v3 在内存里维护一个 B 树</strong>，存储的是 Key 和这个 Key 所有的版本列表。磁盘里维护了一个 B+树，存储的是版本和 KV 的实际内容。磁盘 B+树是实际的数据，内存 B 数一个二级索引。查找某个 Key 某个版本的数据可以分为以下两步：</p>
+<ul>
+<li>通过内存 B 数查找到 Key 对应的版本列表。再从版本列表中找到里查询版本参数最近的一个版本号 Version。</li>
+<li>再到磁盘 B+树中查找 Version 对应的数据信息。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332627222-1069364f-fad8-4a14-af9f-37310e26864a.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=341&id=ufefa5f31&margin=%5Bobject%20Object%5D&name=image.png&originHeight=341&originWidth=706&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=41411&status=done&style=none&taskId=u9bfeeb2a-bcc3-400e-8b8e-5481d04e835&title=&width=706" alt="image.png"><br>因为需要将 Key 存储在内存中，etcd 的实际存储量也是非常有限的。按照 etcd 文档，默认存储是 2G、最大可配置到 8G。当然这个比内存型的 consul 容量还是大的多了。</p>
+<h3 id="事件触发"><a href="#事件触发" class="headerlink" title="事件触发"></a>事件触发</h3><p>和其他的存储系统不一样的是，watch 存储系统需要在某个 key 变更的时候通知到 client。这就需要设计对应的触发响应机制。watcher 往往不仅仅监听单个的 key，还可能是监听某个前缀或是范围 key，只要其中之一有变化，就需要触发事件。<br>事件触发最简单的实现方式就是采用遍历的方法：当某个 Key 发生变化时，逐个遍历 watcher，一旦发现满足条件的 watcher 就发送数据。这种 O(n)复杂度的处理方式固然简单，但随着 watcher 数量的增多，带来的性能损失也是越来越大的。下面介绍两种应用于工程的数据结构。</p>
+<h4 id="radix-树"><a href="#radix-树" class="headerlink" title="radix 树"></a>radix 树</h4><p>说到前缀匹配，很容易想到和前缀匹配相关的数据结构 radix 树。在计算机科学中，基数树，或称 Patricia trie&#x2F;tree，或 crit bit tree，压缩前缀树，是一种更节省空间的 Trie（前缀树）。对于基数树的每个节点，如果该节点是唯一的子树的话，就和父节点合并。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332704592-0ddff3f7-8abf-4d1d-a895-369366f0af17.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=386&id=u19bc4e5e&margin=%5Bobject%20Object%5D&name=image.png&originHeight=386&originWidth=1053&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=77353&status=done&style=none&taskId=u45e744bf-24f0-431b-8ef1-21e053fb9f3&title=&width=1053" alt="image.png"><br>radix.png<br>如图当前缀匹配 watch ro 的时候，可以通过 radix 树找到 om 节点。之后切割 o、m 节点并将 watcher 挂载在 o 节点上。如果 o 下面的节点有任何的变化，都会通过回调通知 watcher 触发事件。<br>consul 就是采用 radix 树来存储 KV 数据的。但是 radix 树只能解决前缀匹配的问题，无法解决范围 Key 的问题。因此 consul 是不支持范围 key watch 的。</p>
+<h4 id="区间树"><a href="#区间树" class="headerlink" title="区间树"></a>区间树</h4><p>radix 作为一个树的问题在于它太长了，需要大量使用间接指针。对于内存型存储结构还算好，但对于磁盘数据结构而言，多次间接查找是非常消耗性能的。目前 B+树还是最适合查找的磁盘数据结构。但 B+树没法反向查找某个 Key 是否在某个 watcher 范围内。为了解决这个问题，etcd v3 采用了区间树。<br>区间树是在红黑树基础上进行扩展得到的支持以区间为元素的动态集合的操作，其中每个节点的关键值是区间的左端点。通过建立这种特定的结构，可是使区间的元素的查找和插入都可以在 O(lgn)的时间内完成。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332720273-bac1820d-f734-482b-98ed-6737d3f9510c.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=315&id=u15a55f4d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=315&originWidth=760&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=69990&status=done&style=none&taskId=u8a1821c8-6301-4c2b-a70d-458dd3a81d0&title=&width=760" alt="image.png"><br>区间树.png<br>关于区间树原理本文不再赘述，感兴趣的同学可以查阅算法导论。简而言之，每个 watcher 将自己的监听范围[start,end]封装成一个节点插入区间树。当某个 Key 发生变化需要查找对应 watcher 的时候，就可以利用区间树快速查找到重叠的 watcher。</p>
+<h1 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h1><p>之前说的是 watch 的实现机制。下面谈谈 watch 的应用场景。利用（list watch 机制）的方式解决以下场景的读性能瓶颈问题：</p>
+<ul>
+<li>读多写少</li>
+<li>可以接受最终一致性</li>
+<li>数据量不大，可以存储在内存中</li>
+</ul>
+<h2 id="服务发现"><a href="#服务发现" class="headerlink" title="服务发现"></a>服务发现</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332879811-a20b7de6-a93d-4ea9-9c36-e99d768b5ee0.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=350&id=uff0d3c06&margin=%5Bobject%20Object%5D&name=image.png&originHeight=350&originWidth=431&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=24373&status=done&style=none&taskId=u13b3f945-5ca5-403c-9600-9c716ffc5be&title=&width=431" alt="image.png"><br>服务发现.png<br>服务发现场景恰好满足了上述的 3 个条件，因此非常适合采用 watch 同步机制来减缓服务发现服务器的读压力。每个客户端可以利用 list watch 缓存一份同步数据到本地，程序直接查询本地缓存，性能非常优异。</p>
+<h2 id="k8s-api-server"><a href="#k8s-api-server" class="headerlink" title="k8s api-server"></a>k8s api-server</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332896374-af568760-e22e-4819-9d14-c6bba4cae298.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=475&id=u3a2a1052&margin=%5Bobject%20Object%5D&name=image.png&originHeight=475&originWidth=542&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=38689&status=done&style=none&taskId=u47d1c787-d261-463d-8278-cc4f005b05f&title=&width=542" alt="image.png"><br>k8s-server.png<br>k8s api 每个 server 利用 list watch 机制保留一份和 etcd 数据同步的缓存。当接收到查询请求时，直接读取缓存数据返回给客户端。对于新增、修改和删除请求直接透传给 etcd。<br>需要注意的是，在服务发现场景里客户端不会修改缓存数据，但 api-server 是可以修改数据的。一旦涉及数据修改，就会有数据一致性的问题。假设原先数据 a&#x3D;1,之后客户端写入 a&#x3D;2。写入成功后让客户端读取另外一个 server 的数据，有可能读取到 a&#x3D;1（watch 有时间差）。这就产生了读写不一致的问题。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332917866-7ad571c9-cd28-41f0-af3c-e368d2f543d5.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=542&id=u44435634&margin=%5Bobject%20Object%5D&name=image.png&originHeight=542&originWidth=625&originalType=binary%E2%88%B6=1&rotation=0&showTitle=true&size=57577&status=done&style=none&taskId=u0e40e03d-620f-423f-be18-d4b75407997&title=api-server%E8%AF%BB%E5%86%99%E4%B8%8D%E4%B8%80%E8%87%B4&width=625" alt="image.png" title="api-server读写不一致"><br>当然实际情况 k8s 是不会出现上述读写不一致的现象的。解决方法是 ResourceVersion 管理。k8s 里每个 Object 都有对应的 ResourceVersion，其实这个就是 etcd 的 revision，也就是 watch 的版本号。这个版本号是自增的，对于每个请求 k8s 都要求客户端在请求里带上特点的版本号。api-server 在收到客户端请求后会对比自身缓存里的版本信息，如果小于客户端的版本信息则需要阻塞等待新数据同步。只有缓存数据版本大于等于客户端请求的版本信息才可以返回数据给客户端。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647332930990-4df6d8ac-91d0-4921-973c-2d5fe1a54478.png#clientId=u772060f5-114b-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=454&id=u09529b6d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=454&originWidth=819&originalType=binary%E2%88%B6=1&rotation=0&showTitle=true&size=88670&status=done&style=none&taskId=u76b283a0-5015-4325-81d7-19eb17a5614&title=k8s-api-version&width=819" alt="image.png" title="k8s-api-version"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文主要讨论了 watch 机制的具体实现和一些应用场景。虽然要实现一个简易的 watch 机制很容易，但随着业务发展，数据量和请求量逐步上升，就不得不就各个环节进行优化。虽然 etcd 和 consul 都是基于 raft 的 KV 数据库，但两者发展的方向已经越来越不相同。etcd 是伴随着 k8s 不断成长，在性能优化上一步步改进。consul 则是向着服务发现场景不断进步。当从 watch 机制实现上来看，consul 做的确不如 etcd 做的好，但在实际应用上，很难找到一个像 k8s 一样对性能要求如此严苛的场景。可以说 k8s 采用了 etcd，也是 etcd 的幸运。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://github.com/etcd-io/etcd">https://github.com/etcd-io/etcd</a></li>
+<li><a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://github.com/hashicorp/consul">https://github.com/hashicorp/consul</a></li>
+<li><a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://github.com/kubernetes/kubernetes">https://github.com/kubernetes/kubernetes</a></li>
+<li><a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://coreos.com/blog/etcd3-a-new-etcd.html">etcd3 | A New Version of etcd from CoreOS</a></li>
+<li><a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://coreos.com/blog/etcd-3.2-announcement">etcd 3.2 now with massive watch scaling and easy locks</a></li>
+</ul>
+<p>其他系统文章可参考<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/369782579">https://zhuanlan.zhihu.com/p/369782579</a></p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Etcd/" itemprop="url" rel="index">
+                  <span itemprop="name">Etcd</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/raft/" rel="next" title="分布式一致性Raft算法">
+            <i class="fa far fa-chevron-left"></i> 分布式一致性Raft算法
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/nacos/nacos/" rel="prev" title="Nacos简介">
+            Nacos简介 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E6%AF%94"><span class="toc-text">对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8C%9C%E6%83%B3"><span class="toc-text">猜想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0"><span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%84%E7%A7%8D%E5%9C%BA%E6%99%AF"><span class="toc-text">各种场景</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Watch-%E6%9C%BA%E5%88%B6%E8%AE%BE%E8%AE%A1"><span class="toc-text">Watch 机制设计</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E5%8F%B7"><span class="toc-text">版本号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E5%B1%82"><span class="toc-text">连接层</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#http-%E9%95%BF%E8%BD%AE%E8%AF%A2"><span class="toc-text">http 长轮询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%95%BF%E8%BF%9E%E6%8E%A5"><span class="toc-text">长连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8"><span class="toc-text">多路复用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#watch-gateway"><span class="toc-text">watch gateway</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%86%E5%8F%B2%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8"><span class="toc-text">历史数据存储</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BB%91%E5%8A%A8%E4%BA%8B%E4%BB%B6%E7%AA%97%E5%8F%A3"><span class="toc-text">滑动事件窗口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E7%89%88%E6%9C%AC%E5%AD%98%E5%82%A8"><span class="toc-text">多版本存储</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E8%A7%A6%E5%8F%91"><span class="toc-text">事件触发</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#radix-%E6%A0%91"><span class="toc-text">radix 树</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%BA%E9%97%B4%E6%A0%91"><span class="toc-text">区间树</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0"><span class="toc-text">服务发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#k8s-api-server"><span class="toc-text">k8s api-server</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

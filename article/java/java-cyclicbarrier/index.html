@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Java锁（五）CyclicBarrier分析 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="CyclicBarrier 的字面意思是可循环使用（Cyclic）的屏障（Barrier）。它要做的事情是，让一组线程到达一个屏障（也可以叫同步点）时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续干活。CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截的线程数量，每个线程调用 await 方法告诉">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java锁（五）CyclicBarrier分析">
+<meta property="og:url" content="https://www.alicharles.com/article/java/java-cyclicbarrier/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="CyclicBarrier 的字面意思是可循环使用（Cyclic）的屏障（Barrier）。它要做的事情是，让一组线程到达一个屏障（也可以叫同步点）时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续干活。CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截的线程数量，每个线程调用 await 方法告诉">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-02-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.499Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Lock">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Java锁（五）CyclicBarrier分析</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2015-02-08T00:00:00+08:00">
+            2015-02-08
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/java/" itemprop="url" rel="index">
+              <span itemprop="name">java</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>CyclicBarrier 的字面意思是可循环使用（Cyclic）的屏障（Barrier）。它要做的事情是，让一组线程到达一个屏障（也可以叫同步点）时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续干活。CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截的线程数量，每个线程调用 await 方法告诉 CyclicBarrier 我已经到达了屏障，然后当前线程被阻塞。</p>
+<h2 id="1、CyclicBarrier-使用实例"><a href="#1、CyclicBarrier-使用实例" class="headerlink" title="1、CyclicBarrier 使用实例"></a>1、CyclicBarrier 使用实例</h2><pre class="line-numbers language-java" data-language="java"><code class="language-java">public class CyclicBarrierTest &#123;
+    static CyclicBarrier c &#x3D; new CyclicBarrier(2);
+    public static void main(String[] args) &#123;
+        new Thread(new Runnable() &#123;
+            @Override
+            public void run() &#123;
+                try &#123;
+                    c.await();
+                &#125; catch (Exception e) &#123;
+                &#125;
+                System.out.println(1);
+            &#125;
+        &#125;).start();
+        try &#123;
+            c.await();
+        &#125; catch (Exception e) &#123;
+        &#125;
+        System.out.println(2);
+    &#125;
+&#125;</code></pre>
+
+<p>输出 1,2 或者 2,1<br>如果把 new CyclicBarrier(2)修改成 new CyclicBarrier(3)则主线程和子线程会永远等待，因为没有第三个线程执行 await 方法，即没有第三个线程到达屏障，所以之前到达屏障的两个线程都不会继续执行。<br>CyclicBarrier 还提供一个更高级的构造函数 CyclicBarrier(int parties, Runnable barrierAction)，用于在线程到达屏障时，优先执行 barrierAction，方便处理更复杂的业务场景。代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public class CyclicBarrierTest2 &#123;
+    static CyclicBarrier c &#x3D; new CyclicBarrier(2, new A());
+    public static void main(String[] args) &#123;
+        new Thread(new Runnable() &#123;
+
+            @Override
+            public void run() &#123;
+                try &#123;
+                    c.await();
+                &#125; catch (Exception e) &#123;
+
+                &#125;
+                System.out.println(1);
+            &#125;
+        &#125;).start();
+
+        try &#123;
+            c.await();
+        &#125; catch (Exception e) &#123;
+
+        &#125;
+        System.out.println(2);
+    &#125;
+
+    static class A implements Runnable &#123;
+
+        @Override
+        public void run() &#123;
+            System.out.println(3);
+        &#125;
+
+    &#125;
+&#125;</code></pre>
+
+<p>输出 1、3、2</p>
+<h2 id="2、CyclicBarrier-源码分析"><a href="#2、CyclicBarrier-源码分析" class="headerlink" title="2、CyclicBarrier 源码分析"></a>2、CyclicBarrier 源码分析</h2><p>CyclicBarrier 底层是基于 ReentrantLock、AbstractQueuedSynchronizer，ConditionObject 来实现的，实现相对比较简单。了解前面的 ReentrantLock，对 AQS 的分析中已经指出了其数据结构，在这里不再累赘。<br>CyclicBarrier 的几个标志性的成员变量</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 循环栅栏的当前代
+ *&#x2F;
+private static class Generation &#123;
+    boolean broken &#x3D; false;
+&#125;
+
+&#x2F;** 屏障的重入锁 *&#x2F;
+private final ReentrantLock lock &#x3D; new ReentrantLock();
+&#x2F;** 等待状态直到触发*&#x2F;
+private final Condition trip &#x3D; lock.newCondition();
+&#x2F;**  parties 数量 *&#x2F;
+private final int parties;
+&#x2F;** 到达屏障时先触发的操作 *&#x2F;
+private final Runnable barrierCommand;
+
+&#x2F;** 一个generation对象代表一代的屏障，
+ * 就是说，如果generation对象不同，就代表进入了下一次的屏障，
+ * 所以说，这个线程屏障是可循环的(Cyclic)
+ *&#x2F;
+private Generation generation &#x3D; new Generation();
+
+&#x2F;**
+ * count是计数器，如果有线程到达了屏障点，count就减1；
+ * 直到count&#x3D;0时，其它线程才可以向下执行
+ *&#x2F;
+private int count;</code></pre>
+
+<p>线程等待所有线程到达，触发栅栏</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">public int await() throws InterruptedException, BrokenBarrierException &#123;
+    try &#123;
+        return dowait(false, 0L);
+    &#125; catch (TimeoutException toe) &#123;
+        throw new Error(toe); &#x2F;&#x2F; cannot happen
+    &#125;
+&#125;
+
+&#x2F;**
+ * 主要屏障代码，负责各种策略
+ *&#x2F;
+private int dowait(boolean timed, long nanos)
+    throws InterruptedException, BrokenBarrierException,
+           TimeoutException &#123;
+    final ReentrantLock lock &#x3D; this.lock;
+    lock.lock();
+    try &#123;
+        &#x2F;&#x2F; 获取屏障的当前代信息
+        final Generation g &#x3D; generation;
+
+        if (g.broken)
+            throw new BrokenBarrierException();
+
+        &#x2F;&#x2F; 线程中断，中断屏障
+        if (Thread.interrupted()) &#123;
+            breakBarrier();
+            throw new InterruptedException();
+        &#125;
+
+        &#x2F;&#x2F; count-1，到达0的时候，所有的线程向下执行
+        int index &#x3D; --count;
+        if (index &#x3D;&#x3D; 0) &#123;  &#x2F;&#x2F; 触发屏障的栅栏
+            boolean ranAction &#x3D; false;
+            try &#123;
+                &#x2F;&#x2F; 如果设置了barrierCommand，优先执行
+                final Runnable command &#x3D; barrierCommand;
+                if (command !&#x3D; null)
+                    command.run();
+                ranAction &#x3D; true;
+                &#x2F;&#x2F; 所有线程都到的屏障点
+                &#x2F;&#x2F; 更新屏障状态，唤醒其他线程，生成下一代屏障
+                nextGeneration();
+                return 0;
+            &#125; finally &#123;
+                if (!ranAction)
+                    breakBarrier();
+            &#125;
+        &#125;
+
+        &#x2F;&#x2F; 循环直到触发屏障栅栏，或者中断，超时
+        for (;;) &#123;
+            try &#123;
+                if (!timed)
+                    trip.await();
+                else if (nanos &gt; 0L)
+                    nanos &#x3D; trip.awaitNanos(nanos);
+            &#125; catch (InterruptedException ie) &#123;
+                &#x2F;&#x2F; 被中断，设置栅栏中断标志
+                if (g &#x3D;&#x3D; generation &amp;&amp; ! g.broken) &#123;
+                    &#x2F;&#x2F; 设置broken中断标示
+                    breakBarrier();
+                    throw ie;
+                &#125; else &#123;
+                    &#x2F;&#x2F; We&#39;re about to finish waiting even if we had not
+                    &#x2F;&#x2F; been interrupted, so this interrupt is deemed to
+                    &#x2F;&#x2F; &quot;belong&quot; to subsequent execution.
+                    Thread.currentThread().interrupt();
+                &#125;
+            &#125;
+
+            &#x2F;&#x2F; 屏障被中断，抛出异常
+            if (g.broken)
+                throw new BrokenBarrierException();
+
+            &#x2F;&#x2F; 不是栅栏的当前代（所有线程都到达，已经生成下一代的generation）
+            if (g !&#x3D; generation)
+                return index;
+
+            &#x2F;&#x2F; 超时后，中断屏障
+            if (timed &amp;&amp; nanos &lt;&#x3D; 0L) &#123;
+                breakBarrier();
+                throw new TimeoutException();
+            &#125;
+        &#125;
+    &#125; finally &#123;
+        lock.unlock();
+    &#125;
+&#125;
+
+&#x2F;**
+ * 中断屏障，唤醒其他线程
+ *&#x2F;
+private void breakBarrier() &#123;
+    generation.broken &#x3D; true;
+    count &#x3D; parties;
+    trip.signalAll();
+&#125;
+
+&#x2F;**
+ * 更新屏障状态，唤醒其他线程，生成下一代屏障
+ *&#x2F;
+private void nextGeneration() &#123;
+    &#x2F;&#x2F; signal completion of last generation
+    trip.signalAll();
+    &#x2F;&#x2F; set up next generation
+    count &#x3D; parties;
+    generation &#x3D; new Generation();
+&#125;</code></pre>
+
+<h2 id="3、CyclicBarrier-和-CountDownLatch-的区别"><a href="#3、CyclicBarrier-和-CountDownLatch-的区别" class="headerlink" title="3、CyclicBarrier 和 CountDownLatch 的区别"></a>3、CyclicBarrier 和 CountDownLatch 的区别</h2><p>CountDownLatch 的计数器只能使用一次。而 CyclicBarrier 的计数器可以使用 reset() 方法重置。所以 CyclicBarrier 能处理更为复杂的业务场景，比如如果计算发生错误，可以重置计数器，并让线程们重新执行一次。<br>CyclicBarrier 还提供其他有用的方法，比如 getNumberWaiting 方法可以获得 CyclicBarrier 阻塞的线程数量。isBroken 方法用来知道阻塞的线程是否被中断。</p>
+<h2 id="4、CyclicBarrier-的应用场景"><a href="#4、CyclicBarrier-的应用场景" class="headerlink" title="4、CyclicBarrier 的应用场景"></a>4、CyclicBarrier 的应用场景</h2><p>CyclicBarrier 可以用于多线程计算数据，最后合并计算结果的应用场景。比如我们用一个 Excel 保存了用户所有银行流水，每个 Sheet 保存一个帐户近一年的每笔银行流水，现在需要统计用户的日均银行流水，先用多线程处理每个 sheet 里的银行流水，都执行完之后，得到每个 sheet 的日均银行流水，最后，再用 barrierAction 用这些线程的计算结果，计算出整个 Excel 的日均银行流水。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Lock/" itemprop="url" rel="index">
+                  <span itemprop="name">Lock</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/java/java-conditionobject/" rel="next" title="Java锁（四）ConditionObject分析">
+            <i class="fa far fa-chevron-left"></i> Java锁（四）ConditionObject分析
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/java/java-reference/" rel="prev" title="Java引用类型">
+            Java引用类型 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81CyclicBarrier-%E4%BD%BF%E7%94%A8%E5%AE%9E%E4%BE%8B"><span class="toc-text">1、CyclicBarrier 使用实例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81CyclicBarrier-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-text">2、CyclicBarrier 源码分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81CyclicBarrier-%E5%92%8C-CountDownLatch-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">3、CyclicBarrier 和 CountDownLatch 的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81CyclicBarrier-%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">4、CyclicBarrier 的应用场景</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

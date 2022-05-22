@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        短链生成 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="背景  当前短地址发号使用 hbase 的 increament 指令, 每个转短请求都会做一次操作, 当 qps 超过 1k 时, 会造成 hbase 机器报警, 需要减少 hbase 的 increament 指令调用   方案  修改为每个请求在本地取号, 当本地无号可取时请求 hbase 发号, 每次在 hbase 中调用 increament 时取 100 个号, 回到本地   具体代码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="短链生成">
+<meta property="og:url" content="https://www.alicharles.com/article/url/short-url/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="背景  当前短地址发号使用 hbase 的 increament 指令, 每个转短请求都会做一次操作, 当 qps 超过 1k 时, 会造成 hbase 机器报警, 需要减少 hbase 的 increament 指令调用   方案  修改为每个请求在本地取号, 当本地无号可取时请求 hbase 发号, 每次在 hbase 中调用 increament 时取 100 个号, 回到本地   具体代码">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646818360387-c606b10f-0666-4543-a76d-19919097f615.png#clientId=ubd7c2cee-e4f0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=44&id=u6e000831&margin=%5Bobject%20Object%5D&name=image.png&originHeight=44&originWidth=541&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=9956&status=done&style=none&taskId=u07c03a37-7e88-4869-af19-704523d54b4&title=&width=541">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646818507763-fd691c4a-0b77-4895-9286-20aa70fbe593.png#clientId=ubd7c2cee-e4f0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=267&id=ue2bfc6fe&margin=%5Bobject%20Object%5D&name=image.png&originHeight=267&originWidth=297&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=21991&status=done&style=none&taskId=uab6c0ba0-3092-49fb-acc0-a061e2ea13a&title=&width=297">
+<meta property="article:published_time" content="2019-06-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.496Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="ShortUrl">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1646818360387-c606b10f-0666-4543-a76d-19919097f615.png#clientId=ubd7c2cee-e4f0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=44&id=u6e000831&margin=%5Bobject%20Object%5D&name=image.png&originHeight=44&originWidth=541&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=9956&status=done&style=none&taskId=u07c03a37-7e88-4869-af19-704523d54b4&title=&width=541">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>短链生成</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2019-06-21T00:00:00+08:00">
+            2019-06-21
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/short-url/" itemprop="url" rel="index">
+              <span itemprop="name">short-url</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>当前短地址发号使用 hbase 的 increament 指令, 每个转短请求都会做一次操作, 当 qps 超过 1k 时, 会造成 hbase 机器报警, 需要减少 hbase 的 increament 指令调用</p>
+<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p>修改为每个请求在本地取号, 当本地无号可取时请求 hbase 发号, 每次在 hbase 中调用 increament 时取 100 个号, 回到本地</p>
+<h2 id="具体代码流程"><a href="#具体代码流程" class="headerlink" title="具体代码流程"></a>具体代码流程</h2><ul>
+<li>加全局锁, 所有转短请求在取号前通过全局锁串行</li>
+<li>尝试本地取号, 如果不成功, 去 hbase 取号 100 个, 放入本地缓存</li>
+<li>解锁, 并继续原有转短流程</li>
+</ul>
+<p>待确认的点，全局锁是否需要公平 公平锁的性能是否满足需求</p>
+<h2 id="修改背景"><a href="#修改背景" class="headerlink" title="修改背景"></a>修改背景</h2><p>商家有需求需要定制自己的域名不使用有赞的默认域名。<br>定制的过程涉及到一个 VIP 域名的发布，这个发布涉及到前端，后端，运维的一个 VIP 域名的维护，现在是 iron，node，后端，运维都维护了一个 VIP 名单，存储的位置也是各自维护的，之前发布过程每次发布都会有白名单不同步问题导致 VIP 商户的功能挂掉。<br>上午讨论的结果同步：<br>上午和前端，后端，运维的同事讨论了下，使用 apollo 统一维护一份域名，每次更改这份配置将自动同步到其他不同的端，保证数据的维护的一致性。</p>
+<ul>
+<li>短地址修改方案</li>
+</ul>
+<p>短地址白名单修改为由动态白名单和静态白名单合并得到，动态白名单从 apollo 中获取，静态白名单在启动时配置。<br>apollo 配置格式为 json 格式，数据结构为 map，key 为 kdtid，value 为对应域名</p>
+<ul>
+<li>可能影响的场景<ul>
+<li>静态白名单的有效性<ul>
+<li>静态白名单中配置的域名应该始终可以成功进行转短链</li>
+</ul>
+</li>
+<li>动态白名单的有效性<ul>
+<li>动态白名单中配置的域名应该可以成功转短链</li>
+<li>当 apollo 中配置的动态白名单添加域名后，新增加的域名应该可以成功转短链</li>
+<li>当 apollo 中配置的动态白名单减少部分域名后，如减少的域名不在静态白名单中，则该域名应该转短链失败</li>
+<li>当 apollo 中配置的动态白名单减少部分域名后，如减少的域名在静态白名单中，则该域名应该可以成功转短链</li>
+<li>当 apollo 中白名单配置为空时，应该只有静态白名单中的域名可以成功转短链</li>
+</ul>
+</li>
+<li>动态白名单无法获取或是失效场景<ul>
+<li>当 apollo 中配置的动态白名单不符合 json 的 map 格式时，视为动态白名单配空，与 2.e 场景一致</li>
+<li>当 apollo 无法正常读取到白名单配置项时，将最后一次成功读取的值视为动态白名单的值，该值保存在 apollo-config.json 文件中</li>
+</ul>
+</li>
+<li>短转长的场景<ul>
+<li>经产品确认，该场景不受白名单限制，无论域名是否还在白名单中，短转长都应该正常进行</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="主要的方案有两种"><a href="#主要的方案有两种" class="headerlink" title="主要的方案有两种"></a>主要的方案有两种</h2><ol>
+<li>hash 算法: hash 长地址得到一个短地址</li>
+<li>发号器：通过发号器得到一个整数，再转为 62 进制</li>
+</ol>
+<h2 id="两种方案的优缺点"><a href="#两种方案的优缺点" class="headerlink" title="两种方案的优缺点"></a>两种方案的优缺点</h2><ol>
+<li><p>hash 方案的优点: 生成的短链不可遍历</p>
+</li>
+<li><p>hash 方案的缺点：位数较短时，生成的短链容易冲突，碰撞的概率可由如下公式得出：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646818360387-c606b10f-0666-4543-a76d-19919097f615.png#clientId=ubd7c2cee-e4f0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=44&id=u6e000831&margin=%5Bobject%20Object%5D&name=image.png&originHeight=44&originWidth=541&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=9956&status=done&style=none&taskId=u07c03a37-7e88-4869-af19-704523d54b4&title=&width=541" alt="image.png"><br>当生成的短链为 8 位，且为 62 进制时，在 hash 了 3kw 次时，碰撞的概率为 1&#x2F;2, 我们要求生成的短链接为 6 位，且目前每日的增长量为 200w，显然不符合我们的要求</p>
+</li>
+<li><p>发号器的优点：生成的短链必定不会碰撞</p>
+</li>
+<li><p>发号器的缺点：同一个 url 分两次不同的时间，生成结果不一致，且 url 容易被遍历</p>
+</li>
+</ol>
+<h2 id="最终采取的方案"><a href="#最终采取的方案" class="headerlink" title="最终采取的方案"></a>最终采取的方案</h2><p>选择发号器，且做了一些方案上的优化解决了发号器的缺点：</p>
+<ol>
+<li>预先生成一亿个短链接，并随机打乱插入到 mysql，这样通过发号器拿到的 id 去更新数据库的对应主键短链，解决了短链容易被遍历，且为将来的横向扩展做了准备，当数据量即将一亿时，再重新准备插入一亿的纪录到新的 mysql 实例</li>
+<li>用 redis 缓存了最近一天的长链，每次生成短链先去 redis 查，这样同一个长链接在一天内反复生成的短链相同，并且每次查询成功时，更新 key 的过期时间，所以热门的短链很大可能上生成的都是同一个短链。</li>
+</ol>
+<h2 id="短地址店铺隔离改造"><a href="#短地址店铺隔离改造" class="headerlink" title="短地址店铺隔离改造"></a>短地址店铺隔离改造</h2><ul>
+<li>改造背景：为规避腾讯风控，短地址改为不同商家使用不同的域名访问，同时增加对不同调用方的接入管理</li>
+<li>改造方案：<ul>
+<li>长转短：<ul>
+<li>接口输入参数为 长地址，访问限制域名，调用方 app_name，版本号</li>
+<li>按照原有方案生成短地址，将短地址和长地址以及对应域名的关系存入 hbase，以供短转长时校验</li>
+</ul>
+</li>
+<li>短转长：<ul>
+<li>接口输入参数为短地址，调用方 app_name， 版本号</li>
+<li>hbase 中查询到长地址和访问限制域名，校验 hbase 中的访问限制域名与参数中短地址访问的域名是否一致，如一致，按原流程返回，否则报错</li>
+</ul>
+</li>
+<li>接入管理：<ul>
+<li>前期先通过人工接入，后续改造接入 ops</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="短地址监控"><a href="#短地址监控" class="headerlink" title="短地址监控"></a>短地址监控</h2><p>监控接口 curl -H “Host: <a target="_blank" rel="noopener" href="http://kdt.im/">kdt.im</a>“ “<a target="_blank" rel="noopener" href="http://127.0.0.1/shorturl_status">http://127.0.0.1/shorturl_status</a><br>监控分四个维度:</p>
+<ul>
+<li>redis<br>a. hit: 缓存的命中次数<br>b. miss：缓存的 miss 次数，当 miss 上升时需引起注意<br>c. error：error 次数，任何非正常情况下的错误，当 error 上升时，需要立刻查看日志排查问题</li>
+<li>mysql<br>a. update: 短链的更新次数<br>b. select: 缓存失效，数据库查询的次数，当次数上升时需关注<br>c. error: error 次数，任何非正常情况下的错误，当 error 上升时，需要立刻查看日志排查问题</li>
+<li>lock<br>a. get: 缓存失效时，获取的锁，当次数上升时需关注<br>b. error: 任何非正常情况下的错误，当 error 上升时，需要立刻查看日志排查问题</li>
+<li>发号器<br>a. current: 发号器当前的号，当发号即将达到预设的一亿、二亿时，需要进行扩容<br>b. error: 任何非正常情况下的错误，当 error 上升时，需要立刻查看日志排查问题</li>
+</ul>
+<h2 id="短地址部署容量"><a href="#短地址部署容量" class="headerlink" title="短地址部署容量"></a>短地址部署容量</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646818507763-fd691c4a-0b77-4895-9286-20aa70fbe593.png#clientId=ubd7c2cee-e4f0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=267&id=ue2bfc6fe&margin=%5Bobject%20Object%5D&name=image.png&originHeight=267&originWidth=297&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=21991&status=done&style=none&taskId=uab6c0ba0-3092-49fb-acc0-a061e2ea13a&title=&width=297" alt="image.png"><br>nginx 的 qps 单机过万，umem 的 qps 单机过万，只有 udb 的 tps 单机只有 800， 目前整个系统的瓶颈在 udb</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"># &#x2F;opt&#x2F;wrk&#x2F;bin&#x2F;wrk -t 4 -c 4 -d 3600s --script get.lua http:&#x2F;&#x2F;127.0.0.1
+Running 60m test @ http:&#x2F;&#x2F;127.0.0.1
+4 threads and 4 connections
+Thread Stats   Avg      Stdev     Max   +&#x2F;- Stdev
+Latency    19.86ms   62.22ms   1.00s    93.87%
+Req&#x2F;Sec   198.29     59.82   474.00     84.81%
+2714028 requests in 60.00m, 832.96MB read
+Requests&#x2F;sec:    753.88
+Transfer&#x2F;sec:    236.93KB</code></pre>
+
+<p>&#x2F;data&#x2F;shorturl&#x2F;src&#x2F;config.lua<br>因为没有配置解析器，不要配置有域名，直接换成 ip，tengine 要换成 openresty</p>
+<p>短链链接使用 6 位字符，62^6 &#x3D; 568 亿，a-zA-Z0-9 这 62 位取 6 位组合,可产生 500 多亿个组合数量。把数字和字符组合做一定的映射，就可以产生唯一的字符串，如第 62 个组合就是 aaaaa9，第 63 个组合就是 aaaaba，再利用洗牌算法，把原字符串打乱后保存，那么对应位置的组合字符串就会是无序的组合。</p>
+<p>把长网址存入数据库，取返回的 id，找出对应的字符串，例如返回 ID 为 1，那么对应上面的字符串组合就是 bbb，同理 ID 为 2 时，字符串组合为 bba，依次类推，直至到达 64 种组合后才会出现重复的可能，所以如果用上面的 62 个字符，任意取 6 个字符组合成字符串的话，你的数据存量达到 500 多亿后才会出现重复的可能。</p>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/ShortUrl/" itemprop="url" rel="index">
+                  <span itemprop="name">ShortUrl</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/mysql/mysql-btree-depth/" rel="next" title="MySQL B+树深度的了解">
+            <i class="fa far fa-chevron-left"></i> MySQL B+树深度的了解
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/shell/shell-command/" rel="prev" title="Shell（一）常用命令">
+            Shell（一）常用命令 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%A1%88"><span class="toc-text">方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E4%BB%A3%E7%A0%81%E6%B5%81%E7%A8%8B"><span class="toc-text">具体代码流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E8%83%8C%E6%99%AF"><span class="toc-text">修改背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E7%9A%84%E6%96%B9%E6%A1%88%E6%9C%89%E4%B8%A4%E7%A7%8D"><span class="toc-text">主要的方案有两种</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8D%E6%96%B9%E6%A1%88%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-text">两种方案的优缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88%E9%87%87%E5%8F%96%E7%9A%84%E6%96%B9%E6%A1%88"><span class="toc-text">最终采取的方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%AD%E5%9C%B0%E5%9D%80%E5%BA%97%E9%93%BA%E9%9A%94%E7%A6%BB%E6%94%B9%E9%80%A0"><span class="toc-text">短地址店铺隔离改造</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%AD%E5%9C%B0%E5%9D%80%E7%9B%91%E6%8E%A7"><span class="toc-text">短地址监控</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%AD%E5%9C%B0%E5%9D%80%E9%83%A8%E7%BD%B2%E5%AE%B9%E9%87%8F"><span class="toc-text">短地址部署容量</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

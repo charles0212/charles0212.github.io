@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="记录平时的点点滴滴">
+<meta property="og:type" content="website">
+<meta property="og:title" content="启航的蜗牛">
+<meta property="og:url" content="https://www.alicharles.com/page/6/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="记录平时的点点滴滴">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="charles">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  
+
+<div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+    <!-- 指示符 -->
+    <div class="carousel-indicators">
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0"  class="active" ></button>
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" ></button>
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" ></button>
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="3" ></button>
+        
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="4" ></button>
+        
+    </div>
+
+    <!-- 轮播图片 -->
+    <div class="carousel-inner">
+        
+        <div class="carousel-item  active ">
+            <img src="/images/c2.jpg" alt="常用架构分析" >
+            <a class="container" href="/article/architecture/architecture/">
+                <div class="carousel-caption text-start">
+                    <h3>常用架构分析</h3>
+                    <p class="excerpt">常用经典架构分析，了解设计思路和注意问题，主要以电商架构为主，设计到秒杀、商品、用户、库存、交易等相关通用解决方案，解析业务过程中的难点和解决方式。</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="carousel-item ">
+            <img src="/images/c1.jpg" alt="深入理解Disruptor" >
+            <a class="container" href="/article/disruptor/understanding-disruptor/">
+                <div class="carousel-caption text-start">
+                    <h3>深入理解Disruptor</h3>
+                    <p class="excerpt">Disruptor是LMAX公司开源的一个高效的内存无锁队列，一个高性能的异步处理框架，或者可以认为是最快的消息框架(轻量的JMS)，也可以认为是一个观察者模式实现，或者事件-监听模式的实现，直接称disruptor模式。disruptor最大特点是高性能，其LMAX架构可以获得每秒6百万订单，用1微秒的延迟获得吞吐量为100K+。理解Disruptor的原理，可以帮助我们更好的理解内存无锁，CAS，volatile，缓冲行等并发原理。</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="carousel-item ">
+            <img src="/images/c2.jpg" alt="深入理解jvm虚拟机" >
+            <a class="container" href="/article/jvm/understanding-jvm/">
+                <div class="carousel-caption text-start">
+                    <h3>深入理解jvm虚拟机</h3>
+                    <p class="excerpt">每个Java开发者都知道Java字节码是执行在JRE(（Java Runtime Environment Java运行时环境）上的。JRE中最重要的部分是Java虚拟机（JVM），JVM负责分析和执行Java字节码。Java开发人员并不需要去关心JVM是如何运行的。在没有深入理解JVM的情况下，许多开发者已经开发出了非常多的优秀的应用以及Java类库。不过，如果你了解JVM的话，你会更加了解Java的，并且你会轻松解决那些看似简单但是无从下手的问题。</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="carousel-item ">
+            <img src="/images/c3.jpg" alt="JDK中的设计模式" >
+            <a class="container" href="/article/design-pattern/jdk-design-pattern/">
+                <div class="carousel-caption text-start">
+                    <h3>JDK中的设计模式</h3>
+                    <p class="excerpt">本文主要是归纳了JDK中所包含的设计模式，包括作用和其设计类图。 一、设计模式的作用 反复出现问题的解决方案 增强软件的灵活性 适应软件不断变化 二、设计模式的七大原则 开闭原则OCP（Open Close Principle），一个软件实体如类、模块和函数应该对扩展开放，对修改关闭。 里氏代换原则LSP（Liskov Substitution Principle），子类可以扩展父类的功能，但不能</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="carousel-item ">
+            <img src="/images/c2.jpg" alt="Java并发编程之锁" >
+            <a class="container" href="/article/java/java-lock/">
+                <div class="carousel-caption text-start">
+                    <h3>Java并发编程之锁</h3>
+                    <p class="excerpt">作为一个java开发者，并发编程是不可或缺的，在并发的过程，Lock是并发的关键， 本文主要从排它锁和共享锁的实例来讲解锁的机制。 本文主要从以下方面来讲解锁的原理以及使用： 1、AbstractQueuedSynchronizer分析 2、ReentrantLock独占锁分析 3、CountDownLatch共享锁分析 4、ConditionObject分析 5、CyclicBarrier分析</p>
+                </div>
+            </a>
+        </div>
+        
+    </div>
+
+    <!-- 左右切换按钮 -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
+
+
+<div class="container bg-white my-2">
+    <div class="row mx-0">
+        <div class="col-sm-12 col-lg-9 charles-border-right px-lg-5 py-lg-2">
+            <section id="posts" class="posts-collapse">
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/architecture/architecture-skill/">
+                架构（一）架构师技能和微服务架构图谱
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        架构师技能图谱平时学习的知识比较零散，没有做系统的归类和整理，通过下面的图，可以系统的学习。 补充不太熟悉知识，做到查漏补缺。
+微服务架构图谱
+
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2020-05-21T00:00:00+08:00">
+                2020-05-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/architecture/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">architecture</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Architecture/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Architecture</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/architecture/architecture-skill/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/architecture/architecture/">
+                常用架构分析
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        常用架构分析常用经典架构分析，了解设计思路和注意问题1、架构师技能和微服务架构图谱2、秒杀架构设计
+
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2020-05-20T00:00:00+08:00">
+                2020-05-20
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/architecture/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">architecture</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Architecture/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Architecture</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/architecture/architecture/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/shell/jar-diff/">
+                Shell（二）分支和主干jar差异
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        分支和主干 jar 差异脚本文件见附件，可以快速了解本次分支修改，便于发布前比对当前的开发分支和主干 jar 差异情况。 将 jar-diff.sh 放在根目录文件下面。
+#!&amp;#x2F;bin&amp;#x2F;bash
+
+# 获取当前git分支
+CURRENT_BRANCH&amp;#x3D;&amp;#96;sh -c &amp;#39;git branch --no-color 2&amp;gt;&amp;#x2F;dev&amp;#x2F;null&amp;#39; | sed -e &amp;#39;&amp;#x2F;^[^*]&amp;#x2F;d&amp;#39; -e &amp;#39;s&amp;#x2F;* \(.*\)&amp;#x2F;\1&amp;#x2F;&amp;#39;&amp;#96;
+
+if [
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-07-21T00:00:00+08:00">
+                2019-07-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/shell/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">shell</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Shell/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Shell</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/shell/jar-diff/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/shell/shell-command/">
+                Shell常用命令
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        find + xargs将当前目录下.bak 的文件，移动到临时&amp;#x2F;tmp 下面
+find . -name &amp;quot;*.bak&amp;quot; | xargs -I &amp;#39;&amp;#123;&amp;#125;&amp;#39; mv &amp;#123;&amp;#125; &amp;#x2F;tmp
+
+移动到&amp;#x2F;tmp 临时目录下，不要使用 rm -rf 命令防止误删，其中-I ‘{}’标识占位符
+awk分隔字符串，排序
+grep charles &amp;#x2F;home&amp;#x2F;zhangcheng.log | awk &amp;#39;&amp;#123;split($0,a,&amp;quot;,&amp;quot;);if (index(a
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-06-21T00:00:00+08:00">
+                2019-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/shell/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">shell</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Shell/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Shell</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/shell/shell-command/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/shell/shell-command/">
+                Shell（一）常用命令
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        find + xargs将当前目录下.bak 的文件，移动到临时&amp;#x2F;tmp 下面
+find . -name &amp;quot;*.bak&amp;quot; | xargs -I &amp;#39;&amp;#123;&amp;#125;&amp;#39; mv &amp;#123;&amp;#125; &amp;#x2F;tmp
+
+移动到&amp;#x2F;tmp 临时目录下，不要使用 rm -rf 命令防止误删，其中-I ‘{}’标识占位符
+awk分隔字符串，排序
+grep charles &amp;#x2F;home&amp;#x2F;zhangcheng.log | awk &amp;#39;&amp;#123;split($0,a,&amp;quot;,&amp;quot;);if (index(a
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-06-21T00:00:00+08:00">
+                2019-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/shell/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">shell</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Shell/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Shell</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/shell/shell-command/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/url/short-url/">
+                短链生成
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        背景当前短地址发号使用 hbase 的 increament 指令, 每个转短请求都会做一次操作, 当 qps 超过 1k 时, 会造成 hbase 机器报警, 需要减少 hbase 的 increament 指令调用
+方案修改为每个请求在本地取号, 当本地无号可取时请求 hbase 发号, 每次在 hbase 中调用 increament 时取 100 个号, 回到本地
+具体代码流程
+加全局锁, 所有转短请求在取号前通过全局锁串行
+尝试本地取号, 如果不成功, 去 hbase 取号 100 个, 放入本地缓存
+解锁, 并继续原有转短流程
+
+待确认的点，全局锁是否需要公平 公平锁的性能是否满足
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-06-21T00:00:00+08:00">
+                2019-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/short-url/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">short-url</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/ShortUrl/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">ShortUrl</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/url/short-url/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/mysql/mysql-btree-depth/">
+                MySQL B+树深度的了解
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+https://zhuanlan.zhihu.com/p/444448405
+
+以下从 B+树深度简单模拟计算，有两个主要特征决定了 B 树（或 B+ 树）的深度。
+
+数据库中的行数。我们将其称为 N。
+索引键的大小。让我们称 B 为适合 B 树节点的键数。（有时 B 用于指代节点大小本身，而不是它持有的键数，但我希望这样看起来更直观。）
+
+给定这些数量，B 树的深度是 log B 为下标 N。那只是 (log N )&amp;#x2F;log B。现在我们可以注意到小键意味着更大的 B，这会减少 (log N )&amp;#x2F;log B。如果我们将键的字节大小减半，那么 B 树的深度将从 (log 
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-05-27T00:00:00+08:00">
+                2019-05-27
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/database/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">数据库</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Mysql/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Mysql</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/InnoDB/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">InnoDB</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/mysql/mysql-btree-depth/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/mysql/mysql-table-fragmentation/">
+                MySQL表碎片
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+原文链接：https://www.percona.com/blog/2020/06/24/mysql-table-fragmentation-beware-of-bulk-insert-with-failure-or-rollback/
+
+当心批量插入失败或者回滚时带来的 MySQL 表碎片，通常，DBA 都了解使用 DELETE 语句会产生表碎片。在大多数情况下，当执行大量的删除时，DBA 总会重新构建表以回收磁盘空间。但是，您是否认为只有删除才会导致表碎片？（答案：并不是）。在这篇博文中，我将解释插入如何会带来碎片。
+在讨论这个主题之前，我们需要了解 MySQL，有两种碎片：
+
+在表中的
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-05-26T00:00:00+08:00">
+                2019-05-26
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/database/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">数据库</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Mysql/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Mysql</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/InnoDB/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">InnoDB</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/mysql/mysql-table-fragmentation/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+            </section>
+        </div>
+        <div class="col px-lg-3 py-lg-2">
+            <div class="sidebar">
+    <div class="widget-author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+    <div class="author">
+        <!--个人信息-->
+        
+        <img class="author-image" itemprop="image"
+             src="/images/logo.jpg"
+             alt=""/>
+        
+        <p class="author-name" itemprop="name"></p>
+        <p class="description" itemprop="description">
+            
+        </p>
+    </div>
+
+    <nav class="state">
+        <!--文章-->
+        
+        <div class="state-item state-posts">
+            <a href="/archives">
+                <span class="state-item-count">98</span>
+                <span class="state-item-name">文章</span>
+            </a>
+        </div>
+        
+
+        <!--类目-->
+        
+        <div class="state-item state-categories">
+            <a href="/categories">
+                <span class="state-item-count">25</span>
+                <span class="state-item-name">分类</span>
+            </a>
+        </div>
+        
+
+        <!--标签-->
+        
+        <div class="state-item state-tags">
+            <a href="/tags">
+                <span class="state-item-count">36</span>
+                <span class="state-item-name">标签</span>
+            </a>
+        </div>
+        
+    </nav>
+
+    <!--社交链接-->
+    
+    
+    <nav class="links-of-author">
+        
+        <div class="links-of-author-row row px-4">
+            <span class="links-of-author-item col-2" style="padding:0;"></span>
+            <span class="links-of-author-item col-4 " style="padding:0;">
+                <a href="https://weibo.com/charles0212" target="_blank" title="微博">
+                    <i class="fab fa-weibo "></i>
+                    微博
+                </a>
+            </span>
+            
+            <span class="links-of-author-item col-6" style="padding:0;">
+                <a href="https://www.facebook.com/cheng.zhang.charles" target="_blank" title="facebook">
+                    <i class="fab fa-facebook "></i>
+                    facebook
+                </a>
+            </span>
+            
+        </div>
+        
+        <div class="links-of-author-row row px-4">
+            <span class="links-of-author-item col-2" style="padding:0;"></span>
+            <span class="links-of-author-item col-4 " style="padding:0;">
+                <a href="https://zhihu.com/people/charles0212" target="_blank" title="知乎">
+                    <i class="fab fa-dribbble "></i>
+                    知乎
+                </a>
+            </span>
+            
+            <span class="links-of-author-item col-6" style="padding:0;">
+                <a href="https://github.com/charles0212" target="_blank" title="github">
+                    <i class="fab fa-github "></i>
+                    github
+                </a>
+            </span>
+            
+        </div>
+        
+    </nav>
+    
+
+</div>
+</div>
+        </div>
+    </div>
+    <div class="row mx-0">
+        <div class="col-sm-12 col-lg-9 px-lg-5">
+            <div class="pagination justify-content-center my-4">
+                <a class="extend prev" rel="prev" href="/page/5/">上一页</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/7/">下一页</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>

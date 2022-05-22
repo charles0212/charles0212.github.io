@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Docker（二）使用Swarm Mode创建集群 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; 能使用 Docker Machine &gt; 的前提是宿主机需要是物理机，云主机目前不支持 &gt; Docker Machine 的创建。   Virtualbox 安装  步骤可参考  cd &#x2F;etc&#x2F;yum.repos.d wget http:&#x2F;&#x2F;download.virtualbox.org&#x2F;virtualbox&#x2F;rpm&#x2F;rhel&#x2F;virtualbox.repo yum install Virt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker（二）使用Swarm Mode创建集群">
+<meta property="og:url" content="https://www.alicharles.com/article/docker/docker-warm-mode/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; 能使用 Docker Machine &gt; 的前提是宿主机需要是物理机，云主机目前不支持 &gt; Docker Machine 的创建。   Virtualbox 安装  步骤可参考  cd &#x2F;etc&#x2F;yum.repos.d wget http:&#x2F;&#x2F;download.virtualbox.org&#x2F;virtualbox&#x2F;rpm&#x2F;rhel&#x2F;virtualbox.repo yum install Virt">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-07-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-15T04:19:28.498Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+
+    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="/images/logo.svg">
+    <!-- css -->
+    
+<link rel="stylesheet" href="/css/bootstrap.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
+
+    
+<link rel="stylesheet" href="/lib/prism/css/prism.css">
+
+
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Docker（二）使用Swarm Mode创建集群</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2018-07-12T00:00:00+08:00">
+            2018-07-12
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/docker/" itemprop="url" rel="index">
+              <span itemprop="name">docker</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p>能使用 Docker Machine 的前提是宿主机需要是物理机，云主机目前不支持 Docker Machine 的创建。</p>
+</blockquote>
+<h2 id="Virtualbox-安装"><a href="#Virtualbox-安装" class="headerlink" title="Virtualbox 安装"></a>Virtualbox 安装</h2><p>步骤<a target="_blank" rel="noopener" href="https://www.virtualbox.org/wiki/Linux_Downloads">可参考</a></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">cd &#x2F;etc&#x2F;yum.repos.d
+wget http:&#x2F;&#x2F;download.virtualbox.org&#x2F;virtualbox&#x2F;rpm&#x2F;rhel&#x2F;virtualbox.repo
+yum install VirtualBox-5.2</code></pre>
+
+<h2 id="Docker-Machine-安装"><a href="#Docker-Machine-安装" class="headerlink" title="Docker Machine 安装"></a>Docker Machine 安装</h2><h3 id="命令行安装-docker-machine"><a href="#命令行安装-docker-machine" class="headerlink" title="命令行安装 docker-machine"></a>命令行安装 docker-machine</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">base&#x3D;https:&#x2F;&#x2F;github.com&#x2F;docker&#x2F;machine&#x2F;releases&#x2F;download&#x2F;v0.15.0 &amp;&amp;
+  curl -L $base&#x2F;docker-machine-$(uname -s)-$(uname -m) &gt;&#x2F;tmp&#x2F;docker-machine &amp;&amp;
+  sudo ixunstall &#x2F;tmp&#x2F;docker-machine &#x2F;usr&#x2F;local&#x2F;bin&#x2F;docker-machine</code></pre>
+
+<h3 id="创建-docker-machine"><a href="#创建-docker-machine" class="headerlink" title="创建 docker-machine"></a>创建 docker-machine</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker-machine create --engine-registry-mirror&#x3D;https:&#x2F;&#x2F;xxx.mirror.aliyuncs.com -d virtualbox manager
+docker-machine create --engine-registry-mirror&#x3D;https:&#x2F;&#x2F;xxx.mirror.aliyuncs.com -d virtualbox worker1
+docker-machine create --engine-registry-mirror&#x3D;https:&#x2F;&#x2F;xxx.mirror.aliyuncs.com -d virtualbox worker2</code></pre>
+
+<p>创建 3 台机器，manager 为 leader</p>
+<h3 id="初始化-swarm-集群-manager"><a href="#初始化-swarm-集群-manager" class="headerlink" title="初始化 swarm 集群 manager"></a>初始化 swarm 集群 manager</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker-machine ssh manager
+docker swarm init
+Swarm initialized: current node (bvz81updecsj6wjz393c09vti) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-0bfpg588koug4bricwcs7y4edh70984pnpfx3tj1tmpb83atmn-442mbo6pueqsjcedq8aey04v0 192.168.99.100:2377
+
+To add a manager to this swarm, run &#39;docker swarm join-token manager&#39; and follow the instructions.</code></pre>
+
+<h3 id="机器加入到-swarm-集群"><a href="#机器加入到-swarm-集群" class="headerlink" title="机器加入到 swarm 集群"></a>机器加入到 swarm 集群</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker-machine ssh work1
+docker swarm join --token SWMTKN-1-0bfpg588koug4bricwcs7y4edh70984pnpfx3tj1tmpb83atmn-442mbo6pueqsjcedq8aey04v0 192.168.99.100:2377</code></pre>
+
+<h2 id="Swarm-Mode-集群部署"><a href="#Swarm-Mode-集群部署" class="headerlink" title="Swarm Mode 集群部署"></a>Swarm Mode 集群部署</h2><h3 id="创建-service-服务"><a href="#创建-service-服务" class="headerlink" title="创建 service 服务"></a>创建 service 服务</h3><p>详细命令<a target="_blank" rel="noopener" href="https://docs.docker.com/engine/reference/commandline/service_create/">可参考</a>，部署 etcd <a target="_blank" rel="noopener" href="https://github.com/appcelerator-archive/docker-etcd">可参考</a></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker-machine ssh manager
+
+docker network create --driver overlay db
+docker service create --network db -e SERVICE_NAME&#x3D;etcd -e MIN_SEEDS_COUNT&#x3D;3 --replicas 3 --name etcd appcelerator&#x2F;etcd</code></pre>
+
+<h3 id="查看-service-服务"><a href="#查看-service-服务" class="headerlink" title="查看 service 服务"></a>查看 service 服务</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker@manager:~$ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+i0o3eu86v8qhf9pjfgpseytxq *   manager             Ready               Active              Leader              18.06.0-ce
+tafuebh4yfm7c6a753xuq7hu1     worker1             Down                Active                                  18.06.0-ce
+no9dktvpeslqipt6suc6d7va0     worker2             Down                Active</code></pre>
+
+<h3 id="其他-service-命令"><a href="#其他-service-命令" class="headerlink" title="其他 service 命令"></a>其他 service 命令</h3><p>其他详细的命令<a target="_blank" rel="noopener" href="https://docs.docker.com/engine/swarm/#whats-next">可参考</a></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker service inspect
+docker service ls
+docker service rm
+docker service scale
+docker service ps
+docker service update</code></pre>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Docker/" itemprop="url" rel="index">
+                  <span itemprop="name">Docker</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="/images/mp_qrcode.jpg"
+         alt="/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/docker/docker-command/" rel="next" title="Docker（一）基本命令">
+            <i class="fa far fa-chevron-left"></i> Docker（一）基本命令
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/spock/" rel="prev" title="Spock 基于BDD测试">
+            Spock 基于BDD测试 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Virtualbox-%E5%AE%89%E8%A3%85"><span class="toc-text">Virtualbox 安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-Machine-%E5%AE%89%E8%A3%85"><span class="toc-text">Docker Machine 安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%AE%89%E8%A3%85-docker-machine"><span class="toc-text">命令行安装 docker-machine</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-docker-machine"><span class="toc-text">创建 docker-machine</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96-swarm-%E9%9B%86%E7%BE%A4-manager"><span class="toc-text">初始化 swarm 集群 manager</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%BA%E5%99%A8%E5%8A%A0%E5%85%A5%E5%88%B0-swarm-%E9%9B%86%E7%BE%A4"><span class="toc-text">机器加入到 swarm 集群</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Swarm-Mode-%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2"><span class="toc-text">Swarm Mode 集群部署</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-service-%E6%9C%8D%E5%8A%A1"><span class="toc-text">创建 service 服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B-service-%E6%9C%8D%E5%8A%A1"><span class="toc-text">查看 service 服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96-service-%E5%91%BD%E4%BB%A4"><span class="toc-text">其他 service 命令</span></a></li></ol></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    
+<script src="/lib/jquery/jquery.min.js"></script>
+
+    
+<script src="/lib/popper.js/popper.js"></script>
+
+    
+<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    
+<script src="/lib/prism/js/prism.js"></script>
+
+    
+<script src="/js/app.js"></script>
+
+
+    
+</div>
+</body>
+
+</html>
