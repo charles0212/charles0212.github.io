@@ -79,7 +79,7 @@
                                     
                                     <div class="col-sm " style="overflow: hidden;">
                                         
-                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                            <a class="nav-link" href="/categories/jvm/" target="_blank">JVM</a>
                                         
                                             <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
                                         
@@ -93,9 +93,9 @@
                                     
                                     <div class="col-sm  border-left " style="overflow: hidden;">
                                         
-                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                            <a class="nav-link" href="/categories/disruptor/" target="_blank">Disruptor</a>
                                         
-                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                            <a class="nav-link" href="/categories/netty/" target="_blank">Netty</a>
                                         
                                             <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
                                         
@@ -720,32 +720,15 @@ Redis 的大 key 有什么危害？一个 key 的 value 较大时的情况，比
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/redis/redis-storage-structure/">
-                Redis（四）存储结构
+            <a class="list-item" target="_blank" href="/article/redis/redis-thread-model/">
+                Redis（五）线程模型
             </a>
         </h3>
     </header>
     <div class="post-body">
         
-        前言Redis 作为一款高性能数据库，表现在：它接收到一个键值对操作后， 能以微秒级别的速度找到数据，并快速完成操作。其高性能得奥秘来缘于以下两点：
-
-Redis 是内存数据库， 所有操作都在内存上完成，内存的访问速度本身就很快
-Reids 通过高效的数据结构来组织数据。
-
-本章节可以让你在最短的时间了解如下内容：
-
-Redis 支持五大数据类型
-Redis 组织 Key-Value 数据结构
-Redis5 大值类型数据存储结构
-
-一、五大数据类型
-String(字符串)
-List(列表)
-Set(集合)
-Hash（哈希）
-Zset（有序集合）
-
-二、组织 Key-Value 数据结构在 re
+        一、Redis 有多快？Redis 是基于内存运行的高性能 K-V 数据库，官方提供的测试报告是单机可以支持约 10w&amp;#x2F;s 的 QPS
+二、Redis 为什么这么快？（1）完全基于内存，数据存在内存中，绝大部分请求是纯粹的内存操作，非常快速，跟传统的磁盘文件数据存储相比，避免了通过磁盘 IO 读取到内存这部分的开销。（2）数据结构简单，对数据操作也简单。Redis 中的数据结构是专门进行设计的，每种数据结构都有一种或多种数据结构来支持。Redis 正是依赖这些灵活的数据结构，来提升读取和写入的性能。（3）采用单线程，省去了很多上下文切换的时间以及 CPU 消耗，不存在竞争条件，不用去
         
         ...
         
@@ -802,7 +785,7 @@ Zset（有序集合）
             
             
 
-            <a class="read-more float-end mr-3" target="_blank" href="/article/redis/redis-storage-structure/">
+            <a class="read-more float-end mr-3" target="_blank" href="/article/redis/redis-thread-model/">
                 继续阅读 &raquo;
             </a>
         </span>
@@ -833,7 +816,7 @@ Zset（有序集合）
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">98</span>
+                <span class="state-item-count">99</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

@@ -77,7 +77,7 @@
                                     
                                     <div class="col-sm " style="overflow: hidden;">
                                         
-                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                            <a class="nav-link" href="/categories/jvm/" target="_blank">JVM</a>
                                         
                                             <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
                                         
@@ -91,9 +91,9 @@
                                     
                                     <div class="col-sm  border-left " style="overflow: hidden;">
                                         
-                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                            <a class="nav-link" href="/categories/disruptor/" target="_blank">Disruptor</a>
                                         
-                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                            <a class="nav-link" href="/categories/netty/" target="_blank">Netty</a>
                                         
                                             <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
                                         
@@ -150,7 +150,7 @@
     <div class="carousel-inner">
         
         <div class="carousel-item  active ">
-            <img src="/images/c2.jpg" alt="常用架构分析" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910800-ca4cddb8-e24e-46cf-acb9-ef354ded6cb4.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="常用架构分析" >
             <a class="container" href="/article/architecture/architecture/">
                 <div class="carousel-caption text-start">
                     <h3>常用架构分析</h3>
@@ -160,7 +160,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c1.jpg" alt="深入理解Disruptor" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910532-3d9881a4-a2c3-47b6-82f8-70de7541cd17.jpeg?x-oss-process=image%2Fresize%2Cw_1366%2Climit_0" alt="深入理解Disruptor" >
             <a class="container" href="/article/disruptor/understanding-disruptor/">
                 <div class="carousel-caption text-start">
                     <h3>深入理解Disruptor</h3>
@@ -170,7 +170,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c2.jpg" alt="深入理解jvm虚拟机" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910800-ca4cddb8-e24e-46cf-acb9-ef354ded6cb4.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="深入理解jvm虚拟机" >
             <a class="container" href="/article/jvm/understanding-jvm/">
                 <div class="carousel-caption text-start">
                     <h3>深入理解jvm虚拟机</h3>
@@ -180,7 +180,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c3.jpg" alt="JDK中的设计模式" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910536-3e420d23-763c-45c3-886c-4350c3018ace.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="JDK中的设计模式" >
             <a class="container" href="/article/design-pattern/jdk-design-pattern/">
                 <div class="carousel-caption text-start">
                     <h3>JDK中的设计模式</h3>
@@ -190,7 +190,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c2.jpg" alt="Java并发编程之锁" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910800-ca4cddb8-e24e-46cf-acb9-ef354ded6cb4.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="Java并发编程之锁" >
             <a class="container" href="/article/java/java-lock/">
                 <div class="carousel-caption text-start">
                     <h3>Java并发编程之锁</h3>
@@ -215,6 +215,81 @@
     <div class="row mx-0">
         <div class="col-sm-12 col-lg-9 charles-border-right px-lg-5 py-lg-2">
             <section id="posts" class="posts-collapse">
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/redis/redis-consistent-hashing/">
+                Redis（二）ShardedJedis一致性哈希
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        本文主要介绍一致性哈希的概念，以及在 Redis 中的 ShardedJedis 一致性哈希实现原理
+1、非一致性哈希在讨论一致性哈希之前，先认识下”非一致性哈希”，例如 HashMap。当使用 HashMap 时，key 被均匀地映射到数组之上，映射方法就是利用 key 的 hash 与数组长度取模(通过&amp;amp;运算)。当 put 的数据超过负载因子 loadFactor×2Len 时，HashMap 会按照 2 被的容量扩容。新 put 进来的数据会通过与新数组的长度取模的方式进行映射。那之前已经映射的数据该怎么办？通过查看 HashMap 代码的 resize 方法会发现，每次扩容都会
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2020-06-24T00:00:00+08:00">
+                2020-06-24
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/cache/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">cache</span>
+                    </a>
+                </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/cache/redis/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">redis</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Cache/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Cache</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Redis/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Redis</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/redis/redis-consistent-hashing/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
                 
                 <article class="post post-type">
     <header class="post-header">
@@ -495,72 +570,6 @@ Arthas 提供了非常丰富的关于调用拦截的命令，比如 trace&amp;#x
     <header class="post-header">
         <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
-                HBase （一）系统架构
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        本文基本是对 MapR 的官网文章An In-Depth Look at the HBase Architecture的翻译
-HBase 存储架构HBase 采用 Master&amp;#x2F;Slave 架构搭建集群，它隶属于 Hadoop 生态系统，由一下类型节点组成：HMaster 节点、HRegionServer 节点、ZooKeeper 集群，而在底层，它将数据存储于 HDFS 中，因而涉及到 HDFS 的 NameNode、DataNode 等，总体结构如下：
-HMaster 节点
-管理 HRegionServer，实现其负载均衡。
-管理和分配 HRegion，比如在 HRegion s
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2020-06-21T00:00:00+08:00">
-                2020-06-21
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/hbase/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">hbase</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/HBase/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">HBase</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/hbase/hbase-architecture/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
                 HBase（一）系统架构
             </a>
         </h3>
@@ -691,14 +700,18 @@ HMaster 节点
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/architecture/architecture-miaosha/">
-                架构（二）秒杀架构设计
+            <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
+                HBase （一）系统架构
             </a>
         </h3>
     </header>
     <div class="post-body">
         
-        秒杀业务与难点秒杀业务在各业务中已然非常流行，这里我将互联网行业中的秒杀定义为： 在非常短的时间内，将一件商品分成多份进行购买的行为。微信抢红包、一元夺宝、双 11 大促抢购等业务本质上都可视作秒杀业务。而最近大热的抢红包的难度在于这是和钱打交道的秒杀场景，对于事务的要求性更高。 秒杀业务优化的难点或者说痛点在于： 同一件商品在同一时间段内有非常多的用户去进行抢夺，从而造成服务器资源的紧张。非秒杀情况下，比如非大促的时候，用户购买的体验都是非常不错的。但是在秒杀场景下，这时意味着多个用户在同时抢一件商品，也就是并发很高，但集中在同一商品上，造成实质为串行操作。因为在数据库这层本质执行的是对同一
+        本文基本是对 MapR 的官网文章An In-Depth Look at the HBase Architecture的翻译
+HBase 存储架构HBase 采用 Master&amp;#x2F;Slave 架构搭建集群，它隶属于 Hadoop 生态系统，由一下类型节点组成：HMaster 节点、HRegionServer 节点、ZooKeeper 集群，而在底层，它将数据存储于 HDFS 中，因而涉及到 HDFS 的 NameNode、DataNode 等，总体结构如下：
+HMaster 节点
+管理 HRegionServer，实现其负载均衡。
+管理和分配 HRegion，比如在 HRegion s
         
         ...
         
@@ -709,8 +722,8 @@ HMaster 节点
                 <i class="fa far fa-user"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2020-05-22T00:00:00+08:00">
-                2020-05-22
+            <time itemprop="dateCreated" datetime="2020-06-21T00:00:00+08:00">
+                2020-06-21
             </time>
         </span>
         <span class="post-category">
@@ -722,8 +735,8 @@ HMaster 节点
             <span class="post-meta-item-text">分类</span>
             
             <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/architecture/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">architecture</span>
+                    <a href="/categories/hbase/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">hbase</span>
                     </a>
                 </span>
             
@@ -736,14 +749,14 @@ HMaster 节点
             <span class="post-meta-item-text">标签</span>
             
             <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Architecture/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Architecture</span>
+                <a href="/tags/HBase/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">HBase</span>
                 </a>
             </span>
             
             
 
-            <a class="read-more float-end mr-3" target="_blank" href="/article/architecture/architecture-miaosha/">
+            <a class="read-more float-end mr-3" target="_blank" href="/article/hbase/hbase-architecture/">
                 继续阅读 &raquo;
             </a>
         </span>
@@ -774,7 +787,7 @@ HMaster 节点
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">98</span>
+                <span class="state-item-count">99</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

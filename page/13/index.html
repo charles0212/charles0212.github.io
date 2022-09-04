@@ -77,7 +77,7 @@
                                     
                                     <div class="col-sm " style="overflow: hidden;">
                                         
-                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                            <a class="nav-link" href="/categories/jvm/" target="_blank">JVM</a>
                                         
                                             <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
                                         
@@ -91,9 +91,9 @@
                                     
                                     <div class="col-sm  border-left " style="overflow: hidden;">
                                         
-                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                            <a class="nav-link" href="/categories/disruptor/" target="_blank">Disruptor</a>
                                         
-                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                            <a class="nav-link" href="/categories/netty/" target="_blank">Netty</a>
                                         
                                             <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
                                         
@@ -150,7 +150,7 @@
     <div class="carousel-inner">
         
         <div class="carousel-item  active ">
-            <img src="/images/c2.jpg" alt="常用架构分析" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910800-ca4cddb8-e24e-46cf-acb9-ef354ded6cb4.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="常用架构分析" >
             <a class="container" href="/article/architecture/architecture/">
                 <div class="carousel-caption text-start">
                     <h3>常用架构分析</h3>
@@ -160,7 +160,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c1.jpg" alt="深入理解Disruptor" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910532-3d9881a4-a2c3-47b6-82f8-70de7541cd17.jpeg?x-oss-process=image%2Fresize%2Cw_1366%2Climit_0" alt="深入理解Disruptor" >
             <a class="container" href="/article/disruptor/understanding-disruptor/">
                 <div class="carousel-caption text-start">
                     <h3>深入理解Disruptor</h3>
@@ -170,7 +170,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c2.jpg" alt="深入理解jvm虚拟机" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910800-ca4cddb8-e24e-46cf-acb9-ef354ded6cb4.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="深入理解jvm虚拟机" >
             <a class="container" href="/article/jvm/understanding-jvm/">
                 <div class="carousel-caption text-start">
                     <h3>深入理解jvm虚拟机</h3>
@@ -180,7 +180,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c3.jpg" alt="JDK中的设计模式" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910536-3e420d23-763c-45c3-886c-4350c3018ace.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="JDK中的设计模式" >
             <a class="container" href="/article/design-pattern/jdk-design-pattern/">
                 <div class="carousel-caption text-start">
                     <h3>JDK中的设计模式</h3>
@@ -190,7 +190,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c2.jpg" alt="Java并发编程之锁" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910800-ca4cddb8-e24e-46cf-acb9-ef354ded6cb4.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="Java并发编程之锁" >
             <a class="container" href="/article/java/java-lock/">
                 <div class="carousel-caption text-start">
                     <h3>Java并发编程之锁</h3>
@@ -215,6 +215,75 @@
     <div class="row mx-0">
         <div class="col-sm-12 col-lg-9 charles-border-right px-lg-5 py-lg-2">
             <section id="posts" class="posts-collapse">
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-factory-pattern/">
+                JDK设计模式（二）工厂模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        工厂模式是我们最常用的实例化对象模式，使用工厂方法代替 new 操作的一种模式，使用工厂模式，可能多做一些工作，但会给你系统带来更大的可扩展性和尽量少的修改量。
+1、简单工厂模式简单工厂模式是属于创建型模式，又叫做静态工厂方法（Static Factory Method）模式，但不属于 23 种 GOF 设计模式之一。简单工厂模式是由一个工厂对象决定创建出哪一种产品类的实例。简单工厂模式是工厂模式家族中最简单实用的模式，可以理解为是不同工厂模式的一个特殊实现。简单工厂模式的实质是由一个工厂类根据传入的参数，动态决定应该创建哪一个产品类（这些产品类继承自一个父类或接口）的实例。使用场景1、工厂类
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-01-18T08:00:00+08:00">
+                2015-01-18
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-factory-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
                 
                 <article class="post post-type">
     <header class="post-header">
@@ -391,7 +460,7 @@ public class Singleton &amp;#123;
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">98</span>
+                <span class="state-item-count">99</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

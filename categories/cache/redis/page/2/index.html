@@ -79,7 +79,7 @@
                                     
                                     <div class="col-sm " style="overflow: hidden;">
                                         
-                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                            <a class="nav-link" href="/categories/jvm/" target="_blank">JVM</a>
                                         
                                             <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
                                         
@@ -93,9 +93,9 @@
                                     
                                     <div class="col-sm  border-left " style="overflow: hidden;">
                                         
-                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                            <a class="nav-link" href="/categories/disruptor/" target="_blank">Disruptor</a>
                                         
-                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                            <a class="nav-link" href="/categories/netty/" target="_blank">Netty</a>
                                         
                                             <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
                                         
@@ -134,81 +134,6 @@
     <div class="row mx-0">
         <div class="col-sm-12 col-lg-9 charles-border-right px-lg-5 py-lg-2">
             <section id="posts" class="posts-collapse">
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/redis/redis-consistent-hashing/">
-                Redis（二）ShardedJedis一致性哈希
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        本文主要介绍一致性哈希的概念，以及在 Redis 中的 ShardedJedis 一致性哈希实现原理
-1、非一致性哈希在讨论一致性哈希之前，先认识下”非一致性哈希”，例如 HashMap。当使用 HashMap 时，key 被均匀地映射到数组之上，映射方法就是利用 key 的 hash 与数组长度取模(通过&amp;amp;运算)。当 put 的数据超过负载因子 loadFactor×2Len 时，HashMap 会按照 2 被的容量扩容。新 put 进来的数据会通过与新数组的长度取模的方式进行映射。那之前已经映射的数据该怎么办？通过查看 HashMap 代码的 resize 方法会发现，每次扩容都会
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2020-06-24T00:00:00+08:00">
-                2020-06-24
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/cache/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">cache</span>
-                    </a>
-                </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/cache/redis/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">redis</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Cache/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Cache</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Redis/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Redis</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/redis/redis-consistent-hashing/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
                 
                 <article class="post post-type">
     <header class="post-header">
@@ -287,6 +212,81 @@ Redis 集群可以在一组 redis 节点之间实现高可用性和 sharding。�
             
 
             <a class="read-more float-end mr-3" target="_blank" href="/article/redis/redis-sentinel/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/redis/redis-consistent-hashing/">
+                Redis（二）ShardedJedis一致性哈希
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        本文主要介绍一致性哈希的概念，以及在 Redis 中的 ShardedJedis 一致性哈希实现原理
+1、非一致性哈希在讨论一致性哈希之前，先认识下”非一致性哈希”，例如 HashMap。当使用 HashMap 时，key 被均匀地映射到数组之上，映射方法就是利用 key 的 hash 与数组长度取模(通过&amp;amp;运算)。当 put 的数据超过负载因子 loadFactor×2Len 时，HashMap 会按照 2 被的容量扩容。新 put 进来的数据会通过与新数组的长度取模的方式进行映射。那之前已经映射的数据该怎么办？通过查看 HashMap 代码的 resize 方法会发现，每次扩容都会
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2020-06-24T00:00:00+08:00">
+                2020-06-24
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/cache/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">cache</span>
+                    </a>
+                </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/cache/redis/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">redis</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Cache/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Cache</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Redis/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Redis</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/redis/redis-consistent-hashing/">
                 继续阅读 &raquo;
             </a>
         </span>
@@ -392,7 +392,7 @@ Redis 简介Redis 是完全开源免费的，遵守 BSD 协议，是一个高性
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">98</span>
+                <span class="state-item-count">99</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

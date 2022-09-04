@@ -77,7 +77,7 @@
                                     
                                     <div class="col-sm " style="overflow: hidden;">
                                         
-                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                            <a class="nav-link" href="/categories/jvm/" target="_blank">JVM</a>
                                         
                                             <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
                                         
@@ -91,9 +91,9 @@
                                     
                                     <div class="col-sm  border-left " style="overflow: hidden;">
                                         
-                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                            <a class="nav-link" href="/categories/disruptor/" target="_blank">Disruptor</a>
                                         
-                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                            <a class="nav-link" href="/categories/netty/" target="_blank">Netty</a>
                                         
                                             <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
                                         
@@ -150,7 +150,7 @@
     <div class="carousel-inner">
         
         <div class="carousel-item  active ">
-            <img src="/images/c2.jpg" alt="常用架构分析" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910800-ca4cddb8-e24e-46cf-acb9-ef354ded6cb4.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="常用架构分析" >
             <a class="container" href="/article/architecture/architecture/">
                 <div class="carousel-caption text-start">
                     <h3>常用架构分析</h3>
@@ -160,7 +160,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c1.jpg" alt="深入理解Disruptor" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910532-3d9881a4-a2c3-47b6-82f8-70de7541cd17.jpeg?x-oss-process=image%2Fresize%2Cw_1366%2Climit_0" alt="深入理解Disruptor" >
             <a class="container" href="/article/disruptor/understanding-disruptor/">
                 <div class="carousel-caption text-start">
                     <h3>深入理解Disruptor</h3>
@@ -170,7 +170,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c2.jpg" alt="深入理解jvm虚拟机" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910800-ca4cddb8-e24e-46cf-acb9-ef354ded6cb4.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="深入理解jvm虚拟机" >
             <a class="container" href="/article/jvm/understanding-jvm/">
                 <div class="carousel-caption text-start">
                     <h3>深入理解jvm虚拟机</h3>
@@ -180,7 +180,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c3.jpg" alt="JDK中的设计模式" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910536-3e420d23-763c-45c3-886c-4350c3018ace.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="JDK中的设计模式" >
             <a class="container" href="/article/design-pattern/jdk-design-pattern/">
                 <div class="carousel-caption text-start">
                     <h3>JDK中的设计模式</h3>
@@ -190,7 +190,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c2.jpg" alt="Java并发编程之锁" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910800-ca4cddb8-e24e-46cf-acb9-ef354ded6cb4.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="Java并发编程之锁" >
             <a class="container" href="/article/java/java-lock/">
                 <div class="carousel-caption text-start">
                     <h3>Java并发编程之锁</h3>
@@ -215,6 +215,75 @@
     <div class="row mx-0">
         <div class="col-sm-12 col-lg-9 charles-border-right px-lg-5 py-lg-2">
             <section id="posts" class="posts-collapse">
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/jvm/java-oom/">
+                JVM（一）Java内存区域与内存溢出
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        Java 内存区域Java 虚拟机所管理的内存将包括以下几个运行时数据区域，如下图所示：
+程序计数器ProgramCounterRegister 是一块较小的内存空间，它的作用可以看做是当前线程所执行的字节码的行号指示器。字节码解释器工作时就是通过改变程序计数器的值来选取下一条要执行的字节码指令，分支、循环、跳转、异常跳转、线程恢复等基础功能都需要依赖这个计数器来完成。由于 Java 虚拟机的多线程时通过线程切换并分配处理器执行时间来实现的，对于单核处理器在某一个时间都只会有一个线程在运行，为了线程切换后能恢复到正确的执行位置，每个线程都需要维护一个独立的程序计数器，各个线程之间的计数器互不影
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-01-05T00:00:00+08:00">
+                2016-01-05
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/jvm/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">jvm</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/JVM/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">JVM</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/jvm/java-oom/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
                 
                 <article class="post post-type">
     <header class="post-header">
@@ -708,76 +777,6 @@
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-proxy-pattern/">
-                JDK设计模式（十一）代理模式
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        1、定义为另一个对象提供一个替身或占位符以控制对这个对象的访问。
-2、解决的问题在某些情况下，一个对象不想或者不能直接引用另一个对象，而代理对象可以在客户端和目标对象之间起到中介的作用，提供额外的处理或者不同的操作。
-3、模式中的角色1、抽象主题角色(Subject)：声明真实对象和代理对象的共同接口；2、 代理角色(Proxy)：代理对象角色内部含有对真实对象的引用，从而可以操作真实对象，同时代理对象提供与真实对象相同的接口以便在任何时刻都能代替真实对象。同时，代理对象可以在执行真实对象操作时，附加其他的操作，相当于对真实对象进行封装。3、真实主题角色(RealSubject)：代理角色所代
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-04-15T00:00:00+08:00">
-                2015-04-15
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">design-pattern</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Java</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">设计模式</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-proxy-pattern/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -802,7 +801,7 @@
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">98</span>
+                <span class="state-item-count">99</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

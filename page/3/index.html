@@ -77,7 +77,7 @@
                                     
                                     <div class="col-sm " style="overflow: hidden;">
                                         
-                                            <a class="nav-link" href="/categories/JVM/" target="_blank">JVM</a>
+                                            <a class="nav-link" href="/categories/jvm/" target="_blank">JVM</a>
                                         
                                             <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
                                         
@@ -91,9 +91,9 @@
                                     
                                     <div class="col-sm  border-left " style="overflow: hidden;">
                                         
-                                            <a class="nav-link" href="/categories/Disruptor/" target="_blank">Disruptor</a>
+                                            <a class="nav-link" href="/categories/disruptor/" target="_blank">Disruptor</a>
                                         
-                                            <a class="nav-link" href="/categories/Netty/" target="_blank">Netty</a>
+                                            <a class="nav-link" href="/categories/netty/" target="_blank">Netty</a>
                                         
                                             <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
                                         
@@ -150,7 +150,7 @@
     <div class="carousel-inner">
         
         <div class="carousel-item  active ">
-            <img src="/images/c2.jpg" alt="常用架构分析" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910800-ca4cddb8-e24e-46cf-acb9-ef354ded6cb4.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="常用架构分析" >
             <a class="container" href="/article/architecture/architecture/">
                 <div class="carousel-caption text-start">
                     <h3>常用架构分析</h3>
@@ -160,7 +160,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c1.jpg" alt="深入理解Disruptor" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910532-3d9881a4-a2c3-47b6-82f8-70de7541cd17.jpeg?x-oss-process=image%2Fresize%2Cw_1366%2Climit_0" alt="深入理解Disruptor" >
             <a class="container" href="/article/disruptor/understanding-disruptor/">
                 <div class="carousel-caption text-start">
                     <h3>深入理解Disruptor</h3>
@@ -170,7 +170,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c2.jpg" alt="深入理解jvm虚拟机" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910800-ca4cddb8-e24e-46cf-acb9-ef354ded6cb4.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="深入理解jvm虚拟机" >
             <a class="container" href="/article/jvm/understanding-jvm/">
                 <div class="carousel-caption text-start">
                     <h3>深入理解jvm虚拟机</h3>
@@ -180,7 +180,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c3.jpg" alt="JDK中的设计模式" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910536-3e420d23-763c-45c3-886c-4350c3018ace.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="JDK中的设计模式" >
             <a class="container" href="/article/design-pattern/jdk-design-pattern/">
                 <div class="carousel-caption text-start">
                     <h3>JDK中的设计模式</h3>
@@ -190,7 +190,7 @@
         </div>
         
         <div class="carousel-item ">
-            <img src="/images/c2.jpg" alt="Java并发编程之锁" >
+            <img src="https://cdn.nlark.com/yuque/0/2022/jpeg/104130/1662296910800-ca4cddb8-e24e-46cf-acb9-ef354ded6cb4.jpeg?x-oss-process=image%2Fresize%2Cw_1024%2Climit_0" alt="Java并发编程之锁" >
             <a class="container" href="/article/java/java-lock/">
                 <div class="carousel-caption text-start">
                     <h3>Java并发编程之锁</h3>
@@ -215,6 +215,72 @@
     <div class="row mx-0">
         <div class="col-sm-12 col-lg-9 charles-border-right px-lg-5 py-lg-2">
             <section id="posts" class="posts-collapse">
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
+                HBase 系统架构
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        本文基本是对 MapR 的官网文章An In-Depth Look at the HBase Architecture的翻译
+HBase 存储架构HBase 采用 Master&amp;#x2F;Slave 架构搭建集群，它隶属于 Hadoop 生态系统，由一下类型节点组成：HMaster 节点、HRegionServer 节点、ZooKeeper 集群，而在底层，它将数据存储于 HDFS 中，因而涉及到 HDFS 的 NameNode、DataNode 等，总体结构如下：
+HMaster 节点
+管理 HRegionServer，实现其负载均衡。
+管理和分配 HRegion，比如在 HRegion s
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2021-06-21T00:00:00+08:00">
+                2021-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/hbase/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">hbase</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/HBase/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">HBase</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/hbase/hbase-architecture/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
                 
                 <article class="post post-type">
     <header class="post-header">
@@ -732,75 +798,6 @@ https://zhuanlan.zhihu.com/p/375912272 &amp;gt; https://www.pianshen.com/article
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/nacos/nacos/">
-                Nacos简介
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        
-https://zhuanlan.zhihu.com/p/375912272 &amp;gt; https://www.cnblogs.com/crazymakercircle/p/14231815.html
-
-1、Nacos 优势问题，既然有了 Eureka ，为啥还要用 Nacos？而 Nacos 作为微服务核心的服务注册与发现中心，让大家在 Eureka 和 Consule 之外有了新的选择，开箱即用，上手简洁，暂时也没发现有太大的坑。
-1.1、与 eureka 对比
-eureka 2.0 闭源码了
-从官网来看 nacos 的注册的实例数是大于 eureka 的
-因为 nacos 使用的 ra
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2021-03-20T00:00:00+08:00">
-                2021-03-20
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/nacos/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">nacos</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Nacos/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Nacos</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/nacos/nacos/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -825,7 +822,7 @@ eureka 2.0 闭源码了
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">98</span>
+                <span class="state-item-count">99</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>
