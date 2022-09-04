@@ -23,22 +23,13 @@
 <meta property="article:author" content="charles">
 <meta name="twitter:card" content="summary">
 
-    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
-    <link rel="icon" sizes="any" mask href="/images/logo.svg">
-    <!-- css -->
+    <link rel="shortcut icon" href="//cdn.alicharles.com/static/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="//cdn.alicharles.com/static/images/logo.svg">
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/css/bootstrap.css">  
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/css/style.css">   
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/lib/fontawesome/css/all.css">   
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/lib/prism/css/prism.css">   
     
-<link rel="stylesheet" href="/css/bootstrap.css">
-
-    
-<link rel="stylesheet" href="/css/style.css">
-
-    
-<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
-
-    
-<link rel="stylesheet" href="/lib/prism/css/prism.css">
-
-
     
 
 <meta name="generator" content="Hexo 6.2.0"></head>
@@ -51,7 +42,7 @@
     <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
         <div class="container">
             <a class="navbar-brand mr-0 mr-md-2" href="/">
-                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+                <img src="//cdn.alicharles.com/static/images/charles-logo.png" height="32px" width="80px" alt="charles">
             </a>
             <button class="navbar-toggler"
                     type="button"
@@ -570,6 +561,72 @@ Arthas 提供了非常丰富的关于调用拦截的命令，比如 trace&amp;#x
     <header class="post-header">
         <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
+                HBase （一）系统架构
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        本文基本是对 MapR 的官网文章An In-Depth Look at the HBase Architecture的翻译
+HBase 存储架构HBase 采用 Master&amp;#x2F;Slave 架构搭建集群，它隶属于 Hadoop 生态系统，由一下类型节点组成：HMaster 节点、HRegionServer 节点、ZooKeeper 集群，而在底层，它将数据存储于 HDFS 中，因而涉及到 HDFS 的 NameNode、DataNode 等，总体结构如下：
+HMaster 节点
+管理 HRegionServer，实现其负载均衡。
+管理和分配 HRegion，比如在 HRegion s
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2020-06-21T00:00:00+08:00">
+                2020-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/hbase/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">hbase</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/HBase/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">HBase</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/hbase/hbase-architecture/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
                 HBase（一）系统架构
             </a>
         </h3>
@@ -697,72 +754,6 @@ HMaster 节点
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
-                HBase （一）系统架构
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        本文基本是对 MapR 的官网文章An In-Depth Look at the HBase Architecture的翻译
-HBase 存储架构HBase 采用 Master&amp;#x2F;Slave 架构搭建集群，它隶属于 Hadoop 生态系统，由一下类型节点组成：HMaster 节点、HRegionServer 节点、ZooKeeper 集群，而在底层，它将数据存储于 HDFS 中，因而涉及到 HDFS 的 NameNode、DataNode 等，总体结构如下：
-HMaster 节点
-管理 HRegionServer，实现其负载均衡。
-管理和分配 HRegion，比如在 HRegion s
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2020-06-21T00:00:00+08:00">
-                2020-06-21
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/hbase/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">hbase</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/HBase/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">HBase</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/hbase/hbase-architecture/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -773,7 +764,7 @@ HMaster 节点
         <!--个人信息-->
         
         <img class="author-image" itemprop="image"
-             src="/images/logo.jpg"
+             src="https://cdn.alicharles.com/static/images/logo.jpg"
              alt=""/>
         
         <p class="author-name" itemprop="name"></p>
@@ -885,21 +876,11 @@ HMaster 节点
     </div>
 
     <!-- js -->
-    
-<script src="/lib/jquery/jquery.min.js"></script>
-
-    
-<script src="/lib/popper.js/popper.js"></script>
-
-    
-<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
-
-    
-<script src="/lib/prism/js/prism.js"></script>
-
-    
-<script src="/js/app.js"></script>
-
+    <script src="//cdn.alicharles.com/static/lib/jquery/jquery.min.js"></script>
+    <script src="//cdn.alicharles.com/static/lib/popper.js/popper.js"></script>
+    <script src="//cdn.alicharles.com/static/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="//cdn.alicharles.com/static/lib/prism/js/prism.js"></script>
+    <script src="//cdn.alicharles.com/static/js/app.js"></script>
 
     
 </div>

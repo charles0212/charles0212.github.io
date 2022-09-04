@@ -25,22 +25,13 @@
 <meta property="article:author" content="charles">
 <meta name="twitter:card" content="summary">
 
-    <link rel="shortcut icon" href="/images/logo.png" type="image/png">
-    <link rel="icon" sizes="any" mask href="/images/logo.svg">
-    <!-- css -->
+    <link rel="shortcut icon" href="//cdn.alicharles.com/static/images/logo.png" type="image/png">
+    <link rel="icon" sizes="any" mask href="//cdn.alicharles.com/static/images/logo.svg">
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/css/bootstrap.css">  
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/css/style.css">   
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/lib/fontawesome/css/all.css">   
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/lib/prism/css/prism.css">   
     
-<link rel="stylesheet" href="/css/bootstrap.css">
-
-    
-<link rel="stylesheet" href="/css/style.css">
-
-    
-<link rel="stylesheet" href="/lib/fontawesome/css/all.css">
-
-    
-<link rel="stylesheet" href="/lib/prism/css/prism.css">
-
-
     
 
 <meta name="generator" content="Hexo 6.2.0"></head>
@@ -53,7 +44,7 @@
     <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
         <div class="container">
             <a class="navbar-brand mr-0 mr-md-2" href="/">
-                <img src="/images/charles-logo.png" height="32px" width="80px" alt="charles">
+                <img src="//cdn.alicharles.com/static/images/charles-logo.png" height="32px" width="80px" alt="charles">
             </a>
             <button class="navbar-toggler"
                     type="button"
@@ -269,71 +260,6 @@ LSM 树(Log-Structured-Merge-Tree)的名字往往会给初识者一个错误的�
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/hbase/hbase-read-optimize/">
-                HBase 读优化
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        
-https://blog.csdn.net/weixin_40954192&amp;#x2F;article&amp;#x2F;details&amp;#x2F;106942029
-
-LSM 存储引擎是在 B+树的基础上衍生过来的，目的就是为了在读和写之间，提高写的性能。所以，LSM 树的弊端也由此可见，对读并不是很友好，所以，针对 LSM 树，有后续 compact，布隆过滤器，blockCache 等优化方式。来弥补对读的查询。LSM 树的索引一般由 2 部分构成，一部分是内存部分，一部分是磁盘部分。内存部分采用跳跃表来维护一个有序的 KV 集合,也就是 memstore.随着内存不断数据写入，一旦内存占用超过
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2021-06-21T00:00:00+08:00">
-                2021-06-21
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/hbase/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">hbase</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/HBase/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">HBase</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/hbase/hbase-read-optimize/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
                 HBase 系统架构
             </a>
@@ -391,6 +317,71 @@ HMaster 节点
             
 
             <a class="read-more float-end mr-3" target="_blank" href="/article/hbase/hbase-architecture/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/hbase/hbase-read-optimize/">
+                HBase 读优化
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+https://blog.csdn.net/weixin_40954192&amp;#x2F;article&amp;#x2F;details&amp;#x2F;106942029
+
+LSM 存储引擎是在 B+树的基础上衍生过来的，目的就是为了在读和写之间，提高写的性能。所以，LSM 树的弊端也由此可见，对读并不是很友好，所以，针对 LSM 树，有后续 compact，布隆过滤器，blockCache 等优化方式。来弥补对读的查询。LSM 树的索引一般由 2 部分构成，一部分是内存部分，一部分是磁盘部分。内存部分采用跳跃表来维护一个有序的 KV 集合,也就是 memstore.随着内存不断数据写入，一旦内存占用超过
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2021-06-21T00:00:00+08:00">
+                2021-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/hbase/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">hbase</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/HBase/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">HBase</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/hbase/hbase-read-optimize/">
                 继续阅读 &raquo;
             </a>
         </span>
@@ -540,7 +531,7 @@ services:
     <header class="post-header">
         <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
-                HBase（一）系统架构
+                HBase （一）系统架构
             </a>
         </h3>
     </header>
@@ -606,7 +597,7 @@ HMaster 节点
     <header class="post-header">
         <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
-                HBase （一）系统架构
+                HBase（一）系统架构
             </a>
         </h3>
     </header>
@@ -678,7 +669,7 @@ HMaster 节点
         <!--个人信息-->
         
         <img class="author-image" itemprop="image"
-             src="/images/logo.jpg"
+             src="https://cdn.alicharles.com/static/images/logo.jpg"
              alt=""/>
         
         <p class="author-name" itemprop="name"></p>
@@ -789,21 +780,11 @@ HMaster 节点
     </div>
 
     <!-- js -->
-    
-<script src="/lib/jquery/jquery.min.js"></script>
-
-    
-<script src="/lib/popper.js/popper.js"></script>
-
-    
-<script src="/lib/bootstrap/js/bootstrap.min.js"></script>
-
-    
-<script src="/lib/prism/js/prism.js"></script>
-
-    
-<script src="/js/app.js"></script>
-
+    <script src="//cdn.alicharles.com/static/lib/jquery/jquery.min.js"></script>
+    <script src="//cdn.alicharles.com/static/lib/popper.js/popper.js"></script>
+    <script src="//cdn.alicharles.com/static/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="//cdn.alicharles.com/static/lib/prism/js/prism.js"></script>
+    <script src="//cdn.alicharles.com/static/js/app.js"></script>
 
     
 </div>
