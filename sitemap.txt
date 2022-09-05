@@ -3,15 +3,12 @@ https://www.alicharles.com/article/architecture/architecture-order-fsm/
 https://www.alicharles.com/article/url/short-url/
 https://www.alicharles.com/article/hbase/hbase-lsm/
 https://www.alicharles.com/article/design-pattern/go-design-pattern/
-https://www.alicharles.com/article/gateway/apisix/
 https://www.alicharles.com/article/arthas/arthas-context/
 https://www.alicharles.com/article/cncf/cloud-native/
-https://www.alicharles.com/article/ddd/core-concept/
 https://www.alicharles.com/article/ddd/onion-architecture/
 https://www.alicharles.com/article/ddd/ports-adapters-architecture/
 https://www.alicharles.com/article/ddd/cqrs-architecture/
 https://www.alicharles.com/article/ddd/explicit-architecture/
-https://www.alicharles.com/article/ddd/clean-architecture/
 https://www.alicharles.com/article/disruptor/disruptor-ringbuffer/
 https://www.alicharles.com/article/disruptor/disruptor-ringbuffer-single-write/
 https://www.alicharles.com/article/disruptor/disruptor-ringbuffer-read/
@@ -36,8 +33,8 @@ https://www.alicharles.com/article/design-pattern/jdk-decorator-pattern/
 https://www.alicharles.com/article/design-pattern/jdk-bridge-pattern/
 https://www.alicharles.com/article/design-pattern/jdk-proxy-pattern/
 https://www.alicharles.com/article/design-pattern/jdk-command-pattern/
-https://www.alicharles.com/article/design-pattern/jdk-strategy-pattern/
 https://www.alicharles.com/article/design-pattern/jdk-template-method-pattern/
+https://www.alicharles.com/article/design-pattern/jdk-strategy-pattern/
 https://www.alicharles.com/article/design-pattern/jdk-iterator-pattern/
 https://www.alicharles.com/article/design-pattern/jdk-responsibility-pattern/
 https://www.alicharles.com/article/design-pattern/jdk-observer-pattern/
@@ -59,13 +56,14 @@ https://www.alicharles.com/article/java/java-cyclicbarrier/
 https://www.alicharles.com/article/java/java-conditionobject/
 https://www.alicharles.com/article/mysql/mysql-mvcc/
 https://www.alicharles.com/article/mysql/mysql-btree-depth/
-https://www.alicharles.com/article/mysql/mysql-transaction/
 https://www.alicharles.com/article/mysql/mysql-deadlock/
+https://www.alicharles.com/article/mysql/mysql-transaction/
 https://www.alicharles.com/article/mysql/mysql-table-fragmentation/
 https://www.alicharles.com/article/nacos/nacos-config/
 https://www.alicharles.com/article/nacos/nacos-architecture/
 https://www.alicharles.com/article/nacos/nacos/
 https://www.alicharles.com/article/netty/netty-io-basic/
+https://www.alicharles.com/article/redis/redis-introduce/
 https://www.alicharles.com/article/redis/redis-large-value/
 https://www.alicharles.com/article/redis/redis-sentinel/
 https://www.alicharles.com/article/redis/redis-consistent-hashing/
@@ -86,7 +84,9 @@ https://www.alicharles.com/article/architecture/architecture-miaosha/
 https://www.alicharles.com/article/disruptor/understanding-disruptor/
 https://www.alicharles.com/article/jvm/understanding-jvm/
 https://www.alicharles.com/article/stability/stability-diff/
-https://www.alicharles.com/article/redis/redis-introduce/
+https://www.alicharles.com/article/gateway/apisix/
+https://www.alicharles.com/article/ddd/core-concept/
+https://www.alicharles.com/article/ddd/clean-architecture/
 https://www.alicharles.com/article/hbase/hbase-architecture/
 https://www.alicharles.com/article/cache/redis-lock/
 https://www.alicharles.com/article/hbase/hbase-docker/
@@ -103,7 +103,6 @@ https://www.alicharles.com/search/index.html
 https://www.alicharles.com/404.html
 https://www.alicharles.com/categories/index.html
 https://www.alicharles.com/
-https://www.alicharles.com/tags/Gateway/
 https://www.alicharles.com/tags/Arthas/
 https://www.alicharles.com/tags/CNCF/
 https://www.alicharles.com/tags/DDD/
@@ -139,7 +138,7 @@ https://www.alicharles.com/tags/Go/
 https://www.alicharles.com/tags/Limit/
 https://www.alicharles.com/tags/Fuse/
 https://www.alicharles.com/tags/Degradation/
-https://www.alicharles.com/categories/gateway/
+https://www.alicharles.com/tags/Gateway/
 https://www.alicharles.com/categories/arthas/
 https://www.alicharles.com/categories/cncf/
 https://www.alicharles.com/categories/ddd/
@@ -163,4 +162,5 @@ https://www.alicharles.com/categories/raft/
 https://www.alicharles.com/categories/id-generator/
 https://www.alicharles.com/categories/architecture/
 https://www.alicharles.com/categories/short-url/
+https://www.alicharles.com/categories/gateway/
 https://www.alicharles.com/categories/cache/redis/
