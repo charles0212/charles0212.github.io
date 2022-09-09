@@ -166,7 +166,7 @@
 <li>代表传达机制和基础设施的外层；</li>
 <li>代表业务逻辑的内层。</li>
 </ol>
-<p>端口和适配器架构与洋葱架构有着相同的思路，它们都通过编写适配器代码将应用核心从对基础设施的关注中解放出来，避免基础设施代码渗透到应用核心之中。这样应用使用的工具和传达机制都可以轻松地替换，可以一定程度地避免技术、工具或者供应商锁定。<br>另外，它还有着脱离真实基础设施和传达机制应用仍然可以运行的便利，这样可以使用 mock 代替它们方便测试。<br>然而，洋葱架构还告诉我们，企业应用中存在着不止两个层次，它在业务逻辑中加入了一些在领域驱动设计的过程中被识别出来的层次：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608119083-5309ddc4-278c-4f09-a764-26b5310736ad.png#clientId=udd11f49d-b9ae-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=289&id=u8b611542&margin=%5Bobject%20Object%5D&name=image.png&originHeight=577&originWidth=828&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=403435&status=done&style=none&taskId=u696a16fc-1738-4c2e-b42e-fa75a013357&title=&width=414" alt="image.png"><br>此外，它明确了端口和适配器架构中关于依赖方向的暗示：</p>
+<p>端口和适配器架构与洋葱架构有着相同的思路，它们都通过编写适配器代码将应用核心从对基础设施的关注中解放出来，避免基础设施代码渗透到应用核心之中。这样应用使用的工具和传达机制都可以轻松地替换，可以一定程度地避免技术、工具或者供应商锁定。<br>另外，它还有着脱离真实基础设施和传达机制应用仍然可以运行的便利，这样可以使用 mock 代替它们方便测试。<br>然而，洋葱架构还告诉我们，企业应用中存在着不止两个层次，它在业务逻辑中加入了一些在领域驱动设计的过程中被识别出来的层次：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608119083-5309ddc4-278c-4f09-a764-26b5310736ad.png#clientId=udd11f49d-b9ae-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=289&id=u8b611542&margin=%5Bobject%20Object%5D&name=image.png&originHeight=577&originWidth=828&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=403435&status=done&style=none&taskId=u696a16fc-1738-4c2e-b42e-fa75a013357&title=&width=414" alt="image.png" width="414"><br>此外，它明确了端口和适配器架构中关于依赖方向的暗示：</p>
 <ul>
 <li>外层依赖内层；</li>
 <li>内层对外层无感知。</li>

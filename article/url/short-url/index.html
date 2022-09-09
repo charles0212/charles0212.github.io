@@ -204,7 +204,7 @@
 <h2 id="两种方案的优缺点"><a href="#两种方案的优缺点" class="headerlink" title="两种方案的优缺点"></a>两种方案的优缺点</h2><ol>
 <li><p>hash 方案的优点: 生成的短链不可遍历</p>
 </li>
-<li><p>hash 方案的缺点：位数较短时，生成的短链容易冲突，碰撞的概率可由如下公式得出：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646818360387-c606b10f-0666-4543-a76d-19919097f615.png#clientId=ubd7c2cee-e4f0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=44&id=u6e000831&margin=%5Bobject%20Object%5D&name=image.png&originHeight=44&originWidth=541&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=9956&status=done&style=none&taskId=u07c03a37-7e88-4869-af19-704523d54b4&title=&width=541" alt="image.png"><br>当生成的短链为 8 位，且为 62 进制时，在 hash 了 3kw 次时，碰撞的概率为 1&#x2F;2, 我们要求生成的短链接为 6 位，且目前每日的增长量为 200w，显然不符合我们的要求</p>
+<li><p>hash 方案的缺点：位数较短时，生成的短链容易冲突，碰撞的概率可由如下公式得出：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646818360387-c606b10f-0666-4543-a76d-19919097f615.png#clientId=ubd7c2cee-e4f0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=44&id=u6e000831&margin=%5Bobject%20Object%5D&name=image.png&originHeight=44&originWidth=541&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=9956&status=done&style=none&taskId=u07c03a37-7e88-4869-af19-704523d54b4&title=&width=541" alt="image.png" width="541"><br>当生成的短链为 8 位，且为 62 进制时，在 hash 了 3kw 次时，碰撞的概率为 1&#x2F;2, 我们要求生成的短链接为 6 位，且目前每日的增长量为 200w，显然不符合我们的要求</p>
 </li>
 <li><p>发号器的优点：生成的短链必定不会碰撞</p>
 </li>
@@ -243,7 +243,7 @@
 <li>lock<br>a. get: 缓存失效时，获取的锁，当次数上升时需关注<br>b. error: 任何非正常情况下的错误，当 error 上升时，需要立刻查看日志排查问题</li>
 <li>发号器<br>a. current: 发号器当前的号，当发号即将达到预设的一亿、二亿时，需要进行扩容<br>b. error: 任何非正常情况下的错误，当 error 上升时，需要立刻查看日志排查问题</li>
 </ul>
-<h2 id="短地址部署容量"><a href="#短地址部署容量" class="headerlink" title="短地址部署容量"></a>短地址部署容量</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646818507763-fd691c4a-0b77-4895-9286-20aa70fbe593.png#clientId=ubd7c2cee-e4f0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=267&id=ue2bfc6fe&margin=%5Bobject%20Object%5D&name=image.png&originHeight=267&originWidth=297&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=21991&status=done&style=none&taskId=uab6c0ba0-3092-49fb-acc0-a061e2ea13a&title=&width=297" alt="image.png"><br>nginx 的 qps 单机过万，umem 的 qps 单机过万，只有 udb 的 tps 单机只有 800， 目前整个系统的瓶颈在 udb</p>
+<h2 id="短地址部署容量"><a href="#短地址部署容量" class="headerlink" title="短地址部署容量"></a>短地址部署容量</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646818507763-fd691c4a-0b77-4895-9286-20aa70fbe593.png#clientId=ubd7c2cee-e4f0-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=267&id=ue2bfc6fe&margin=%5Bobject%20Object%5D&name=image.png&originHeight=267&originWidth=297&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=21991&status=done&style=none&taskId=uab6c0ba0-3092-49fb-acc0-a061e2ea13a&title=&width=297" alt="image.png" width="297"><br>nginx 的 qps 单机过万，umem 的 qps 单机过万，只有 udb 的 tps 单机只有 800， 目前整个系统的瓶颈在 udb</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"># &#x2F;opt&#x2F;wrk&#x2F;bin&#x2F;wrk -t 4 -c 4 -d 3600s --script get.lua http:&#x2F;&#x2F;127.0.0.1
 Running 60m test @ http:&#x2F;&#x2F;127.0.0.1
 4 threads and 4 connections

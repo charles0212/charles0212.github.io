@@ -171,7 +171,7 @@
 </blockquote>
 <p>LSM 树(Log-Structured-Merge-Tree)的名字往往会给初识者一个错误的印象，事实上，LSM 树并不像 B+树、红黑树一样是一颗严格的树状数据结构，它其实是一种存储结构，目前<strong>HBase、LevelDB、RocksDB 这些 NoSQL 存储都是采用的 LSM 树</strong>。<br>LSM 树的核心特点是<strong>利用顺序写来提高写性能</strong>，但因为分层(此处分层是指的<strong>分为内存和文件两部分</strong>)的设计会稍微降低读性能，但是<strong>通过牺牲小部分读性能换来高性能写</strong>，使得 LSM 树成为非常流行的存储结构。</p>
 <p>数据库存储有两种数据结构，一种 B+树，另外一种是 LSM。数据库，我们知道是用 B+树，但是对于 LSM，就不是所有人都知道。因为这种数据结构适用大数据的存储场景，适用于写多读少的场景。</p>
-<h1 id="LSM-数据结构"><a href="#LSM-数据结构" class="headerlink" title="LSM 数据结构"></a>LSM 数据结构</h1><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648782774822-e07bae96-e83e-45d9-9c48-88500f652b40.png#clientId=u2acb4bb6-2979-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=511&id=u09414e6c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=511&originWidth=879&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=204654&status=done&style=none&taskId=u846292cb-eb66-4a68-81ac-2585241568f&title=&width=879" alt="image.png"><br>LSM 数据结构如上图，写入数据时：</p>
+<h1 id="LSM-数据结构"><a href="#LSM-数据结构" class="headerlink" title="LSM 数据结构"></a>LSM 数据结构</h1><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648782774822-e07bae96-e83e-45d9-9c48-88500f652b40.png#clientId=u2acb4bb6-2979-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=511&id=u09414e6c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=511&originWidth=879&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=204654&status=done&style=none&taskId=u846292cb-eb66-4a68-81ac-2585241568f&title=&width=879" alt="image.png" width="879"><br>LSM 数据结构如上图，写入数据时：</p>
 <ul>
 <li>先写入 WAL，用于故障恢复，如果断电，由于有 WAL Log 的存在，不会导致数据丢失。</li>
 <li>再写入 MemTable 中，如果 MemTable 满，则数据被迁移到 Imutable Memtable 中。</li>

@@ -11,7 +11,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/redis/redis-zset/</loc>
+    <loc>https://www.alicharles.com/article/mysql/mysql-redo-and-undo-log/</loc>
     
     <lastmod>2022-09-09</lastmod>
     
@@ -20,7 +20,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/mysql/mysql-redo-and-undo-log/</loc>
+    <loc>https://www.alicharles.com/article/redis/redis-zset/</loc>
     
     <lastmod>2022-09-09</lastmod>
     
@@ -128,7 +128,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/ddd/cqrs-architecture/</loc>
+    <loc>https://www.alicharles.com/article/ddd/ports-adapters-architecture/</loc>
     
     <lastmod>2022-05-15</lastmod>
     
@@ -137,7 +137,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/ddd/ports-adapters-architecture/</loc>
+    <loc>https://www.alicharles.com/article/ddd/cqrs-architecture/</loc>
     
     <lastmod>2022-05-15</lastmod>
     
@@ -380,7 +380,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/design-pattern/jdk-strategy-pattern/</loc>
+    <loc>https://www.alicharles.com/article/design-pattern/jdk-template-method-pattern/</loc>
     
     <lastmod>2022-05-15</lastmod>
     
@@ -389,7 +389,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/design-pattern/jdk-template-method-pattern/</loc>
+    <loc>https://www.alicharles.com/article/design-pattern/jdk-strategy-pattern/</loc>
     
     <lastmod>2022-05-15</lastmod>
     
@@ -407,15 +407,6 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/design-pattern/jdk-observer-pattern/</loc>
-    
-    <lastmod>2022-05-15</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://www.alicharles.com/article/design-pattern/jdk-responsibility-pattern/</loc>
     
     <lastmod>2022-05-15</lastmod>
@@ -425,7 +416,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/design-pattern/jdk-prototype-pattern/</loc>
+    <loc>https://www.alicharles.com/article/design-pattern/jdk-observer-pattern/</loc>
     
     <lastmod>2022-05-15</lastmod>
     
@@ -443,6 +434,15 @@
   </url>
   
   <url>
+    <loc>https://www.alicharles.com/article/design-pattern/jdk-prototype-pattern/</loc>
+    
+    <lastmod>2022-05-15</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.alicharles.com/article/jvm/java-oom/</loc>
     
     <lastmod>2022-05-15</lastmod>
@@ -452,7 +452,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/jvm/jvm-gc-allocation/</loc>
+    <loc>https://www.alicharles.com/article/jvm/java-memory-model/</loc>
     
     <lastmod>2022-05-15</lastmod>
     
@@ -461,7 +461,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/jvm/java-memory-model/</loc>
+    <loc>https://www.alicharles.com/article/jvm/jvm-gc-allocation/</loc>
     
     <lastmod>2022-05-15</lastmod>
     
@@ -533,7 +533,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/java/java-reentrantlock/</loc>
+    <loc>https://www.alicharles.com/article/java/java-countdownlatch/</loc>
     
     <lastmod>2022-05-15</lastmod>
     
@@ -542,7 +542,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/java/java-countdownlatch/</loc>
+    <loc>https://www.alicharles.com/article/java/java-reentrantlock/</loc>
     
     <lastmod>2022-05-15</lastmod>
     
@@ -866,7 +866,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/hbase/hbase-architecture/</loc>
+    <loc>https://www.alicharles.com/article/hbase/hbase-read-optimize/</loc>
     
     <lastmod>2022-04-02</lastmod>
     
@@ -875,7 +875,7 @@
   </url>
   
   <url>
-    <loc>https://www.alicharles.com/article/hbase/hbase-read-optimize/</loc>
+    <loc>https://www.alicharles.com/article/hbase/hbase-architecture/</loc>
     
     <lastmod>2022-04-02</lastmod>
     

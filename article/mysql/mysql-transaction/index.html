@@ -245,15 +245,15 @@ PRIMARY KEY(&#96;id&#96;)
 insert into test_trx(value) value(1),(2),(3),(4),(5);</code></pre>
 
 <p>下面以例子来说明上面上面的情况</p>
-<h3 id="1-脏读"><a href="#1-脏读" class="headerlink" title="1) 脏读"></a>1) 脏读</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648310234100-5c0a65d1-3b81-47ce-a200-2e7006f6f49b.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=497&id=u2cb52a02&margin=%5Bobject%20Object%5D&name=image.png&originHeight=994&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=98969&status=done&style=none&taskId=u2963e192-f7fb-4450-983b-b1d9b98a6b8&title=&width=772" alt="image.png"></p>
+<h3 id="1-脏读"><a href="#1-脏读" class="headerlink" title="1) 脏读"></a>1) 脏读</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648310234100-5c0a65d1-3b81-47ce-a200-2e7006f6f49b.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=497&id=u2cb52a02&margin=%5Bobject%20Object%5D&name=image.png&originHeight=994&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=98969&status=done&style=none&taskId=u2963e192-f7fb-4450-983b-b1d9b98a6b8&title=&width=772" alt="image.png" width="772"></p>
 <blockquote>
 <p>未提交隔离级别, 事务 1 中更新的 value,未提交,事务 2 中可以看到、造成脏读</p>
 </blockquote>
-<h3 id="2-虚读-不可重复读"><a href="#2-虚读-不可重复读" class="headerlink" title="2) 虚读(不可重复读)"></a>2) 虚读(不可重复读)</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648310714617-0253ccac-7317-4a0c-bd13-877ff146983a.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=957&id=uafea7c26&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1914&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=171359&status=done&style=none&taskId=u74adf793-a0d9-4ed3-a8a3-83903a081a2&title=&width=772" alt="image.png"></p>
+<h3 id="2-虚读-不可重复读"><a href="#2-虚读-不可重复读" class="headerlink" title="2) 虚读(不可重复读)"></a>2) 虚读(不可重复读)</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648310714617-0253ccac-7317-4a0c-bd13-877ff146983a.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=957&id=uafea7c26&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1914&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=171359&status=done&style=none&taskId=u74adf793-a0d9-4ed3-a8a3-83903a081a2&title=&width=772" alt="image.png" width="772"></p>
 <blockquote>
 <p>读提交隔离级别,事务 2 在同一个事务中,读取事务 1 提交后的 update 更改</p>
 </blockquote>
-<h3 id="3-幻读"><a href="#3-幻读" class="headerlink" title="3) 幻读"></a>3) 幻读</h3><p>看下大部分 mysql 所说的幻读现象<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648311001789-6023982f-c8fb-459e-8aa2-09095e18c719.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1132&id=ue0a170e1&margin=%5Bobject%20Object%5D&name=image.png&originHeight=2264&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=223126&status=done&style=none&taskId=u5365eae2-34c4-4f1f-a33b-e8956a94bf3&title=&width=772" alt="image.png"></p>
+<h3 id="3-幻读"><a href="#3-幻读" class="headerlink" title="3) 幻读"></a>3) 幻读</h3><p>看下大部分 mysql 所说的幻读现象<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648311001789-6023982f-c8fb-459e-8aa2-09095e18c719.png#clientId=u7c1ec514-fc0d-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1132&id=ue0a170e1&margin=%5Bobject%20Object%5D&name=image.png&originHeight=2264&originWidth=1544&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=223126&status=done&style=none&taskId=u5365eae2-34c4-4f1f-a33b-e8956a94bf3&title=&width=772" alt="image.png" width="772"></p>
 <blockquote>
 <p>事务 2,查询记录里面没有记录 7,插入 7 的时候提示主键重复,幻读.</p>
 </blockquote>

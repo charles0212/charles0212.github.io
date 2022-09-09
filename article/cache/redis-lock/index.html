@@ -256,9 +256,9 @@
 </blockquote>
 <p><strong>提升效率，允许偶尔的失败。</strong>对锁是有一定宽容度的，就算发生了两个节点同时工作，对系统的影响也仅仅是多付出了一些计算的成本，没什么额外的影响。<strong>使用单点的 Redis 就能很好的解决问题，没有必要使用 RedLock，维护那么多的 Redis 实例，提升系统的维护成本。</strong></p>
 <h3 id="分布式锁的超时性，所带来的缺点"><a href="#分布式锁的超时性，所带来的缺点" class="headerlink" title="分布式锁的超时性，所带来的缺点"></a>分布式锁的超时性，所带来的缺点</h3><p>但是对于第二种场景<strong>保证正确性</strong>来说，就比较慎重了，因为很可能涉及到一些金钱交易，如果锁定失败，并且两个节点同时处理同一数据，则结果将导致文件损坏，数据丢失，永久性不一致，或者金钱方面的损失。</p>
-<p>我们假设一种场景，我们有两个客户端，每一个客户端必须拿到锁之后才能去保存数据到数据库，我们使用 RedLock 算法实现会出现什么问题呢？RedLock 中，为了防止死锁，锁是具有过期时间的，但是 Martin 认为这是不安全的。该流程图类似于这样。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648715500983-f2e3ee2a-3144-46dc-ac75-19814c643102.png#clientId=ue2c0d7c5-aca3-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=400&id=u2c02c07f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=400&originWidth=1100&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=40923&status=done&style=none&taskId=u040b413b-dd5f-4ba8-9ee1-03d3164367d&title=&width=1100" alt="image.png"></p>
+<p>我们假设一种场景，我们有两个客户端，每一个客户端必须拿到锁之后才能去保存数据到数据库，我们使用 RedLock 算法实现会出现什么问题呢？RedLock 中，为了防止死锁，锁是具有过期时间的，但是 Martin 认为这是不安全的。该流程图类似于这样。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648715500983-f2e3ee2a-3144-46dc-ac75-19814c643102.png#clientId=ue2c0d7c5-aca3-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=400&id=u2c02c07f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=400&originWidth=1100&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=40923&status=done&style=none&taskId=u040b413b-dd5f-4ba8-9ee1-03d3164367d&title=&width=1100" alt="image.png" width="1100"></p>
 <p>客户端 1 获取到锁成功后，开始执行，执行到一半系统发生 Full GC ,系统服务被挂起，过段时间锁超时了。客户端 2 等待客户端 1 的锁超时后，成功的获取到锁，开始执行入库操作，完成后，客户端 1 完成了 Full GC,又做了一次入库操作。这是不安全的。如何解决呢？</p>
-<p>Martin 提出来一种<strong>类似乐观锁的实现机制</strong>，示例图如下：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648715529584-8e43c9ec-e9ed-4eac-9f82-0a570402ccb3.png#clientId=ue2c0d7c5-aca3-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=400&id=u6689a039&margin=%5Bobject%20Object%5D&name=image.png&originHeight=400&originWidth=1100&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=42930&status=done&style=none&taskId=u7ce5607d-a74a-443b-8222-477b16071c6&title=&width=1100" alt="image.png"><br>客户端 1 长时间被挂起后，客户端 2 获取到锁，开始写库操作，同时携带令牌 34，写库完成后，客户端 1 苏醒，开始进行入库操作，但是因为携带的令牌为 33 小于最新令牌，该次提交就被拒绝。<br>这个想法听起来似乎时很完备的思路，这样即使系统因为某些原因被挂起，数据也能够被正确的处理。但是仔细想一下：</p>
+<p>Martin 提出来一种<strong>类似乐观锁的实现机制</strong>，示例图如下：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648715529584-8e43c9ec-e9ed-4eac-9f82-0a570402ccb3.png#clientId=ue2c0d7c5-aca3-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=400&id=u6689a039&margin=%5Bobject%20Object%5D&name=image.png&originHeight=400&originWidth=1100&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=42930&status=done&style=none&taskId=u7ce5607d-a74a-443b-8222-477b16071c6&title=&width=1100" alt="image.png" width="1100"><br>客户端 1 长时间被挂起后，客户端 2 获取到锁，开始写库操作，同时携带令牌 34，写库完成后，客户端 1 苏醒，开始进行入库操作，但是因为携带的令牌为 33 小于最新令牌，该次提交就被拒绝。<br>这个想法听起来似乎时很完备的思路，这样即使系统因为某些原因被挂起，数据也能够被正确的处理。但是仔细想一下：</p>
 <blockquote>
 <p>如果仅当您的令牌大于所有过去的令牌时，数据存储区才能始终接受写入，则它是可线性化的存储区，<strong>相当与使用数据库来实现一个 分布式锁系统，那么 RedLock 的作用就变的微乎其微</strong>。甚至不在需要使用 redis 保证分布式锁。</p>
 </blockquote>
@@ -281,7 +281,7 @@
 <h2 id="分布式锁需要注意的问题"><a href="#分布式锁需要注意的问题" class="headerlink" title="分布式锁需要注意的问题"></a>分布式锁需要注意的问题</h2><h3 id="1、加锁成功的客户端挂掉或网络动荡，可能产生死锁"><a href="#1、加锁成功的客户端挂掉或网络动荡，可能产生死锁" class="headerlink" title="1、加锁成功的客户端挂掉或网络动荡，可能产生死锁"></a>1、加锁成功的客户端挂掉或网络动荡，可能产生死锁</h3><p>对于加的分布式锁，需要<strong>设置 expire 过期时间</strong>，锁过期后进行释放</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java">SET key value [EX seconds] [PX milliseconds] NX</code></pre>
 
-<h3 id="2、业务未执行完，分布式锁超时，需要进行锁续期"><a href="#2、业务未执行完，分布式锁超时，需要进行锁续期" class="headerlink" title="2、业务未执行完，分布式锁超时，需要进行锁续期"></a>2、业务未执行完，分布式锁超时，需要进行锁续期</h3><p>Redisson 实现了一种保证锁失效时间绝对大于业务程序执行时间的机制。官方叫做看门狗机制（Watchdog），主要原理是，在程序成功获取锁之后，启动一个 Watchdog，会 fork 一条子线程去不断的给该锁续期，直至该锁释放为止。原理图大概如下所示：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648918542273-8da12f6b-9ecb-41a9-9721-38789a7733d3.png#clientId=u6a12c7db-de06-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=332&id=u11e98e06&margin=%5Bobject%20Object%5D&name=image.png&originHeight=664&originWidth=1354&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=56357&status=done&style=none&taskId=u4219fc59-3e1c-421e-986e-533cac48f1c&title=&width=677" alt="image.png"><br><strong>Redisson 使用守护线程来进行锁的续期</strong>（守护线程的作用：当主线程销毁，会和主线程一起销毁）防止程序宕机后，线程依旧不断续命，造成死锁。<br>RedissonLock 加锁续期</p>
+<h3 id="2、业务未执行完，分布式锁超时，需要进行锁续期"><a href="#2、业务未执行完，分布式锁超时，需要进行锁续期" class="headerlink" title="2、业务未执行完，分布式锁超时，需要进行锁续期"></a>2、业务未执行完，分布式锁超时，需要进行锁续期</h3><p>Redisson 实现了一种保证锁失效时间绝对大于业务程序执行时间的机制。官方叫做看门狗机制（Watchdog），主要原理是，在程序成功获取锁之后，启动一个 Watchdog，会 fork 一条子线程去不断的给该锁续期，直至该锁释放为止。原理图大概如下所示：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648918542273-8da12f6b-9ecb-41a9-9721-38789a7733d3.png#clientId=u6a12c7db-de06-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=332&id=u11e98e06&margin=%5Bobject%20Object%5D&name=image.png&originHeight=664&originWidth=1354&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=56357&status=done&style=none&taskId=u4219fc59-3e1c-421e-986e-533cac48f1c&title=&width=677" alt="image.png" width="677"><br><strong>Redisson 使用守护线程来进行锁的续期</strong>（守护线程的作用：当主线程销毁，会和主线程一起销毁）防止程序宕机后，线程依旧不断续命，造成死锁。<br>RedissonLock 加锁续期</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java">RLock lock &#x3D; redisson.getLock(&quot;myLock&quot;);
 lock.lock();
 
@@ -569,8 +569,8 @@ return 空；</code></pre>
     <span class="post-nav-divider"></span>
     <div class="post-nav-prev post-nav-item">
         
-        <a href="/article/hbase/hbase-read-optimize/" rel="prev" title="HBase 读优化">
-            HBase 读优化 <i class="fa far fa-chevron-right"></i>
+        <a href="/article/hbase/hbase-architecture/" rel="prev" title="HBase 系统架构">
+            HBase 系统架构 <i class="fa far fa-chevron-right"></i>
         </a>
         
     </div>
