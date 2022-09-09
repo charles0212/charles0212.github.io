@@ -543,6 +543,86 @@ Redis 的大 key 有什么危害？一个 key 的 value 较大时的情况，比
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/redis/redis-zset/">
+                Redis（八）Zset结构和跳表SkipList
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        zset 是 redis 中一种有序、不重复的数据类型，每个元素都有一个分值，它可用于实现排行榜单，其底层采用压缩表 ziplist 或跳表 skiplist 的数据结构实现
+Zset 的两种数据结构压缩表 ziplist当 redis 插入第一个元素时，同时满足以下条件，就会以 ziplist 创建跳表
+
+节点数量&amp;lt;128 （可通过 server.zset_max_ziplist_entries 设置）
+节点的长度&amp;lt;64（可通过 server.zset_max_ziplist_value 设置）
+
+当选择用 ziplist 实现 zset 后，以后插入的节点若不满足以上任一个条件
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2020-07-28T00:00:00+08:00">
+                2020-07-28
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/cache/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">cache</span>
+                    </a>
+                </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/cache/redis/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">redis</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Cache/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Cache</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Redis/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Redis</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/redis/redis-zset/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/redis/redis-large-value/">
                 Redis（七）大key和大value
             </a>
@@ -707,81 +787,6 @@ Redis 的大 key 有什么危害？一个 key 的 value 较大时的情况，比
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/redis/redis-thread-model/">
-                Redis（五）线程模型
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        一、Redis 有多快？Redis 是基于内存运行的高性能 K-V 数据库，官方提供的测试报告是单机可以支持约 10w&amp;#x2F;s 的 QPS
-二、Redis 为什么这么快？（1）完全基于内存，数据存在内存中，绝大部分请求是纯粹的内存操作，非常快速，跟传统的磁盘文件数据存储相比，避免了通过磁盘 IO 读取到内存这部分的开销。（2）数据结构简单，对数据操作也简单。Redis 中的数据结构是专门进行设计的，每种数据结构都有一种或多种数据结构来支持。Redis 正是依赖这些灵活的数据结构，来提升读取和写入的性能。（3）采用单线程，省去了很多上下文切换的时间以及 CPU 消耗，不存在竞争条件，不用去
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2020-06-25T00:00:00+08:00">
-                2020-06-25
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/cache/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">cache</span>
-                    </a>
-                </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/cache/redis/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">redis</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Cache/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Cache</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Redis/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Redis</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/redis/redis-thread-model/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -806,7 +811,7 @@ Redis 的大 key 有什么危害？一个 key 的 value 较大时的情况，比
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">99</span>
+                <span class="state-item-count">102</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

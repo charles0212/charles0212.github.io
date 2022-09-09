@@ -209,6 +209,213 @@
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/architecture/architecture-design/">
+                架构（四）架构设计参考规范
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        业务分析业务模式
+
+
+
+业务战略
+
+
+能力矩阵
+
+
+价值链
+
+
+业务架构业务用例
+
+
+
+业务流程
+
+
+概念模型
+
+
+业务组件
+
+
+应用架构分析模型
+
+
+
+系统级架构Drawio C4 模版
+
+
+
+应用级架构
+
+
+容器级架构
+
+组件级架构
+
+
+服务设计服务 API
+
+服务能力
+能力定义
+归属领域
+能力链接
+
+
+促销活动创建服务能力
+提供促销活动创建的服务能力，包括活动创建、库存添加、优惠叠加互斥规则设定
+促销领域
+
+
+
+优惠计算服务能力
+提供优惠计算的服务能力，包括优惠规格（活动、权益）发现、排序、计算、筛选、累计&amp;amp;分摊、过滤
+优惠领域
+
+
+领域模型
+
+
+逻辑模型类图
+
+
+
+时序图
+
+
+
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2022-03-10T00:00:00+08:00">
+                2022-03-10
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/architecture/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">architecture</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Architecture/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Architecture</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/architecture/architecture-design/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/mysql/mysql-redo-and-undo-log/">
+                MySQL事务redo和undo日志
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+事务有 4 种特性：原子性、一致性、隔离性和持久性。那么事务的四种特性到底是基于什么机制实现呢？
+
+
+事务的隔离性由锁机制实现。
+事务的原子性、一致性和持久性由事务的 redo 日志和 undo 日志来保证。
+redo log 称为重做日志，提供再写入操作，恢复提交事务修改的页操作(我们对数据进行修改，数据会报存在内存中，此时还没有保存在磁盘当中，如果此时由于不可抗因素如宕机，事务将不能保证持久性。而 redo log 就阔以保证了，我们在修改完数据之后，将相关的数据保存到 redo log 中，就算出现宕机我们也可以把更新过的数据从 redo log 中进行恢复刷新到磁盘中)，用来保证事务
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2022-02-15T00:00:00+08:00">
+                2022-02-15
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/database/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">数据库</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Mysql/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Mysql</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/InnoDB/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">InnoDB</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/mysql/mysql-redo-and-undo-log/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/architecture/architecture-order-fsm/">
                 架构（三）通用可编排订单状态机引擎设计
             </a>
@@ -597,150 +804,6 @@
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/ddd/core-concept/">
-                DDD（一）核心概念
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        
-原文：https://herbertograca.com/2017/09/07/domain-driven-design/转载：https://www.jianshu.com/p/812636d55677
-
-这篇文章是软件架构编年史(译)的一部分，这部编年史由一系列关于软件架构的文章组成。在这一系列文章中，我将写下我对软件架构的学习和思考，以及我是如何运用这些知识的。如果你阅读了这个系列中之前的文章，本篇文章的的内容将更有意义。
-
-Eric Evans 于 2003 年出版了精采绝伦的《领域驱动设计：软件核心复杂性应对之道》，在书中他创造了领域驱动设计方法。Eric Evans 的这本著作十
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2021-09-01T00:00:00+08:00">
-                2021-09-01
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/ddd/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">ddd</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/DDD/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">DDD</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/ddd/core-concept/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/stability/sentinel-hystrix/">
-                Sentinel与Hystrix的对比
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        Sentinel 是阿里中间件团队研发的面向分布式服务架构的轻量级高可用流量控制组件，已开源。Sentinel 主要以流量为切入点，从流量控制、熔断降级、系统负载保护等多个维度来帮助用户保护服务的稳定性。
-大家可能会问：Sentinel 和之前常用的熔断降级库 Netflix Hystrix 有什么异同呢？本文将从多个角度对 Sentinel 和 Hystrix 进行对比，帮助大家进行技术选型。先来看一下 Hystrix 的官方介绍：
-
-Hystrix is a library that helps you control the interactions between these dist
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2021-08-22T00:00:00+08:00">
-                2021-08-22
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/stability/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">stability</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Stability/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Stability</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Sentinel/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Sentinel</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Hystrix/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Hystrix</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/stability/sentinel-hystrix/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -765,7 +828,7 @@ Hystrix is a library that helps you control the interactions between these dist
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">99</span>
+                <span class="state-item-count">102</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

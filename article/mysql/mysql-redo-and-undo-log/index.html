@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        MySQL事务redo和undo日志 |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="&gt; 事务有 4 &gt; 种特性：原子性、一致性、隔离性和持久性。那么事务的四种特性到底是基于什么机制实现呢？   * 事务的隔离性由锁机制实现。  * 事务的原子性、一致性和持久性由事务的    redo 日志和 undo 日志来保证。    * redo log      称为重做日志，提供再写入操作，恢复提交事务修改的页操作(我们对数据进行修改，数据会报存在内存中，此时还没有保存在磁盘当中，如果此">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL事务redo和undo日志">
+<meta property="og:url" content="https://www.alicharles.com/article/mysql/mysql-redo-and-undo-log/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="&gt; 事务有 4 &gt; 种特性：原子性、一致性、隔离性和持久性。那么事务的四种特性到底是基于什么机制实现呢？   * 事务的隔离性由锁机制实现。  * 事务的原子性、一致性和持久性由事务的    redo 日志和 undo 日志来保证。    * redo log      称为重做日志，提供再写入操作，恢复提交事务修改的页操作(我们对数据进行修改，数据会报存在内存中，此时还没有保存在磁盘当中，如果此">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662566321468-111c3eed-fd88-4f64-a303-f1d606d1de93.png#clientId=u1eb932bf-00d7-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=224&id=u76398b94&name=image.png&originHeight=492&originWidth=1344&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=75643&status=done&style=none&taskId=u064da9d2-bb15-4941-9836-540bdf5f851&title=&width=611">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662566979260-c4db217c-7eec-40e9-afa1-be6fae06df87.png#clientId=u1eb932bf-00d7-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=236&id=uee4f1838&name=image.png&originHeight=554&originWidth=1644&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=59174&status=done&style=none&taskId=u9e80b8f6-cc63-4f79-872c-fbe09120eb8&title=&width=699">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662618207353-5f1ede06-9dcc-4bf7-b092-559c0423fc29.png#clientId=u28e8493f-a927-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=383&id=uabbebbf5&name=image.png&originHeight=1058&originWidth=1754&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=150890&status=done&style=none&taskId=uef61c508-ee82-4bd8-ba50-cbc7e0f1faa&title=&width=635">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662713333606-38c62179-8469-4b94-81a7-0af437922a11.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=334&id=uc12ac066&name=image.png&originHeight=904&originWidth=1644&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=163484&status=done&style=none&taskId=u8900224d-f9a1-40d1-9fde-8334e9770b2&title=&width=607">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662719833130-4330263f-efda-4085-9e28-df7cb3f03348.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=350&id=uc67b5d3e&name=image.png&originHeight=1088&originWidth=1724&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=124193&status=done&style=none&taskId=ubb994e30-7054-4fc1-b6ba-d3046641fed&title=&width=555">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662721306174-4a0c4bb5-5442-4b83-aa61-6907b75ca5a6.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=375&id=uf4b8535f&name=image.png&originHeight=1132&originWidth=1644&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=141078&status=done&style=none&taskId=udd7064ce-3c02-4835-bc60-36a4a52a95c&title=&width=545">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662722046046-f78d0e6a-c12e-4901-ba95-f9b145476125.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=566&id=u9450cd2b&name=image.png&originHeight=1132&originWidth=1644&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=184794&status=done&style=none&taskId=uc2c6e0fc-2fab-45dd-981b-3016b137c53&title=&width=822">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662722237151-7c5a682d-4fcb-4c52-8871-19305bfc7c8c.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=566&id=u9d835d5c&name=image.png&originHeight=1132&originWidth=1644&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=197265&status=done&style=none&taskId=uc1f02e37-40d4-4208-8483-1f93ee75fce&title=&width=822">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662722501856-4db32271-decd-4977-b778-eee9c825aa45.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=561&id=ue9b19181&name=image.png&originHeight=1122&originWidth=1644&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=182102&status=done&style=none&taskId=u968a72b8-6524-45d7-99f0-ac2dd81af70&title=&width=822">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662724810296-23d5de36-6121-43c7-823b-36a19ab87770.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=257&id=u603e35d4&name=image.png&originHeight=710&originWidth=1250&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=110669&status=done&style=none&taskId=u67fb3c2a-ec30-483f-8fb7-f385ac49d5d&title=&width=452">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662727605355-08d3a513-9021-4586-8b30-e0be73714d57.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=364&id=ub2bfb191&name=image.png&originHeight=974&originWidth=2472&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=232116&status=done&style=none&taskId=uece91cdf-0678-489d-8aae-a28b57e047c&title=&width=924">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662727894623-f14353c1-2df1-49dc-be2d-40c6bffefeba.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=67&id=u5f94800f&name=image.png&originHeight=134&originWidth=1914&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=19293&status=done&style=none&taskId=u38bd713f-fb93-4f1c-ae2e-6cdf639f143&title=&width=957">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662728117968-182bf6d0-fa00-4f72-b202-efd109e92644.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=253&id=ub1908546&name=image.png&originHeight=604&originWidth=1394&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=42637&status=done&style=none&taskId=u2914cdfd-d75c-4447-b3ec-1da686c7da3&title=&width=584">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662728201459-5e21a798-eb7d-4e82-944b-4e7288a37ca4.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=258&id=u7d8cacc8&name=image.png&originHeight=608&originWidth=1394&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=46078&status=done&style=none&taskId=u67ad0d63-5f85-49a5-a598-28f54ab1a64&title=&width=592">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662728512271-e5f71039-d82e-4869-b0d0-e8ff7008937d.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=267&id=u095a6686&name=image.png&originHeight=734&originWidth=3024&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=84601&status=done&style=none&taskId=u672b1c39-cc25-4d9c-8e43-cac624d0e92&title=&width=1100">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662723159203-c9466cd9-07fa-4590-8c0b-62e73ba41e61.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=453&id=u9c084d14&name=image.png&originHeight=1148&originWidth=1754&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=160813&status=done&style=none&taskId=u47dd2926-6257-405b-ad0a-82af4c650fc&title=&width=692">
+<meta property="article:published_time" content="2022-02-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-09-09T13:07:16.842Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Mysql">
+<meta property="article:tag" content="InnoDB">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1662566321468-111c3eed-fd88-4f64-a303-f1d606d1de93.png#clientId=u1eb932bf-00d7-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=224&id=u76398b94&name=image.png&originHeight=492&originWidth=1344&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=75643&status=done&style=none&taskId=u064da9d2-bb15-4941-9836-540bdf5f851&title=&width=611">
+
+    <link rel="icon" sizes="any" mask href="//cdn.alicharles.com/static/images/logo.svg">
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/css/bootstrap.css">  
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/css/style.css">   
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/lib/fontawesome/css/all.css">   
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/lib/prism/css/prism.css">   
+    
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="//cdn.alicharles.com/static/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/jvm/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>MySQL事务redo和undo日志</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2022-02-15T00:00:00+08:00">
+            2022-02-15
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/database/" itemprop="url" rel="index">
+              <span itemprop="name">数据库</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<blockquote>
+<p>事务有 4 种特性：原子性、一致性、隔离性和持久性。那么事务的四种特性到底是基于什么机制实现呢？</p>
+</blockquote>
+<ul>
+<li>事务的隔离性由锁机制实现。</li>
+<li>事务的原子性、一致性和持久性由事务的 redo 日志和 undo 日志来保证。<ul>
+<li>redo log 称为重做日志，提供再写入操作，恢复提交事务修改的页操作(我们对数据进行修改，数据会报存在内存中，此时还没有保存在磁盘当中，如果此时由于不可抗因素如宕机，事务将不能保证持久性。而 redo log 就阔以保证了，我们在修改完数据之后，将相关的数据保存到 redo log 中，就算出现宕机我们也可以把更新过的数据从 redo log 中进行恢复刷新到磁盘中)，用来保证事务的持久性。</li>
+<li>undo log 称为回滚日志，回滚行记录到某个特定版本，用来保证事务的原子性、一致性。</li>
+</ul>
+</li>
+<li>undo log 不是 redo log 的逆过程<ul>
+<li>redo log 是存储引擎层（innodb）生成的日志，<strong>记录的是物理级别上的页修改操作</strong>，比如页号 xxx，偏移量，写入了 zzz 数据，主要是为了保证数据的可靠性。</li>
+<li>undo log 是存储引擎层（innodb）生成的日志，<strong>记录的是逻辑操作</strong>，比如对某一数据进行 INSERT 语句操作，那么 redo log 中就记录一条与之相反的 DELETE 操作。主要用于事务回滚（undo log 记录的是每个修改操作的逆操作）和一致性非锁定读（undo log 回滚行记录到某一特定的版本 mvcc 多版本并发控制）。</li>
+</ul>
+</li>
+</ul>
+<h2 id="1、redo日志"><a href="#1、redo日志" class="headerlink" title="1、redo日志"></a>1、redo<strong>日志</strong></h2><p>InnoDB 存储引擎是以页为单位来管理存储空间的，在真正访问页面之前，需要把数据在磁盘上的页缓存到内存中的 Buffer Pool 之后才可以访问。所有的变更都必须先更新缓冲池中的数据，然后缓冲池中的脏页（脏页：修改后的数据在缓存池中还没有被刷新到磁盘当中）会以一定的频率被刷入磁盘（checkPoint 机制），通过缓冲池来优化 CPU 和磁盘之间的鸿沟，这样就阔以保证整体的性能不会下降的太快。</p>
+<h3 id="1-1-为什么需要redo日志"><a href="#1-1-为什么需要redo日志" class="headerlink" title="1.1 为什么需要redo日志"></a>1.1 <strong>为什么需要</strong>redo<strong>日志</strong></h3><ul>
+<li>一方面，<strong>缓冲池可以帮助我们消除 CPU 和磁盘之间的鸿沟</strong>，<strong>checkpoint 机制可以保证数据的最终落盘</strong>，然而由于 checkpoint 并不是每次变更的时候就触发的，而是 master 线程隔一段时间去处理的。所以最坏的情况就是事务提交后，<strong>刚写完缓冲池，数据库宕机了，那么这段数据就是丢失的，无法恢复</strong>。</li>
+<li>另一方面，事务包含<strong>持久性</strong>的特性，就是说对于一个已经提交的事务，**在事务提交后即使系统发生了崩溃，这个事务对数据库中所做的更改也不能丢失。 **</li>
+</ul>
+<p>那么如何保证这个持久性呢？<br>1）一个简单的做法，<strong>在事务提交完成之前把该事务所修改的所有页面都刷新到磁盘</strong>，但是这个简单粗暴的做法有些问题</p>
+<ul>
+<li><strong>修改量与刷新磁盘工作量严重不成比例</strong>，有时候我们仅仅是修改某一个页面的一个字节，但是我们知道在<strong>InnoDB 中是以页为单位来进行磁盘 IO 的</strong>，也就是说我们在该事物提交时不得不将一个完整的页面从内存中刷新到磁盘，我们又知道一个页面默认是 16KB 大小，只修改一个字节就要刷新 16KB 的数据到磁盘上显示是用牛刀去杀鸡了。</li>
+<li><strong>随机 IO 刷新较慢</strong>，一个事物可能包含很多语句，即使是一条语句也可能修改很多的页面，假如该事物修改的页面并不相邻，这就意味着在将某个事物修改的 Buffer Pool 中的页面刷新到磁盘时，需要进行很多的随机 IO，随机 IO 比顺序 IO 要慢，尤其是对于传统的机械机械硬盘来说。</li>
+</ul>
+<p>2）另一个解决的思路，只要<strong>让已经提交了的事务对数据库中数据所做的修改永久生效</strong>，即使后来系统崩溃，重启后也能把这种修改恢复出来。</p>
+<ul>
+<li>没有必要在每次事务提交时就把该事务在内存中修改过的全部页面刷新到磁盘，只需要把修改了哪些东西记录一下就好。比如，某个事务将系统表空间中第 10 号页面中偏移量为 100 处的那个字节的值 1 改成 2 。我们只需要记录一下：将第 0 号表空间的 10 号页面的偏移量为 100 处的值更新为 2。</li>
+<li>InnoDB 引擎的事物采用了 WAL（Write-Ahead Logging），这种技术的思想就是先写日志，在写磁盘，只有日志写入成功，才算是事务提交成功，这里的日志就是 redo log。当发生宕机且数据未刷新到磁盘的时候，可以通过 redo log 来恢复，保证 ACID 中的 D，这就是 redo log 的作用。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662566321468-111c3eed-fd88-4f64-a303-f1d606d1de93.png#clientId=u1eb932bf-00d7-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=224&id=u76398b94&name=image.png&originHeight=492&originWidth=1344&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=75643&status=done&style=none&taskId=u064da9d2-bb15-4941-9836-540bdf5f851&title=&width=611" alt="image.png"></p>
+<h3 id="1-2-redo日志的好处、特点"><a href="#1-2-redo日志的好处、特点" class="headerlink" title="1.2 redo日志的好处、特点"></a>1.2 redo<strong>日志的好处、特点</strong></h3><h4 id="1）redo日志的好处"><a href="#1）redo日志的好处" class="headerlink" title="1）redo日志的好处"></a>1）redo<strong>日志的好处</strong></h4><ul>
+<li>redo<strong>日志降低了刷盘频率</strong></li>
+<li>redo<strong>日志占用的空间非常小</strong></li>
+</ul>
+<p>存储表空间 ID，页号，偏移量以及需要更新的值，所需的存储空间是很小的，刷盘快。</p>
+<h4 id="2）redo日志的特点"><a href="#2）redo日志的特点" class="headerlink" title="2）redo日志的特点"></a>2）redo<strong>日志的特点</strong></h4><ul>
+<li>redo<strong>日志是顺序写入磁盘的</strong><ul>
+<li>在执行事务的过程中，每执行一条语句，就可能产生若干条 redo 日志，这些日志是按照产生的顺序写入磁盘的，也就是说使用顺序 IO，效率比随机 IO 快</li>
+</ul>
+</li>
+<li><strong>事务执行过程中，</strong>redo log<strong>不断记录</strong><ul>
+<li>redo log 跟 bin log 的区别，redo log 是存储引擎层产生的，而 bin log 是数据库层产生的。假设一个事物，对表做十万行的记录插入，在这个过程中，一直不断的往 redo log 顺序记录，而 bin log 顺序记录，而 bin log 不会记录，直到这个事物提交，才会一次写入到 bin log 问价中。</li>
+</ul>
+</li>
+</ul>
+<h4 id="3）redo-的组成"><a href="#3）redo-的组成" class="headerlink" title="3）redo 的组成"></a>3）redo 的组成</h4><ul>
+<li>Redo log 可以简单分为以下两个部分：<ul>
+<li><strong>重做日志的缓冲 (redo log buffer)</strong> ，保存在内存中，是易失的。</li>
+<li>重做日志文件 (redo log file)，保存在硬盘中，是持久的。</li>
+</ul>
+</li>
+</ul>
+<p>在服务器启动时就向操作系统申请一大片称之为 redo log buffer 的俩戏内存空间，翻译成中文就是<strong>redo 日志缓冲区</strong>。这片内存空间被划分成若干连续的 redo log block。一个 redo log block 占用 512 字节大小。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662566979260-c4db217c-7eec-40e9-afa1-be6fae06df87.png#clientId=u1eb932bf-00d7-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=236&id=uee4f1838&name=image.png&originHeight=554&originWidth=1644&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=59174&status=done&style=none&taskId=u9e80b8f6-cc63-4f79-872c-fbe09120eb8&title=&width=699" alt="image.png"></p>
+<ul>
+<li><strong>参数设置：</strong>innodb_log_buffer_size<strong>：</strong><ul>
+<li>redo log buffer 大小，默认 16M ，最大值是 4096M，最小值为 1M。</li>
+</ul>
+</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">mysql&gt; show variables like &#39;%innodb_log_buffer_size%&#39;;
++------------------------+----------+
+| Variable_name | Value |
++------------------------+----------+
+| innodb_log_buffer_size | 16777216 |
++------------------------+----------+</code></pre>
+
+<ul>
+<li>查看 mysql 文件 ib_logfile0 和 ib_logfile1 即为**redo 日志 **</li>
+</ul>
+<h4 id="4）redo的整体流程"><a href="#4）redo的整体流程" class="headerlink" title="4）redo的整体流程"></a>4）redo<strong>的整体流程</strong></h4><ul>
+<li>以一个更新事务为例，redo log 流转过程，如下图所示：</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662618207353-5f1ede06-9dcc-4bf7-b092-559c0423fc29.png#clientId=u28e8493f-a927-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=383&id=uabbebbf5&name=image.png&originHeight=1058&originWidth=1754&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=150890&status=done&style=none&taskId=uef61c508-ee82-4bd8-ba50-cbc7e0f1faa&title=&width=635" alt="image.png"></p>
+<ul>
+<li>第 1 步：先将原始数据从磁盘中读入内存中来，修改数据的内存拷贝</li>
+<li>第 2 步：生成一条重做日志并写入 redo log buffer，记录的是数据被修改后的值</li>
+<li>第 3 步：当事务 commit 时，将 redo log buffer 中的内容刷新到 redo log file，对 redo log file 采用追加 写的方式</li>
+<li>第 4 步：定期将内存中修改的数据刷新到磁盘中<blockquote>
+<p>体会：Write-Ahead Log(预先日志持久化)：在持久化一个数据页之前，先将内存中相应的日志页持久化。</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="5）redo-log的刷盘策略"><a href="#5）redo-log的刷盘策略" class="headerlink" title="5）redo log的刷盘策略"></a>5）redo log<strong>的刷盘策略</strong></h4><ul>
+<li>redo log 的写入并不是直接写入磁盘的，InnoDB 引擎会在写 redo log 的时候先写 redo log buffer，之后以 一 定的频率 刷入到真正的 redo log file 中。这里的一定频率怎么看待呢？这就是我们要说的刷盘策略。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662713333606-38c62179-8469-4b94-81a7-0af437922a11.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=334&id=uc12ac066&name=image.png&originHeight=904&originWidth=1644&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=163484&status=done&style=none&taskId=u8900224d-f9a1-40d1-9fde-8334e9770b2&title=&width=607" alt="image.png"></li>
+<li>注意，<strong>redo log buffer 刷盘到 redo log file 的过程并不是真正的刷到磁盘中去，只是刷入到 文件系统缓存（page cache）</strong>中去（这是现代操作系统为了提高文件写入效率做的一个优化），真正的写入会交给系统自己来决定（比如 page cache 足够大了）。那么对于 InnoDB 来说就存在一个问题，如果交给系统来同步，同样如果系统宕机，那么数据也丢失了（虽然整个系统宕机的概率还是比较小的）。</li>
+<li>针对这种情况，InnoDB 给出 innodb_flush_log_at_trx_commit 参数，该参数控制 commit 提交事务时，如何将 redo log buffer 中的日志刷新到 redo log file 中。它支持三种策略：<ul>
+<li>设置为 0 ：表示每次事务提交时不进行刷盘操作。（系统默认 master thread 每隔 1s 进行一次重做日志的同步）</li>
+<li>设置为 1 ：表示每次事务提交时都将进行同步，刷盘操作（ 默认值 ）</li>
+<li>设置为 2 ：表示每次事务提交时都只把 redo log buffer 内容写入 page cache，不进行同步。由 os 自己决定什么时候同步到磁盘文件。</li>
+</ul>
+</li>
+<li>另外，InnoDB 存储引擎有一个后台线程，每隔一秒，就会吧 redo log buffer 中的内容写到文件系统缓存（page cache），然后调用刷盘操作。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662719833130-4330263f-efda-4085-9e28-df7cb3f03348.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=350&id=uc67b5d3e&name=image.png&originHeight=1088&originWidth=1724&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=124193&status=done&style=none&taskId=ubb994e30-7054-4fc1-b6ba-d3046641fed&title=&width=555" alt="image.png"><ul>
+<li>也就是说，一个没有提交事物的 redo log 记录，也可能刷盘。因为在事物执行过程中 redo log 记录是会写入 redo log buffer 中，这些 redo log 记录会被<code>后台线程</code>刷盘</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662721306174-4a0c4bb5-5442-4b83-aa61-6907b75ca5a6.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=375&id=uf4b8535f&name=image.png&originHeight=1132&originWidth=1644&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=141078&status=done&style=none&taskId=udd7064ce-3c02-4835-bc60-36a4a52a95c&title=&width=545" alt="image.png"></p>
+<ul>
+<li>除了后台线程每秒 1 次轮询操作，还有一种情况，当 redo log buffer 占用的空间即将达到 innodb_log_buffer_size（这个参数默认是 16M）的一半的时候，后台线程会主动刷盘。</li>
+</ul>
+<h4 id="6）-不同刷盘策略演示"><a href="#6）-不同刷盘策略演示" class="headerlink" title="6） 不同刷盘策略演示"></a>6） <strong>不同刷盘策略演示</strong></h4><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662722046046-f78d0e6a-c12e-4901-ba95-f9b145476125.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=566&id=u9450cd2b&name=image.png&originHeight=1132&originWidth=1644&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=184794&status=done&style=none&taskId=uc2c6e0fc-2fab-45dd-981b-3016b137c53&title=&width=822" alt="image.png"></p>
+<blockquote>
+<p>小结：innodb_flush_log_at_trx_commit&#x3D;1<br>innodb_flush_log_at_trx_commit 为 1 时，只要事物提交成功，redo log 记录就一定在硬盘中，不会有任何数据丢失。<br><strong>如果事物执行期间 MySQL 挂了或则宕机。这部份日志丢了，但是事物并没有提交，所以日志丢了也就不会有损失。可以保证 ACID 的 D，数据绝对不会丢失，但是效率最差的</strong><br>建议使用默认值，虽然操作系统宕机的概率小于机器宕机的概率，但是一般使用了事物，那么数据的安全相对来说更重要些。</p>
+</blockquote>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662722237151-7c5a682d-4fcb-4c52-8871-19305bfc7c8c.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=566&id=u9d835d5c&name=image.png&originHeight=1132&originWidth=1644&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=197265&status=done&style=none&taskId=uc1f02e37-40d4-4208-8483-1f93ee75fce&title=&width=822" alt="image.png"></p>
+<blockquote>
+<p>小结：innodb_flush_log_at_trx_commit&#x3D;2<br>innodb_flush_log_at_trx_commit 为 2 时，只要事物提交成功，redo log buffer 中的内容只写入文件系统缓存（page cache）。<br><strong>如果仅仅只是 MySQL 挂了不会有任何数据的丢失</strong>。<strong>但是操作系统宕机可能会有一秒数据的丢失</strong>，这种情况下无法满足 ACID 中的 D。<strong>但是数值 2 肯定是效率最高的</strong>。</p>
+</blockquote>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662722501856-4db32271-decd-4977-b778-eee9c825aa45.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=561&id=ue9b19181&name=image.png&originHeight=1122&originWidth=1644&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=182102&status=done&style=none&taskId=u968a72b8-6524-45d7-99f0-ac2dd81af70&title=&width=822" alt="image.png"></p>
+<blockquote>
+<p>小结：innodb_flush_log_at_trx_commit&#x3D;0<br>innodb_flush_log_at_trx_commit 为 0 时，<strong>master thread 中每一秒进行一次重做日志的 fsync 操作，因此实例 crash 最多丢失一秒钟内的事务。（master thread 是负责将缓冲池中的数据异步刷新到磁盘，保证数据的一致性）</strong><br>数值 0 的话，是一种折中的做法，它的 <strong>IO 效率理论是高于 1 的，低于 2</strong>的，这种策略也有丢失数据的风险，也无法保证 D。</p>
+</blockquote>
+<h2 id="2、Undo日志"><a href="#2、Undo日志" class="headerlink" title="2、Undo日志"></a>2、Undo<strong>日志</strong></h2><p>redo log 是事务持久性的保证，undo log 是事务原子性的保证。在事务中<code>更新数据</code>的前置操作其实是要先写入一个 undo log 。</p>
+<h3 id="2-1-如何理解Undo日志"><a href="#2-1-如何理解Undo日志" class="headerlink" title="2.1 如何理解Undo日志"></a>2.1 <strong>如何理解</strong>Undo<strong>日志</strong></h3><p>事务需要保证 原子性 ，也就是事务中的操作要么全部完成，要么什么也不做。但有时候事务执行到一半会出现一些情况，比如：</p>
+<ul>
+<li>情况一：事务执行过程中可能遇到各种错误，比如服务器本身的错误,操作系统错误 ，甚至是突然 断电 导致的错误。</li>
+<li>情况二：程序员可以在事务执行过程中手动输入 ROLLBACK 语句结束当前事务的执行。</li>
+</ul>
+<p>以上情况出现，我们需要把数据改回原先的样子，这个过程称之为回滚 ，这样就可以造成一个假象：这个事务看起来什么都没做，所以符合<strong>原子性</strong>要求。<br>每当我们要对一条记录作做改动时（这里的改动可以指 INSERT，DELETE，UPDATE），都需要“留一手”–把回所需要的东西记下来。比如：</p>
+<ul>
+<li>你<strong>插入一条记录</strong>时，至少要把这条记录的主键值记下来，之后回滚的时候只需要把这个主键值对应的<strong>记录删掉</strong>就好了。（对于每个 INSERT，InnoDB 存储引擎会完成一个 DELETE）</li>
+<li>你<strong>删除了一条记录</strong>，至少要把这条记录中的内容都记下来。这样之后的回滚在把由这些内容组成的记录&#96;&#96;插入到表中就好了。（对于每个 DELETE，InnoDB 存储引擎会执行一个 INDSERT）</li>
+<li>你<strong>修改了一条记录</strong>，至少要把修改这条记录中的内容都记下来，这样之后的回滚再把这条记录<strong>更新为旧值</strong>就好了。（随遇每个 UPDATE，InooDB 存储引擎会执行一个相反的 UPDATE，将修改前的行放回去）</li>
+</ul>
+<p>MySQL 把这些为了回滚而记录的这些内容称之为<strong>撤销日志</strong>或则<strong>回滚日志</strong>（即 undo log），注意，由于查询操作（SELECT）并不会修改任何用户记录，所以在查询操作执行时，并不需要记录 相应的 undo 日志<br>此外，undo log 会产生 redo log，也就是 undo log 的产生会伴随着 redo log 的产生，这是因为 undo log 也需要持久保护。</p>
+<h3 id="2-2-Undo日志的作用"><a href="#2-2-Undo日志的作用" class="headerlink" title="2.2 Undo日志的作用"></a>2.2 Undo<strong>日志的作用</strong></h3><ul>
+<li><strong>作用</strong>1：<strong>回滚数据</strong><ul>
+<li>用户对 undo 日志可能有误解：undo 用于数据库物理地恢复到执行语句或事务之前的样子。但是事实并非如此。undo 日志是<code>逻辑日志</code>，因此只是将数据库逻辑恢复到原来的样子。所以修改都被逻辑的取消了，但是数据结构和页本身在回滚之后可能大不相同。这是因为在多用户并发系统中面，可能会有数十，数百甚至数千个并发事务。数据库的主要任务就是协调对数据记录的并发访问。比如，一个事务再修改当前一个页中某几条记录，同时还有别的事务在对同一个页中另外几条记录进行修改。因此，不能将一个页回滚到事务开始的样子，因此这样回影响其他事务正常进行的工作。</li>
+</ul>
+</li>
+<li><strong>作用</strong>2：<strong>MVCC</strong><ul>
+<li>undo 的另一个作用是 mvcc，即在 InnoDB 存储引擎中 MVCC 的实现是通过 undo 来完成。当用户读取一行记录时，若该记录已经被其他事务占用，当前事务可以通过 undo 读取之前的版本信息，以此实现非锁定读取。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-3-undo的存储结构"><a href="#2-3-undo的存储结构" class="headerlink" title="2.3 undo的存储结构"></a>2.3 undo<strong>的存储结构</strong></h3><h4 id="1）回滚段与undo页"><a href="#1）回滚段与undo页" class="headerlink" title="1）回滚段与undo页"></a>1）<strong>回滚段与</strong>undo<strong>页</strong></h4><p>InnoDB 对 undo log 的管理采用段的方式，也就是 <strong>回滚段</strong>（rollback segment） 。每个回滚段记录了</p>
+<ul>
+<li>1024 个 undo log segment ，而在每个 undo log segment 段中进行 undo 页 的申请。在 InnoDB1.1 版本之前 （不包括 1.1 版本），只有一个 rollback segment，因此支持同时在线的事务限制为 1024 。虽然对绝大多数的应用来说都已经够用。</li>
+<li>从 1.1 版本开始 InnoDB 支持最大 128 个 rollback segment ，故其支持同时在线的事务限制提高到了 128*1024 。</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">mysql&gt; show variables like &#39;innodb_undo_logs&#39;;
++------------------+-------+
+| Variable_name | Value |
++------------------+-------+
+| innodb_undo_logs | 128 |
++------------------+-------+</code></pre>
+
+<p>虽然 InnoDB1.1 版本支持了 128 个 rollback segment，但是这些 rollback segment 都存储于共享表空间 ibdata 中。从 InnoDB1.2 版本开始，可通过参数对 rollback segment 做进一步的设置。这些参数包括：</p>
+<ul>
+<li><strong>innodb_-undo_directory</strong>：设置 rollback segment 文件所在的路径。这意味着 rollback segmenti 可以存放在共享表空间以外的位置，即可以设置为独立表空间。该参数的默认值为“&#x2F;”，表示当前 noDB 存储引擎的目录。</li>
+<li><strong>innodb_-undo_logs</strong>：设置 rollback segment 的个数，默认值为 128。在 InnoDB1.2 版本中，该参数用来替换之前版本的参数 innodb_rollback_segments。</li>
+<li><strong>innodb_undo_tablespaces</strong>：设置构成 rollback segment 文件的数量，这样 rollback segment 可以较为平均地分布在多个文件中。设置该参数后，会在路径 innodb._undo_directory 看到 undo 为前缀的文件，该文件就代表 rollback segment 文件。<br>undo log 相关参数一般很少改动。</li>
+</ul>
+<p><strong>undo 页的重用</strong><br>当我们开启一个事务需要写 undo log 的时候，就得先去 undo log segment 中去找到一个空闲的位置，当有空位的时候，就去申请 undo 页，在这个申请到的 undo 页中进行 undo log 的写入。我们知道 mysql 默认一页的大小是 16k。<br>为每一个事务分配一个页，是非常浪费的（除非你的事务非常长），假设你的应用的 TPS（每秒处理的事务数目）为 1000，那么 1s 就需要 1000 个页，大概需要 16M 的存储，1 分钟大概需要 1G 的存储。如果照这样下去除非 MySQLi 清理的非常勤快，否测随着时间的推移，磁盘空间会增长的非常快，而且很多空间都是浪费的。<br>于是 undo 页就被设计的可以重用了，当事务提交时，并不会立刻删除 undo 页。因为重用，所以这个 undo 页可能混杂着其他事务的 undo log。undo logi 在 commit）后，会被放到一个链表中，然后判断 undo 页的使用空间是否小于 3&#x2F;4，如果小于 3&#x2F;4 的话，则表示当前的 undo 页可以被重用，那么它就不会被回收，其他事务的 undo logi 可以记录在当前 undo 页的后面。由于 undo log 是离散的，所以清理对应的磁盘空间时，效率不高。</p>
+<h4 id="2）-回滚段与事务"><a href="#2）-回滚段与事务" class="headerlink" title="2） 回滚段与事务"></a>2） <strong>回滚段与事务</strong></h4><ol>
+<li><strong>每个事务只会使用一个回滚段</strong>，一个回滚段在同一时刻可能会服务于多个事务。</li>
+<li>当一个事务开始的时候，会制定一个回滚段，在事务进行的过程中，当数据被修改时，原始的数据会被复制到回滚段。</li>
+<li>在回滚段中，事务会不断填充盘区，直到事务结束或所有的空间被用完。如果当前的盘区不够用，事务会在段中请求扩展下一个盘区，如果所有已分配的盘区都被用完，事务会覆盖最初的盘区或者在回滚段允许的情况下扩展新的盘区来使用。</li>
+<li>回滚段存在于 undo 表空间中，在数据库中可以存在多个 undo 表空间，但同一时刻只能使用一个 undo 表空间。</li>
+</ol>
+<pre class="line-numbers language-none"><code class="language-none">mysql&gt;show variables like innodb_undo_tablespaces&#39;;
+
++------------------+-------+
+| Variable_name | Value |
++------------------+-------+
+| innodb_undo_tablespaces | 2 |
++------------------+-------+
+1 row in set (0.01 sec)
+
+#undo log的数量，最少为2，undo log的truncate操作有purge协调线程发起。在truncate某个undo log表空间的过程中，保证有一个可用的undo log可用。</code></pre>
+
+<ol start="5">
+<li>当事务提交时，InnoDB 存储引擎会做以下两件事情：将 undo log 放入列表中，以供之后的 purge 操作判断 undo log 所在的页是否可以重用，若可以分配给下个事务使用</li>
+</ol>
+<h4 id="3）回滚段中的数据分类"><a href="#3）回滚段中的数据分类" class="headerlink" title="3）回滚段中的数据分类"></a>3）回滚段中的数据分类</h4><ol>
+<li><strong>未提交的回滚数据(uncommitted undo information)：</strong>该数据所关联的事务并未提交，用于实现读一致性，所以该数据不能被其他事务的数据覆盖。</li>
+<li>**已经提交但未过期的回滚数据(committed undo information)**：该数据关联的事务已经提交，但是仍受到 undo retention 参数的保持时间的影响。</li>
+<li>**事务已经提交并过期的数据(expired undo information)**：事务已经提交，而且数据保存时间已经超过 undo retention:参数指定的时间，属于已经过期的数据。当回滚段满了之后，会优先覆盖”事务已经提交并过期的数据”。</li>
+</ol>
+<p>事务提交后并不能马上删除 undo log 及 undo log 所在的页。这是因为可能还有其他事务需要通过 undo log:来得到行记录之前的版本。故事务提交时将 undo log 放入一个链表中，是否可以最终删除 undo log 及 undo log 所在页由 purge 线程来判断。</p>
+<h3 id="2-4-undo的类型"><a href="#2-4-undo的类型" class="headerlink" title="2.4 undo的类型"></a>2.4 undo<strong>的类型</strong></h3><p>在 InnoDB 存储引擎中，undo log 分为：</p>
+<ul>
+<li><strong>insert undo log</strong><br>insert undo log:是指在 insert 操作中产生的 undo log。因为 insert 操作的记录，只对事务本身可见，对其他事务不可见（这是事务隔离性的要求），故该 undo log 可以在事务提交后直接删除。不需要进行 purge 操作。</li>
+<li><strong>update undo log</strong><br>update undo log 记录的是对 delete 和 update 操作产生的 undo log。该 undo logi 可能需要提供 MVCC 机制，因此不能在事务提交时就进行删除。提交时放入 undo log 链表，等待 purge 线程进行最后的删除。</li>
+</ul>
+<h3 id="2-5-undo-log-的生命周期"><a href="#2-5-undo-log-的生命周期" class="headerlink" title="2.5 undo log 的生命周期"></a>2.5 undo log 的生命周期</h3><h4 id="1）简要生成过程"><a href="#1）简要生成过程" class="headerlink" title="1）简要生成过程"></a>1）简要生成过程</h4><p>以下是 undo+redo 事务的简化过程</p>
+<ul>
+<li>假设有 2 个数值，分别为 A&#x3D;1 和 B&#x3D;2,然后将 A 修改为 3，B 修改为 4</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">1. start transaction;
+2. 记录A&#x3D;1到undo1og;
+3. update A&#x3D;3;
+4. 记录A&#x3D;3到redo1og;
+5. 记录B&#x3D;2到undo1og;
+6. update B 4;
+7. 记录B&#x3D;4到redo1og;
+8. 将redo1og刷新到磁盘
+9. commit</code></pre>
+
+<ul>
+<li>在 1-8 步骤的任意一步系统宕机，事务未提交，该事务就不会对磁盘上的数据做任何影响。</li>
+<li>如果在 8-9 之间宕机，恢复之后可以选择回滚，也可以选择继续完成事务提交，因为此时 redo logi 已经持久化。</li>
+<li>若在 9 之后系统宕机，内存映射中变更的数据还来不及刷回磁盘，那么系统恢复之后，可以根据 redo log:把数据刷回磁盘。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662724810296-23d5de36-6121-43c7-823b-36a19ab87770.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=257&id=u603e35d4&name=image.png&originHeight=710&originWidth=1250&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=110669&status=done&style=none&taskId=u67fb3c2a-ec30-483f-8fb7-f385ac49d5d&title=&width=452" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662727605355-08d3a513-9021-4586-8b30-e0be73714d57.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=364&id=ub2bfb191&name=image.png&originHeight=974&originWidth=2472&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=232116&status=done&style=none&taskId=uece91cdf-0678-489d-8aae-a28b57e047c&title=&width=924" alt="image.png"><ul>
+<li>在更新 Buffer Pool 中的数据之前，我们需要先将该数据事务开始之前的状态写入 Undo Logl 中。假设更新到一半出错了，我们就可以通过 Undo Log 来回滚到事务开始前。</li>
+</ul>
+</li>
+</ul>
+<h4 id="2）详细生成过程"><a href="#2）详细生成过程" class="headerlink" title="2）详细生成过程"></a>2）详细生成过程</h4><p>对于 InnoDB 引擎来说，每个行记录除了记录本身的数据之外，还有几个隐藏的列：</p>
+<ul>
+<li><strong>DB_ROW_ID</strong>：如果没有为表显式的定义主键，并且表中也没有定义唯一索引，那么 InnoDB 会自动为表添加一个 row_id 的隐藏列作为主键。</li>
+<li><strong>DB_TRX_ID</strong>：每个事务都会分配一个事务 ID,当对某条记录发生变更时，就会将这个事务的事务 ID 写入 tx_id 中。</li>
+<li><strong>DB_ROLL_PTR</strong>：回滚指针，本质上就是指向 undo log 的指针。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662727894623-f14353c1-2df1-49dc-be2d-40c6bffefeba.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=67&id=u5f94800f&name=image.png&originHeight=134&originWidth=1914&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=19293&status=done&style=none&taskId=u38bd713f-fb93-4f1c-ae2e-6cdf639f143&title=&width=957" alt="image.png"></p>
+<blockquote>
+<p><strong>当我们执行</strong>INSERT<strong>时：</strong></p>
+</blockquote>
+<pre class="line-numbers language-none"><code class="language-none">begin;
+INSERT INTO user (name) VALUES (&quot;tom&quot;);</code></pre>
+
+<ul>
+<li>插入的数据都会生成一条 insert undo log，并且数据的回滚指针会指向它。undo log 会记录 undo logl 的序号、插入主键的列和值，那么在进行 rollback 的时候，通过主键直接把对应的数据删除即可。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662728117968-182bf6d0-fa00-4f72-b202-efd109e92644.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=253&id=ub1908546&name=image.png&originHeight=604&originWidth=1394&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=42637&status=done&style=none&taskId=u2914cdfd-d75c-4447-b3ec-1da686c7da3&title=&width=584" alt="image.png"></p>
+<blockquote>
+<p><strong>当我们执行</strong>UPDATE<strong>时：</strong></p>
+</blockquote>
+<ul>
+<li>对于更新的操作会产生 update undo log,并且会分更新主键的和不更新主键的，假设现在执行：</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662728201459-5e21a798-eb7d-4e82-944b-4e7288a37ca4.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=258&id=u7d8cacc8&name=image.png&originHeight=608&originWidth=1394&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=46078&status=done&style=none&taskId=u67ad0d63-5f85-49a5-a598-28f54ab1a64&title=&width=592" alt="image.png"></p>
+<ul>
+<li>这时会把老的记录写入新的 undo log，让回滚指针指向新的 undo log，它的 undo no 是 i，并且新的 undo log:会指向老的 undo log(undo no:&#x3D;o)。</li>
+<li>假设现在执行：</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">UPDATE user SET id&#x3D;2 WHERE id&#x3D;1;</code></pre>
+
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662728512271-e5f71039-d82e-4869-b0d0-e8ff7008937d.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=267&id=u095a6686&name=image.png&originHeight=734&originWidth=3024&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=84601&status=done&style=none&taskId=u672b1c39-cc25-4d9c-8e43-cac624d0e92&title=&width=1100" alt="image.png"></p>
+<ul>
+<li>对于更新主键的操作，会先把原来的数据 deletemark 标识打开，这时并没有真正的删除数据，真正的删除会交给清理线程去判断，然后在后面插入一条新的数据，新的数据也会产生 undo log,并且 undo log 的序号会递增。</li>
+<li>可以发现每次对数据的变更都会产生一个 undo log，当一条记录被变更多次时，那么就会产生多条 undo log,undo log 记录的是变更前的日志，并且每个 undo logE 的序号是递增的，那么当要回滚的时候，按照序号依次向前推，就可以找到我们的原始数据了。</li>
+</ul>
+<h4 id="3）undo-log是如何回滚的"><a href="#3）undo-log是如何回滚的" class="headerlink" title="3）undo log是如何回滚的"></a>3）undo log<strong>是如何回滚的</strong></h4><p>以上面的例子来说，假设执行 rollback，那么对应的流程应该是这样：</p>
+<ol>
+<li>通过 undo no&#x3D;3 的日志把 id&#x3D;2 的数据删除</li>
+<li>通过 undo no&#x3D;2 的日志把 id&#x3D;1 的数据的 deletemark 还原成 0</li>
+<li>通过 undo no&#x3D;1 的日志把 id&#x3D;1 的数据的 name 还原成 Tom</li>
+<li>通过 undo no&#x3D;0 的日志把 id&#x3D;1 的数据删除</li>
+</ol>
+<h4 id="4）undo-log的删除"><a href="#4）undo-log的删除" class="headerlink" title="4）undo log的删除"></a>4）undo log<strong>的删除</strong></h4><ul>
+<li>针对于 insert undo log<br>因为 insert 操作的记录，只对事务本身可见，对其他事务不可见。故该 undo log 可以在事务提交后直接删除，不需要进行 purge 操作。</li>
+<li>针对于 update undo log<br>该 undo log 可能需要提供 MVCC 机制，因此不能在事务提交时就进行删除。提交时放入 undo log 链表，等待 purge 线程进行最后的删除。<blockquote>
+<p>补充：purge 线程两个主要作用是：清理 undo 页和清除 page 里面带有 Delete_Bit 标识的数据行。在 InnoDB 中，事务中的 Delete 操作实际上并不是真正的删除掉数据行，而是一种 Delete Mark 操作，在记录上标识 Delete._Bit,而不删除记录。是一种”假删除”，只是做了个标记 r 真正的删除工作需要后台 purge 线程去完成。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="3、redo-和-undo-总结"><a href="#3、redo-和-undo-总结" class="headerlink" title="3、redo 和 undo 总结"></a>3、redo 和 undo 总结</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1662723159203-c9466cd9-07fa-4590-8c0b-62e73ba41e61.png#clientId=u59a10a2f-ae93-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=453&id=u9c084d14&name=image.png&originHeight=1148&originWidth=1754&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=160813&status=done&style=none&taskId=u47dd2926-6257-405b-ad0a-82af4c650fc&title=&width=692" alt="image.png"></p>
+<ul>
+<li><strong>undo log 是逻辑日志，对事务回滚时</strong>，只是将数据库逻辑地恢复到原来的样子。</li>
+<li><strong>redo log 是物理日志，记录的是数据页的物理变化</strong>，undo log 不是 redo log 的逆过程。</li>
+</ul>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Mysql/" itemprop="url" rel="index">
+                  <span itemprop="name">Mysql</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/InnoDB/" itemprop="url" rel="index">
+                  <span itemprop="name">InnoDB</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="https://cdn.alicharles.com/static/images/mp_qrcode.jpg"
+         alt="https://cdn.alicharles.com/static/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/architecture/architecture-order-fsm/" rel="next" title="架构（三）通用可编排订单状态机引擎设计">
+            <i class="fa far fa-chevron-left"></i> 架构（三）通用可编排订单状态机引擎设计
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/architecture/architecture-design/" rel="prev" title="架构（四）架构设计参考规范">
+            架构（四）架构设计参考规范 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81redo%E6%97%A5%E5%BF%97"><span class="toc-text">1、redo日志</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81redo%E6%97%A5%E5%BF%97"><span class="toc-text">1.1 为什么需要redo日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-redo%E6%97%A5%E5%BF%97%E7%9A%84%E5%A5%BD%E5%A4%84%E3%80%81%E7%89%B9%E7%82%B9"><span class="toc-text">1.2 redo日志的好处、特点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%EF%BC%89redo%E6%97%A5%E5%BF%97%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="toc-text">1）redo日志的好处</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%EF%BC%89redo%E6%97%A5%E5%BF%97%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-text">2）redo日志的特点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%EF%BC%89redo-%E7%9A%84%E7%BB%84%E6%88%90"><span class="toc-text">3）redo 的组成</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%EF%BC%89redo%E7%9A%84%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-text">4）redo的整体流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5%EF%BC%89redo-log%E7%9A%84%E5%88%B7%E7%9B%98%E7%AD%96%E7%95%A5"><span class="toc-text">5）redo log的刷盘策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6%EF%BC%89-%E4%B8%8D%E5%90%8C%E5%88%B7%E7%9B%98%E7%AD%96%E7%95%A5%E6%BC%94%E7%A4%BA"><span class="toc-text">6） 不同刷盘策略演示</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81Undo%E6%97%A5%E5%BF%97"><span class="toc-text">2、Undo日志</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3Undo%E6%97%A5%E5%BF%97"><span class="toc-text">2.1 如何理解Undo日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-Undo%E6%97%A5%E5%BF%97%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">2.2 Undo日志的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-undo%E7%9A%84%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="toc-text">2.3 undo的存储结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%EF%BC%89%E5%9B%9E%E6%BB%9A%E6%AE%B5%E4%B8%8Eundo%E9%A1%B5"><span class="toc-text">1）回滚段与undo页</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%EF%BC%89-%E5%9B%9E%E6%BB%9A%E6%AE%B5%E4%B8%8E%E4%BA%8B%E5%8A%A1"><span class="toc-text">2） 回滚段与事务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%EF%BC%89%E5%9B%9E%E6%BB%9A%E6%AE%B5%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E5%88%86%E7%B1%BB"><span class="toc-text">3）回滚段中的数据分类</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-undo%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="toc-text">2.4 undo的类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-undo-log-%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-text">2.5 undo log 的生命周期</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%EF%BC%89%E7%AE%80%E8%A6%81%E7%94%9F%E6%88%90%E8%BF%87%E7%A8%8B"><span class="toc-text">1）简要生成过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%EF%BC%89%E8%AF%A6%E7%BB%86%E7%94%9F%E6%88%90%E8%BF%87%E7%A8%8B"><span class="toc-text">2）详细生成过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%EF%BC%89undo-log%E6%98%AF%E5%A6%82%E4%BD%95%E5%9B%9E%E6%BB%9A%E7%9A%84"><span class="toc-text">3）undo log是如何回滚的</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%EF%BC%89undo-log%E7%9A%84%E5%88%A0%E9%99%A4"><span class="toc-text">4）undo log的删除</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81redo-%E5%92%8C-undo-%E6%80%BB%E7%BB%93"><span class="toc-text">3、redo 和 undo 总结</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    <script src="//cdn.alicharles.com/static/lib/jquery/jquery.min.js"></script>
+    <script src="//cdn.alicharles.com/static/lib/popper.js/popper.js"></script>
+    <script src="//cdn.alicharles.com/static/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="//cdn.alicharles.com/static/lib/prism/js/prism.js"></script>
+    <script src="//cdn.alicharles.com/static/js/app.js"></script>
+
+    
+</div>
+</body>
+
+</html>

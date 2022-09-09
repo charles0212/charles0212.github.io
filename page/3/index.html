@@ -209,6 +209,164 @@
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/cache/redis-storage-structure/">
+                Redis存储结构
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        前言Redis 作为一款高性能数据库，表现在：它接收到一个键值对操作后， 能以微秒级别的速度找到数据，并快速完成操作。其高性能得奥秘来缘于以下两点：
+
+Redis 是内存数据库， 所有操作都在内存上完成，内存的访问速度本身就很快
+Reids 通过高效的数据结构来组织数据。
+
+本章节可以让你在最短的时间了解如下内容：
+
+Redis 支持五大数据类型
+Redis 组织 Key-Value 数据结构
+Redis5 大值类型数据存储结构
+
+一、五大数据类型
+String(字符串)
+List(列表)
+Set(集合)
+Hash（哈希）
+Zset（有序集合）
+
+二、组织 Key-Value 数据结构在 re
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2021-06-23T00:00:00+08:00">
+                2021-06-23
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/cache/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">cache</span>
+                    </a>
+                </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/cache/redis/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">redis</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Cache/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Cache</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Redis/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Redis</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/cache/redis-storage-structure/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
+                HBase 系统架构
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        本文基本是对 MapR 的官网文章An In-Depth Look at the HBase Architecture的翻译
+HBase 存储架构HBase 采用 Master&amp;#x2F;Slave 架构搭建集群，它隶属于 Hadoop 生态系统，由一下类型节点组成：HMaster 节点、HRegionServer 节点、ZooKeeper 集群，而在底层，它将数据存储于 HDFS 中，因而涉及到 HDFS 的 NameNode、DataNode 等，总体结构如下：
+HMaster 节点
+管理 HRegionServer，实现其负载均衡。
+管理和分配 HRegion，比如在 HRegion s
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2021-06-21T00:00:00+08:00">
+                2021-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/hbase/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">hbase</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/HBase/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">HBase</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/hbase/hbase-architecture/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/hbase/hbase-read-optimize/">
                 HBase 读优化
             </a>
@@ -657,136 +815,6 @@ LSM 树(Log-Structured-Merge-Tree)的名字往往会给初识者一个错误的�
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/nacos/nacos-architecture/">
-                Nacos2架构设计
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        
-https://blog.csdn.net/alisystemsoftware/article/details/111934889
-
-Nacos 在阿里巴巴起源于 2008 年五彩石项目，该项目完成了微服务拆分和业务中台建设，随着云计算和开源环境的兴起，2018 年我们深刻感受到开源软件行业的影响，因此决定将 Nacos 开源，输出阿里十年关于服务发现和配管管理的沉淀，推动微服务行业发展，加速企业数字化转型。目前 Nacos 支持主流微服务开发语言 &amp;amp; 主流服务框架和配置管理框架，比如支持 Duboo 和 SCA， 还对接了一些云原生的组件比如 coreDNS 和 sentinel 
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2021-04-01T00:00:00+08:00">
-                2021-04-01
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/nacos/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">nacos</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Nacos/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Nacos</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/nacos/nacos-architecture/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/nacos/nacos-config/">
-                Nacos2动态配置
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        
-https://zhuanlan.zhihu.com/p/375912272 &amp;gt; https://www.pianshen.com/article/4989271413/Nacos 配置实时更新原理分析https://www.jianshu.com/p/acb9b1093a54
-
-动态配置场景了解了动态配置管理的效果之后，我们知道了大概的原理了，Nacos 服务端保存了配置信息，客户端连接到服务端之后，根据 dataID，group 可以获取到具体的配置信息，当服务端的配置发生变更时，客户端会收到通知。当客户端拿到变更后的最新配置信息后，就可以做自己的处理了，这非常有用，所有需要使用配
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2021-03-25T00:00:00+08:00">
-                2021-03-25
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/nacos/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">nacos</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Nacos/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Nacos</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/nacos/nacos-config/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -811,7 +839,7 @@ https://zhuanlan.zhihu.com/p/375912272 &amp;gt; https://www.pianshen.com/article
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">99</span>
+                <span class="state-item-count">102</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

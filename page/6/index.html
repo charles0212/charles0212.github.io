@@ -209,6 +209,203 @@
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
+                HBase （一）系统架构
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        本文基本是对 MapR 的官网文章An In-Depth Look at the HBase Architecture的翻译
+HBase 存储架构HBase 采用 Master&amp;#x2F;Slave 架构搭建集群，它隶属于 Hadoop 生态系统，由一下类型节点组成：HMaster 节点、HRegionServer 节点、ZooKeeper 集群，而在底层，它将数据存储于 HDFS 中，因而涉及到 HDFS 的 NameNode、DataNode 等，总体结构如下：
+HMaster 节点
+管理 HRegionServer，实现其负载均衡。
+管理和分配 HRegion，比如在 HRegion s
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2020-06-21T00:00:00+08:00">
+                2020-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/hbase/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">hbase</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/HBase/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">HBase</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/hbase/hbase-architecture/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/hbase/hbase-architecture/">
+                HBase（一）系统架构
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        本文基本是对 MapR 的官网文章An In-Depth Look at the HBase Architecture的翻译
+HBase 存储架构HBase 采用 Master&amp;#x2F;Slave 架构搭建集群，它隶属于 Hadoop 生态系统，由一下类型节点组成：HMaster 节点、HRegionServer 节点、ZooKeeper 集群，而在底层，它将数据存储于 HDFS 中，因而涉及到 HDFS 的 NameNode、DataNode 等，总体结构如下：
+HMaster 节点
+管理 HRegionServer，实现其负载均衡。
+管理和分配 HRegion，比如在 HRegion s
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2020-06-21T00:00:00+08:00">
+                2020-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/hbase/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">hbase</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/HBase/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">HBase</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/hbase/hbase-architecture/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/id-generator/id-generator/">
+                发号器
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        为什么需要一个发号器在使用数据库时，表的主键经常会使用数据库的自增（auto_increment）来产生。这当然很方便也很高效。但是使用自增也会带来一些麻烦。如果从一个数据库以外的地方，也就是发号器来产生全局唯一 ID，这些问题就可以得到解决，生活就可以更美好。
+
+难以适应分片场景在采用数据库分片时，如果使用数据库自增 ID，不同分片上会产生相同的 ID。单靠 ID 无法唯一标示一个对象，还需要额外加上分片字段才行。如果需要将 ID 用于其他对象的关联时，会麻烦很多。而采用发号器生成的是全局唯一的 ID，单靠 ID 就能实现关联。同时，这也使得采用 ID 作为分片字段成为可能。
+主备切换时数据
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2020-06-21T00:00:00+08:00">
+                2020-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/id-generator/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">id-generator</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/IdGenerator/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">IdGenerator</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/id-generator/id-generator/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/architecture/architecture-miaosha/">
                 架构（二）秒杀架构设计
             </a>
@@ -340,7 +537,7 @@
     </header>
     <div class="post-body">
         
-        常用架构分析常用经典架构分析，了解设计思路和注意问题1、架构师技能和微服务架构图谱2、秒杀架构设计3、通用可编排订单状态机引擎设计
+        常用架构分析常用经典架构分析，了解设计思路和注意问题1、架构师技能和微服务架构图谱2、秒杀架构设计3、通用可编排订单状态机引擎设计4、架构设计参考规范
 
         
     </div>
@@ -526,218 +723,6 @@ grep charles &amp;#x2F;home&amp;#x2F;zhangcheng.log | awk &amp;#39;&amp;#123;spl
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/shell/shell-command/">
-                Shell（一）常用命令
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        find + xargs将当前目录下.bak 的文件，移动到临时&amp;#x2F;tmp 下面
-find . -name &amp;quot;*.bak&amp;quot; | xargs -I &amp;#39;&amp;#123;&amp;#125;&amp;#39; mv &amp;#123;&amp;#125; &amp;#x2F;tmp
-
-移动到&amp;#x2F;tmp 临时目录下，不要使用 rm -rf 命令防止误删，其中-I ‘{}’标识占位符
-awk分隔字符串，排序
-grep charles &amp;#x2F;home&amp;#x2F;zhangcheng.log | awk &amp;#39;&amp;#123;split($0,a,&amp;quot;,&amp;quot;);if (index(a
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2019-06-21T00:00:00+08:00">
-                2019-06-21
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/shell/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">shell</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Shell/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Shell</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/shell/shell-command/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/url/short-url/">
-                短链生成
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        背景当前短地址发号使用 hbase 的 increament 指令, 每个转短请求都会做一次操作, 当 qps 超过 1k 时, 会造成 hbase 机器报警, 需要减少 hbase 的 increament 指令调用
-方案修改为每个请求在本地取号, 当本地无号可取时请求 hbase 发号, 每次在 hbase 中调用 increament 时取 100 个号, 回到本地
-具体代码流程
-加全局锁, 所有转短请求在取号前通过全局锁串行
-尝试本地取号, 如果不成功, 去 hbase 取号 100 个, 放入本地缓存
-解锁, 并继续原有转短流程
-
-待确认的点，全局锁是否需要公平 公平锁的性能是否满足
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2019-06-21T00:00:00+08:00">
-                2019-06-21
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/short-url/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">short-url</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/ShortUrl/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">ShortUrl</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/url/short-url/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/mysql/mysql-btree-depth/">
-                MySQL B+树深度的了解
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        
-https://zhuanlan.zhihu.com/p/444448405
-
-以下从 B+树深度简单模拟计算，有两个主要特征决定了 B 树（或 B+ 树）的深度。
-
-数据库中的行数。我们将其称为 N。
-索引键的大小。让我们称 B 为适合 B 树节点的键数。（有时 B 用于指代节点大小本身，而不是它持有的键数，但我希望这样看起来更直观。）
-
-给定这些数量，B 树的深度是 log B 为下标 N。那只是 (log N )&amp;#x2F;log B。现在我们可以注意到小键意味着更大的 B，这会减少 (log N )&amp;#x2F;log B。如果我们将键的字节大小减半，那么 B 树的深度将从 (log 
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2019-05-27T00:00:00+08:00">
-                2019-05-27
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/database/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">数据库</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Mysql/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Mysql</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/InnoDB/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">InnoDB</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/mysql/mysql-btree-depth/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -762,7 +747,7 @@ https://zhuanlan.zhihu.com/p/444448405
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">99</span>
+                <span class="state-item-count">102</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

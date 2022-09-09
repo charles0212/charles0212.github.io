@@ -209,6 +209,220 @@
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/docker/docker-warm-mode/">
+                Docker（二）使用Swarm Mode创建集群
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+能使用 Docker Machine 的前提是宿主机需要是物理机，云主机目前不支持 Docker Machine 的创建。
+
+Virtualbox 安装步骤可参考
+cd &amp;#x2F;etc&amp;#x2F;yum.repos.d
+wget http:&amp;#x2F;&amp;#x2F;download.virtualbox.org&amp;#x2F;virtualbox&amp;#x2F;rpm&amp;#x2F;rhel&amp;#x2F;virtualbox.repo
+yum install VirtualBox-5.2
+
+Docker Machine 安装命令行安装 docker-machinebase&amp;#x3D;https:&amp;#x2
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2018-07-12T00:00:00+08:00">
+                2018-07-12
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/docker/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">docker</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Docker/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Docker</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/docker/docker-warm-mode/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/docker/docker-command/">
+                Docker（一）基本命令
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        Docker 基本服务命令启动 docker$ service docker start
+
+重启 docker$ service docker restart
+
+停止 docker$ service docker stop
+
+docker 自启动让它随服务器的启动而自动运行
+$ update-rc.d docker defaults
+$ systemctl enable docker
+
+Docker 基础命令启动&amp;#x2F;停止&amp;#x2F;重启&amp;#x2F;杀掉容器docker start&amp;#x2F;stop&amp;#x2F;restart&amp;#x2F;kill
+
+实例操作如下：
+$ docker st
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2018-01-30T00:00:00+08:00">
+                2018-01-30
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/docker/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">docker</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Docker/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Docker</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/docker/docker-command/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/mysql/mysql-deadlock/">
+                MySQL死锁分析
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        背景以前接触到的数据库死锁，都是批量更新时加锁顺序不一致而导致的死锁，但是上周却遇到了一个很难理解的死锁。借着这个机会又重新学习了一下 mysql 的死锁知识以及常见的死锁场景。在多方调研以及和同事们的讨论下终于发现了这个死锁问题的成因，收获颇多。虽然是后端程序员，我们不需要像 DBA 一样深入地去分析与锁相关的源码，但是如果我们能够掌握基本的死锁排查方法，对我们的日常开发还是大有裨益的。 PS：本文不会介绍死锁的基本知识，mysql 的加锁原理可以参考本文的参考资料提供的链接。
+死锁起因先介绍一下数据库和表情况，因为涉及到公司内部真是的数据，所以以下都做了模拟，不会影响具体的分析。 我们采用
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2018-01-30T00:00:00+08:00">
+                2018-01-30
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/database/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">数据库</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Mysql/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Mysql</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Deadlock/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Deadlock</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/mysql/mysql-deadlock/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/mysql/mysql-transaction/">
                 MySQL事务和隔离级别
             </a>
@@ -557,212 +771,6 @@
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/disruptor/disruptor-ringbuffer/">
-                Disruptor（一）RingBuffer数据结构
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        
-Disruptor 是 LMAX 公司开源的一个高效的内存无锁队列。
-
-并发程序设计几个概念1、锁： 锁是用来做并发最简单的方式，当然其代价也是最高的。内核态的锁的时候需要操作系统进行一次上下文切换，等待锁的线程会被挂起直至锁释放。在上下文切换的时候，cpu 之前缓存的指令和数据都将失效，对性能有很大的损失。用户态的锁虽然避免了这些问题，但是其实它们只是在没有真实的竞争时才有效。2、CAS： CAS 的涵义不多介绍了。使用 CAS 时不像上锁那样需要一次上下文切换，但是也需要处理器锁住它的指令流水线来保证原子性，并且还要加上 Memory Barrier 来保证其结果可见。3、MemoryB
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-09-20T00:00:00+08:00">
-                2016-09-20
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/disruptor/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">disruptor</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Disruptor/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Disruptor</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Java</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/disruptor/disruptor-ringbuffer/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/disruptor/understanding-disruptor/">
-                深入理解Disruptor
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        
-Disruptor 是 LMAX 公司开源的一个高效的内存无锁队列，一个高性能的异步处理框架，或者可以认为是最快的消息框架(轻量的 JMS)，也可以认为是一个观察者模式实现，或者事件-监听模式的实现，直接称 disruptor 模式。disruptor 最大特点是高性能，其 LMAX 架构可以获得每秒 6 百万订单，用 1 微秒的延迟获得吞吐量为 100K+。理解 Disruptor 的原理，可以帮助我们更好的理解内存无锁，CAS，volatile，缓冲行等并发原理。
-
-本文主要从以下方面介绍 disruptor：1、Disruptor 概念和 RingBuffer 数据结构2、RingBu
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-09-06T00:00:00+08:00">
-                2016-09-06
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/disruptor/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">disruptor</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Disruptor/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Disruptor</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Java</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/disruptor/understanding-disruptor/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/netty/netty-io-basic/">
-                Netty（一）网络IO基础
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        在讨论 IO 的时候，参与者通常有两个角色：系统内核和用户进程。用户进程发送 IO 请求过后，系统内核在准备好 IO 数据后，会通过内存拷贝的方式，将准备好的缓存 IO 数据共享给用户进程缓存。
-网络 I&amp;#x2F;O 模型简介根据 UNIX 网络编程对 I&amp;#x2F;O 模型的分类，提供了阻塞 I&amp;#x2F;O 模型、非阻塞 I&amp;#x2F;O 模型、I&amp;#x2F;O 复用模型、信号驱动 I&amp;#x2F;O 模型、异步 I&amp;#x2F;O 这 5 种 I&amp;#x2F;O 模型。
-1、阻塞 I&amp;#x2F;O 模型最常用的模型，所有文件操作都是阻塞的。套接字 socket 在进程空间中调用 recvfr
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-28T00:00:00+08:00">
-                2016-08-28
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/netty/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">netty</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Netty/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Netty</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/netty/netty-io-basic/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -787,7 +795,7 @@ Disruptor 是 LMAX 公司开源的一个高效的内存无锁队列，一个高�
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">99</span>
+                <span class="state-item-count">102</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

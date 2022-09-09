@@ -209,6 +209,217 @@
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-template-method-pattern/">
+                JDK设计模式（十三）模板方法模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        1、概述定义一个操作中的算法的骨架，而将步骤延迟到子类中。模板方法使得子类可以不改变一个算法的结构即可重定义算法的某些特定步骤。
+2、模式中的角色抽象模板类（AbstractTemplate）：实现了模板方法，定义了算法的骨架。具体模板类（ConcreteTemplate)：实现抽象类中的抽象方法，已完成完整的算法。
+3、模式解读模板方式模式的类图如下所示模板方法中的方法可以分为两大类：模板方法和基本方法。模板方法，一个模板方法是定义在抽象类中的，把基本操作方法组合在一起形成一个总算法或一个总行为的方法。一个抽象类可以有任意多个模板方法，而不限于一个。每一个模板方法都可以调用任意多个具体方法。
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-10-26T00:00:00+08:00">
+                2015-10-26
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-template-method-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/jvm/understanding-jvm/">
+                深入理解jvm虚拟机
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+每个 Java 开发者都知道 Java 字节码是执行在 JRE(（Java Runtime Environment Java 运行时环境）上的。JRE 中最重要的部分是 Java 虚拟机（JVM），JVM 负责分析和执行 Java 字节码。Java 开发人员并不需要去关心 JVM 是如何运行的。在没有深入理解 JVM 的情况下，许多开发者已经开发出了非常多的优秀的应用以及 Java 类库。不过，如果你了解 JVM 的话，你会更加了解 Java 的，并且你会轻松解决那些看似简单但是无从下手的问题。
+
+本系列主要从以下几个方面进行分析1、Java 内存区域与内存溢出2、垃圾收集算法以及垃圾收集器
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-05-04T00:00:00+08:00">
+                2015-05-04
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/jvm/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">jvm</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/JVM/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">JVM</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/jvm/understanding-jvm/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-strategy-pattern/">
+                JDK设计模式（十二）策略模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        1、定义策略模式，又叫算法簇模式，就是定义了不同的算法族，并且之间可以互相替换，此模式让算法的变化独立于使用算法的客户。
+2、解决的问题可以动态的改变对象的行为。
+3、模式中的角色1、环境对象(context)：该类中实现了对抽象策略中定义的接口或者抽象类的引用。2、抽象策略对象(Strategy)：它可由接口或抽象类来实现。3、具体策略对象(ConcreteStrategy)：它封装了实现同不功能的不同算法。利用策略模式构建应用程序，可以根据用户配置等内容，选择不同有算法来实现应用程序的功能。具体的选择有环境对象来完成。采用这种方式可以避免由于使用条件语句而带来的代码混乱，提高应用程序的灵活
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-04-26T00:00:00+08:00">
+                2015-04-26
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-strategy-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/design-pattern/jdk-proxy-pattern/">
                 JDK设计模式（十一）代理模式
             </a>
@@ -557,221 +768,6 @@
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-bridge-pattern/">
-                JDK设计模式（六）桥接模式
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        1、定义将抽象部分与实现部分分离，使它们都可以独立的变化
-2、解决的问题某个类具有两个或两个以上的维度变化，如果只是用继承将无法实现这种需要，或者使得设计变得相当臃肿，把变化部分抽象出来，使变化部分与主类分离开来，从而将多个维度的变化彻底分离，提供一个管理类来组合不同维度上的变化，通过这种组合来满足业务的需要，从达到抽象化、实现化和脱耦。
-3、模式中的角色1、抽象化(Abstraction)角色：抽象化给出的定义，并保存一个对实现化对象的引用。2、修正抽象化(RefinedAbstraction)角色：扩展抽象化角色，改变和修正父类对抽象化的定义。3、实现化(Implementor)角色：这个
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-04-12T09:00:00+08:00">
-                2015-04-12
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">design-pattern</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Java</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">设计模式</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-bridge-pattern/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-adapter-pattern/">
-                JDK设计模式（五）适配器模式
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        1、定义将一个类的接口转换成客户希望的另外一个接口。Adapter 模式使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。
-2、解决的问题即 Adapter 模式使得原本由于接口不兼容而不能一起工作的那些类可以在一起工作。
-3、模式中的角色目标接口（Target）：客户所期待的接口。目标可以是具体的或抽象的类，也可以是接口。需要适配的类（Adaptee）：需要适配的类或适配者类。适配器（Adapter）：通过包装一个需要适配的对象，把原接口转换成目标接口。
-4、模式解读在 GoF 的设计模式中，对适配器模式讲了两种类型，类适配器模式和对象适配器模式。由于类适配器模式通过多重继承对一个接
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-04-12T08:00:00+08:00">
-                2015-04-12
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">design-pattern</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Java</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">设计模式</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-adapter-pattern/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-prototype-pattern/">
-                JDK设计模式（四）原型模式
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        用原型实例指定创建对象的种类，并且通过复制这些原型创建新的对象。在原型模式中，所发动创建的对象通过请求原型对象来拷贝原型对象自己来实现创建过程，当然所发动创建的对象需要知道原型对象的类型。这里也就是说所发动创建的对象只需要知道原型对象的类型就可以获得更多的原型实例对象，至于这些原型对象时如何创建的根本不需要关心，其类图如下所示。原型模式主要包含如下三个角色：
-
-Prototype：抽象原型类。声明克隆自身的接口。
-ConcretePrototype：具体原型类。实现克隆的具体操作。
-Client：客户类。让一个原型克隆自身，从而获得一个新的对象。
-
-讲到原型模式，我们就不得不区分两个概念：深拷
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-03-08T08:00:00+08:00">
-                2015-03-08
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">design-pattern</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Java</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">设计模式</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-prototype-pattern/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -796,7 +792,7 @@ Client：客户类。让一个原型克隆自身，从而获得一个新的对�
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">99</span>
+                <span class="state-item-count">102</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

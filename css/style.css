@@ -133,6 +133,7 @@ blockquote {
 }
 .posts-collapse .post-body {
   word-break: break-word;
+  line-height: 2rem;
 }
 .posts-collapse .post {
   font-weight: normal;
@@ -185,6 +186,7 @@ blockquote {
 }
 .posts-expand .post-body {
   word-break: break-word;
+  line-height: 2rem;
 }
 .posts-expand .post-body h1 {
   font-size: 1.5rem;

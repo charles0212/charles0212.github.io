@@ -209,6 +209,213 @@
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/cncf/service-mesh/">
+                Service Mesh概述
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+关于 ServiceMesh 相关知识和进展，推荐资深大牛敖小剑的相关文章 https://skyao.io/ServiceMesh 的社区网站 http://www.servicemesher.com/最近蚂蚁金服开源了分布式框架 SOFA，项目地址 Alipay，具体文档可见 Sofa关于 Sofa Mesh, 暂时未开源，相关选型介绍可见 Sofa Mesh
+
+一、 Service Mesh 概念与定义这个概念首先由 Linkerd 的团队提出，其官方定义是:
+
+A service mesh is a dedicated infrastructure layer for handlin
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-05T00:00:00+08:00">
+                2016-06-05
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/cncf/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">cncf</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/CNCF/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">CNCF</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/ServiceMesh/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">ServiceMesh</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/cncf/service-mesh/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/cncf/cloud-native/">
+                Cloud Native定义
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        CNCF 定义CNCF（Cloud Native Computing Foundation，云原生计算基金会），2016 年 6 月 11 日，CNCF 技术监督委员会经过几个月的讨论，终于投票通过了 Cloud Native 的定义，目前官方的翻译如下：
+
+Cloud native technologies empower organizations to build and run scalable applications in modern, dynamic environments such as public, private, and hybrid clouds. Contain
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-01T00:00:00+08:00">
+                2016-06-01
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/cncf/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">cncf</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/CNCF/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">CNCF</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/cncf/cloud-native/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/jvm/jvm-gc/">
+                JVM（二）垃圾收集算法与收集器
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        Java 堆中几乎存放着 java 中所有的对象实例，垃圾收集器在对堆进行回收前，需要确定哪些对象还”存活”着，哪些已经“死去”。垃圾回收必须能够完成两件事情：正确检测出垃圾对象；释放垃圾对象占用的空间。
+1、垃圾检测算法当前常见的检测垃圾的方法包括两种：1. 引用计数法；2. 可达性分析算法。
+1.1 引用计数算法（Reference Counting）给对象添加一个引用计数器，每当该对象被引用，它的计数器值就＋ 1；当引用失效时，计数器就－1；在任何情况下，当计数器值为 0 时，就表示该对象不再被使用。缺点：它很难解决对象之间相互引用，引起的循环引用问题，会产生无法被释放的内存区域。因此，
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-01-09T00:00:00+08:00">
+                2016-01-09
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/jvm/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">jvm</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/JVM/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">JVM</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/jvm/jvm-gc/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/jvm/java-oom/">
                 JVM（一）Java内存区域与内存溢出
             </a>
@@ -556,217 +763,6 @@
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-template-method-pattern/">
-                JDK设计模式（十三）模板方法模式
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        1、概述定义一个操作中的算法的骨架，而将步骤延迟到子类中。模板方法使得子类可以不改变一个算法的结构即可重定义算法的某些特定步骤。
-2、模式中的角色抽象模板类（AbstractTemplate）：实现了模板方法，定义了算法的骨架。具体模板类（ConcreteTemplate)：实现抽象类中的抽象方法，已完成完整的算法。
-3、模式解读模板方式模式的类图如下所示模板方法中的方法可以分为两大类：模板方法和基本方法。模板方法，一个模板方法是定义在抽象类中的，把基本操作方法组合在一起形成一个总算法或一个总行为的方法。一个抽象类可以有任意多个模板方法，而不限于一个。每一个模板方法都可以调用任意多个具体方法。
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-10-26T00:00:00+08:00">
-                2015-10-26
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">design-pattern</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Java</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">设计模式</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-template-method-pattern/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/jvm/understanding-jvm/">
-                深入理解jvm虚拟机
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        
-每个 Java 开发者都知道 Java 字节码是执行在 JRE(（Java Runtime Environment Java 运行时环境）上的。JRE 中最重要的部分是 Java 虚拟机（JVM），JVM 负责分析和执行 Java 字节码。Java 开发人员并不需要去关心 JVM 是如何运行的。在没有深入理解 JVM 的情况下，许多开发者已经开发出了非常多的优秀的应用以及 Java 类库。不过，如果你了解 JVM 的话，你会更加了解 Java 的，并且你会轻松解决那些看似简单但是无从下手的问题。
-
-本系列主要从以下几个方面进行分析1、Java 内存区域与内存溢出2、垃圾收集算法以及垃圾收集器
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-05-04T00:00:00+08:00">
-                2015-05-04
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/jvm/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">jvm</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Java</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/JVM/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">JVM</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/jvm/understanding-jvm/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-strategy-pattern/">
-                JDK设计模式（十二）策略模式
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        1、定义策略模式，又叫算法簇模式，就是定义了不同的算法族，并且之间可以互相替换，此模式让算法的变化独立于使用算法的客户。
-2、解决的问题可以动态的改变对象的行为。
-3、模式中的角色1、环境对象(context)：该类中实现了对抽象策略中定义的接口或者抽象类的引用。2、抽象策略对象(Strategy)：它可由接口或抽象类来实现。3、具体策略对象(ConcreteStrategy)：它封装了实现同不功能的不同算法。利用策略模式构建应用程序，可以根据用户配置等内容，选择不同有算法来实现应用程序的功能。具体的选择有环境对象来完成。采用这种方式可以避免由于使用条件语句而带来的代码混乱，提高应用程序的灵活
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-04-26T00:00:00+08:00">
-                2015-04-26
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">design-pattern</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Java</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">设计模式</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-strategy-pattern/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -791,7 +787,7 @@
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">99</span>
+                <span class="state-item-count">102</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

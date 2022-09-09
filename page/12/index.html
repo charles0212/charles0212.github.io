@@ -209,6 +209,221 @@
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-bridge-pattern/">
+                JDK设计模式（六）桥接模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        1、定义将抽象部分与实现部分分离，使它们都可以独立的变化
+2、解决的问题某个类具有两个或两个以上的维度变化，如果只是用继承将无法实现这种需要，或者使得设计变得相当臃肿，把变化部分抽象出来，使变化部分与主类分离开来，从而将多个维度的变化彻底分离，提供一个管理类来组合不同维度上的变化，通过这种组合来满足业务的需要，从达到抽象化、实现化和脱耦。
+3、模式中的角色1、抽象化(Abstraction)角色：抽象化给出的定义，并保存一个对实现化对象的引用。2、修正抽象化(RefinedAbstraction)角色：扩展抽象化角色，改变和修正父类对抽象化的定义。3、实现化(Implementor)角色：这个
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-04-12T09:00:00+08:00">
+                2015-04-12
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-bridge-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-adapter-pattern/">
+                JDK设计模式（五）适配器模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        1、定义将一个类的接口转换成客户希望的另外一个接口。Adapter 模式使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。
+2、解决的问题即 Adapter 模式使得原本由于接口不兼容而不能一起工作的那些类可以在一起工作。
+3、模式中的角色目标接口（Target）：客户所期待的接口。目标可以是具体的或抽象的类，也可以是接口。需要适配的类（Adaptee）：需要适配的类或适配者类。适配器（Adapter）：通过包装一个需要适配的对象，把原接口转换成目标接口。
+4、模式解读在 GoF 的设计模式中，对适配器模式讲了两种类型，类适配器模式和对象适配器模式。由于类适配器模式通过多重继承对一个接
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-04-12T08:00:00+08:00">
+                2015-04-12
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-adapter-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-prototype-pattern/">
+                JDK设计模式（四）原型模式
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        用原型实例指定创建对象的种类，并且通过复制这些原型创建新的对象。在原型模式中，所发动创建的对象通过请求原型对象来拷贝原型对象自己来实现创建过程，当然所发动创建的对象需要知道原型对象的类型。这里也就是说所发动创建的对象只需要知道原型对象的类型就可以获得更多的原型实例对象，至于这些原型对象时如何创建的根本不需要关心，其类图如下所示。原型模式主要包含如下三个角色：
+
+Prototype：抽象原型类。声明克隆自身的接口。
+ConcretePrototype：具体原型类。实现克隆的具体操作。
+Client：客户类。让一个原型克隆自身，从而获得一个新的对象。
+
+讲到原型模式，我们就不得不区分两个概念：深拷
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-03-08T08:00:00+08:00">
+                2015-03-08
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">design-pattern</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Java</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">设计模式</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-prototype-pattern/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/java/java-reference/">
                 Java引用类型
             </a>
@@ -553,229 +768,6 @@
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/java/java-aqs/">
-                Java锁（一）AQS分析
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        
-作为一个 java 开发者，并发编程是不可或缺的，在并发的过程，Lock 是并发的关键。
-
-本系列文章主要来讲解锁的原理和机制。在理解 J.U.C 原理以及锁机制之前，我们来介绍 J.U.C 框架最核心也是最复杂的一个基础类：java.util.concurrent.locks.AbstractQueuedSynchronizer。上面的继承体系中，AbstractQueuedSynchronizer 是 CountDownLatch&amp;#x2F;Semaphore&amp;#x2F;RenntrantReadWriteLock &amp;#x2F;Worker&amp;#x2F;ReentrantLock 的基础，
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-02-02T00:00:00+08:00">
-                2015-02-02
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/java/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">java</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Java</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Lock/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Lock</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/java/java-aqs/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/java/java-lock/">
-                Java并发编程之锁
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        
-作为一个 java 开发者，并发编程是不可或缺的，在并发的过程，Lock 是并发的关键，本文主要从排它锁和共享锁的实例来讲解锁的机制。
-
-本文主要从以下方面来讲解锁的原理及使用：
-
-AbstractQueuedSynchronizer 分析
-ReentrantLock 独占锁分析
-CountDownLatch 共享锁分析
-ConditionObject 分析
-CyclicBarrier 分析
-
-
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-02-01T00:00:00+08:00">
-                2015-02-01
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/java/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">java</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Java</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Lock/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Lock</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/java/java-lock/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/design-pattern/jdk-builder-pattern/">
-                JDK设计模式（三）建造者模式
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        将一个复杂的构建与其表示相分离，使得同样的构建过程可以创建不同的表示。建造模式是将复杂的内部创建封装在内部，对于外部调用的人来说，只需要传入建造者和建造工具，对于内部是如何建造成成品的，调用者无需关心，其类图如下。
-建造者角色Product : 产品类，由多个部件构成。
-class Product &amp;#123;
-    List&amp;lt;String&amp;gt; parts &amp;#x3D; new ArrayList&amp;lt;String&amp;gt;();
-
-    public void AddPart(String part) &amp;#123;
-        parts.add(part);
-    &amp;#
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-01-19T08:00:00+08:00">
-                2015-01-19
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/design-pattern/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">design-pattern</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Java/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Java</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/design-pattern/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">设计模式</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/design-pattern/jdk-builder-pattern/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -800,7 +792,7 @@ class Product &amp;#123;
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">99</span>
+                <span class="state-item-count">102</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

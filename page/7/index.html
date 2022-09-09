@@ -209,6 +209,218 @@
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/shell/shell-command/">
+                Shell（一）常用命令
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        find + xargs将当前目录下.bak 的文件，移动到临时&amp;#x2F;tmp 下面
+find . -name &amp;quot;*.bak&amp;quot; | xargs -I &amp;#39;&amp;#123;&amp;#125;&amp;#39; mv &amp;#123;&amp;#125; &amp;#x2F;tmp
+
+移动到&amp;#x2F;tmp 临时目录下，不要使用 rm -rf 命令防止误删，其中-I ‘{}’标识占位符
+awk分隔字符串，排序
+grep charles &amp;#x2F;home&amp;#x2F;zhangcheng.log | awk &amp;#39;&amp;#123;split($0,a,&amp;quot;,&amp;quot;);if (index(a
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-06-21T00:00:00+08:00">
+                2019-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/shell/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">shell</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Shell/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Shell</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/shell/shell-command/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/url/short-url/">
+                短链生成
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        背景当前短地址发号使用 hbase 的 increament 指令, 每个转短请求都会做一次操作, 当 qps 超过 1k 时, 会造成 hbase 机器报警, 需要减少 hbase 的 increament 指令调用
+方案修改为每个请求在本地取号, 当本地无号可取时请求 hbase 发号, 每次在 hbase 中调用 increament 时取 100 个号, 回到本地
+具体代码流程
+加全局锁, 所有转短请求在取号前通过全局锁串行
+尝试本地取号, 如果不成功, 去 hbase 取号 100 个, 放入本地缓存
+解锁, 并继续原有转短流程
+
+待确认的点，全局锁是否需要公平 公平锁的性能是否满足
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-06-21T00:00:00+08:00">
+                2019-06-21
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/short-url/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">short-url</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/ShortUrl/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">ShortUrl</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/url/short-url/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/mysql/mysql-btree-depth/">
+                MySQL B+树深度的了解
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        
+https://zhuanlan.zhihu.com/p/444448405
+
+以下从 B+树深度简单模拟计算，有两个主要特征决定了 B 树（或 B+ 树）的深度。
+
+数据库中的行数。我们将其称为 N。
+索引键的大小。让我们称 B 为适合 B 树节点的键数。（有时 B 用于指代节点大小本身，而不是它持有的键数，但我希望这样看起来更直观。）
+
+给定这些数量，B 树的深度是 log B 为下标 N。那只是 (log N )&amp;#x2F;log B。现在我们可以注意到小键意味着更大的 B，这会减少 (log N )&amp;#x2F;log B。如果我们将键的字节大小减半，那么 B 树的深度将从 (log 
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2019-05-27T00:00:00+08:00">
+                2019-05-27
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/database/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">数据库</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Mysql/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Mysql</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/InnoDB/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">InnoDB</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/mysql/mysql-btree-depth/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/mysql/mysql-table-fragmentation/">
                 MySQL表碎片
             </a>
@@ -562,220 +774,6 @@ Spock 官网，必读书籍《Java Testing with Spock》, 如要速成只需要�
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/docker/docker-warm-mode/">
-                Docker（二）使用Swarm Mode创建集群
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        
-能使用 Docker Machine 的前提是宿主机需要是物理机，云主机目前不支持 Docker Machine 的创建。
-
-Virtualbox 安装步骤可参考
-cd &amp;#x2F;etc&amp;#x2F;yum.repos.d
-wget http:&amp;#x2F;&amp;#x2F;download.virtualbox.org&amp;#x2F;virtualbox&amp;#x2F;rpm&amp;#x2F;rhel&amp;#x2F;virtualbox.repo
-yum install VirtualBox-5.2
-
-Docker Machine 安装命令行安装 docker-machinebase&amp;#x3D;https:&amp;#x2
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2018-07-12T00:00:00+08:00">
-                2018-07-12
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/docker/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">docker</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Docker/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Docker</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/docker/docker-warm-mode/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/docker/docker-command/">
-                Docker（一）基本命令
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        Docker 基本服务命令启动 docker$ service docker start
-
-重启 docker$ service docker restart
-
-停止 docker$ service docker stop
-
-docker 自启动让它随服务器的启动而自动运行
-$ update-rc.d docker defaults
-$ systemctl enable docker
-
-Docker 基础命令启动&amp;#x2F;停止&amp;#x2F;重启&amp;#x2F;杀掉容器docker start&amp;#x2F;stop&amp;#x2F;restart&amp;#x2F;kill
-
-实例操作如下：
-$ docker st
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2018-01-30T00:00:00+08:00">
-                2018-01-30
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/docker/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">docker</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Docker/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Docker</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/docker/docker-command/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/mysql/mysql-deadlock/">
-                MySQL死锁分析
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        背景以前接触到的数据库死锁，都是批量更新时加锁顺序不一致而导致的死锁，但是上周却遇到了一个很难理解的死锁。借着这个机会又重新学习了一下 mysql 的死锁知识以及常见的死锁场景。在多方调研以及和同事们的讨论下终于发现了这个死锁问题的成因，收获颇多。虽然是后端程序员，我们不需要像 DBA 一样深入地去分析与锁相关的源码，但是如果我们能够掌握基本的死锁排查方法，对我们的日常开发还是大有裨益的。 PS：本文不会介绍死锁的基本知识，mysql 的加锁原理可以参考本文的参考资料提供的链接。
-死锁起因先介绍一下数据库和表情况，因为涉及到公司内部真是的数据，所以以下都做了模拟，不会影响具体的分析。 我们采用
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2018-01-30T00:00:00+08:00">
-                2018-01-30
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/database/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">数据库</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Mysql/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Mysql</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Deadlock/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Deadlock</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/mysql/mysql-deadlock/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -800,7 +798,7 @@ $ docker st
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">99</span>
+                <span class="state-item-count">102</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>

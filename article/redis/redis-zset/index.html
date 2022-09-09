@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>
+        
+        Redis（八）Zset结构和跳表SkipList |
+        
+        启航的蜗牛</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- open graph -->
+    <meta name="description" content="zset 是 redis 中一种有序、不重复的数据类型，每个元素都有一个分值，它可用于实现排行榜单，其底层采用压缩表 ziplist 或跳表 skiplist 的数据结构实现   Zset 的两种数据结构   压缩表 ziplist  当 redis 插入第一个元素时，同时满足以下条件，就会以 ziplist 创建跳表   1. 节点数量">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis（八）Zset结构和跳表SkipList">
+<meta property="og:url" content="https://www.alicharles.com/article/redis/redis-zset/index.html">
+<meta property="og:site_name" content="启航的蜗牛">
+<meta property="og:description" content="zset 是 redis 中一种有序、不重复的数据类型，每个元素都有一个分值，它可用于实现排行榜单，其底层采用压缩表 ziplist 或跳表 skiplist 的数据结构实现   Zset 的两种数据结构   压缩表 ziplist  当 redis 插入第一个元素时，同时满足以下条件，就会以 ziplist 创建跳表   1. 节点数量">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1650878212810-ddb1db61-8c5d-47c8-ac3a-e30457666c03.png#clientId=uea216351-f775-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u739a6637&margin=%5Bobject%20Object%5D&name=image.png&originHeight=336&originWidth=631&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=149505&status=done&style=none&taskId=u61305bee-da14-4bcd-8e91-277a09a8e21&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1650878213036-208043fc-90e4-4488-9f5a-f34c509d4da0.png#clientId=uea216351-f775-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ud81fee3f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=844&originWidth=720&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=303815&status=done&style=none&taskId=ufcbbd68e-b657-41d6-8b58-9f316527db1&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1650878212874-468dd1ea-91cb-4de3-ad77-c50e53f6b687.png#clientId=uea216351-f775-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uc4457562&margin=%5Bobject%20Object%5D&name=image.png&originHeight=222&originWidth=704&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=90372&status=done&style=none&taskId=uc93f278f-d867-40f2-ba7b-1a90e738d29&title=">
+<meta property="article:published_time" content="2020-07-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-09-09T13:07:16.843Z">
+<meta property="article:author" content="charles">
+<meta property="article:tag" content="Cache">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/104130/1650878212810-ddb1db61-8c5d-47c8-ac3a-e30457666c03.png#clientId=uea216351-f775-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u739a6637&margin=%5Bobject%20Object%5D&name=image.png&originHeight=336&originWidth=631&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=149505&status=done&style=none&taskId=u61305bee-da14-4bcd-8e91-277a09a8e21&title=">
+
+    <link rel="icon" sizes="any" mask href="//cdn.alicharles.com/static/images/logo.svg">
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/css/bootstrap.css">  
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/css/style.css">   
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/lib/fontawesome/css/all.css">   
+    <link rel="stylesheet" href="//cdn.alicharles.com/static/lib/prism/css/prism.css">   
+    
+    
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+
+  <!-- Nav -->
+  <header>
+    <nav class="navbar navbar-expand-md navbar-light charles-navbar py-0">
+        <div class="container">
+            <a class="navbar-brand mr-0 mr-md-2" href="/">
+                <img src="//cdn.alicharles.com/static/images/charles-logo.png" height="32px" width="80px" alt="charles">
+            </a>
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">主页<span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" target="_blank">
+                            推荐
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mt-0" >
+                            <div class="row mx-0" style="width: 16rem">
+                                
+                                
+                                    
+                                    
+                                    <div class="col-sm " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/jvm/" target="_blank">JVM</a>
+                                        
+                                            <a class="nav-link" href="/categories/design-pattern/" target="_blank">设计模式</a>
+                                        
+                                            <a class="nav-link" href="/tags/Lock/" target="_blank">Java锁</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                                    
+                                    
+                                    <div class="col-sm  border-left " style="overflow: hidden;">
+                                        
+                                            <a class="nav-link" href="/categories/disruptor/" target="_blank">Disruptor</a>
+                                        
+                                            <a class="nav-link" href="/categories/netty/" target="_blank">Netty</a>
+                                        
+                                            <a class="nav-link" href="/categories/ddd/" target="_blank">领域驱动设计</a>
+                                        
+                                    </div>
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories" target="_blank">分类</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags" target="_blank">标签</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/archives" target="_blank">归档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" target="_blank">关于</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search" target="_blank">搜索</a>
+                    </li>
+                </ul>
+            </div>
+        </div> <!-- /container -->
+    </nav>
+</header>
+
+
+  <!-- Main Content -->
+  <div class="container bg-white my-3">
+    <div class="post-article">
+        <section id="posts" class="posts-expand">
+            <h1>Redis（八）Zset结构和跳表SkipList</h1>
+<header class="post-header">
+     <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-user"></i>
+        </span>
+        <span class="post-meta-item-text">发表于</span>
+        <time itemprop="dateCreated" datetime="2020-07-28T00:00:00+08:00">
+            2020-07-28
+        </time>
+    </span>
+    <span class="post-category">
+        
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="fa far fa-calendar-alt"></i>
+        </span>
+        <span class="post-meta-item-text">分类于</span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/cache/" itemprop="url" rel="index">
+              <span itemprop="name">cache</span>
+            </a>
+        </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+            <a href="/categories/cache/redis/" itemprop="url" rel="index">
+              <span itemprop="name">redis</span>
+            </a>
+        </span>
+        
+    
+    </span>
+</header>
+<div class="post-body">
+<p>zset 是 redis 中一种有序、不重复的数据类型，<strong>每个元素都有一个分值，它可用于实现排行榜单</strong>，其底层采用压缩表 ziplist 或跳表 skiplist 的数据结构实现</p>
+<h2 id="Zset-的两种数据结构"><a href="#Zset-的两种数据结构" class="headerlink" title="Zset 的两种数据结构"></a>Zset 的两种数据结构</h2><h3 id="压缩表-ziplist"><a href="#压缩表-ziplist" class="headerlink" title="压缩表 ziplist"></a>压缩表 ziplist</h3><p>当 redis 插入第一个元素时，同时满足以下条件，就会以 ziplist 创建跳表</p>
+<ol>
+<li>节点数量&lt;128 （可通过 server.zset_max_ziplist_entries 设置）</li>
+<li>节点的长度&lt;64（可通过 server.zset_max_ziplist_value 设置）</li>
+</ol>
+<p>当选择用 ziplist 实现 zset 后，以后插入的节点若不满足以上任一个条件，就会转为 skiplist</p>
+<h3 id="跳表-skiplist"><a href="#跳表-skiplist" class="headerlink" title="跳表 skiplist"></a>跳表 skiplist</h3><p>跳表的本质是一个多层链表，它能快速地查询、插入、删除【时间复杂度均为 O(logn)】，所以它的查询速度媲美平衡二叉树，而且它的数据结构比平衡二叉树简单，结构示意图如下:</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1650878212810-ddb1db61-8c5d-47c8-ac3a-e30457666c03.png#clientId=uea216351-f775-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u739a6637&margin=%5Bobject%20Object%5D&name=image.png&originHeight=336&originWidth=631&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=149505&status=done&style=none&taskId=u61305bee-da14-4bcd-8e91-277a09a8e21&title=" alt="image.png"><br>特点：</p>
+<ul>
+<li>跳表的最底层拥有所有的元素</li>
+<li>跳表每一层都是一个链表，除了最底层是原始链表，层次逐渐往上可分别划分为一级索引层、二级索引层…</li>
+<li>跳表插入元素时，会先随机生成出一个“层次数字”，然后元素会插入到这个层次的所有底层，直到原始链表层</li>
+<li>如果一个元素存在与某个索引层，那么这个元素也会存在于低于它的所有索引下层，如元素在第 99 索引层，那么由上到下从 99 索引层直到原始链表层都会存在该元素</li>
+<li>空间换时间，跳表查找变快了，但是要存储许多索引层，故空间开销变大了</li>
+</ul>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">&#x2F;**
+ * 产生节点的高度。使用抛硬币
+ *
+ * @return
+ *&#x2F;
+private int getRandomLevel() &#123;
+  &#x2F;&#x2F; 可知，元素的插入层次i从1开始自增，随机到哪一层的概率就像抛硬币一样，都是50%，故i越往后，其概率越小(每次都*0.5)
+  &#x2F;&#x2F; 第一层概率：0.5，第二层0.5*0.5&#x3D;0.25，...
+  int lev &#x3D; 1;
+  while (random.nextInt() % 2 &#x3D;&#x3D; 0) &#123;
+    lev++;
+  &#125;
+  &#x2F;&#x2F; MAX_LEVEL为跳表的最大层级
+  return lev &gt; MAX_LEVEL ? MAX_LEVEL : lev;
+&#125;</code></pre>
+
+<ul>
+<li>插入节点</li>
+<li>插入的时间复杂度为 O(logn)，每次插入都会先查找到要插入的位置（查找的时间复杂度就已经是【O(logn)】了，找到后直接插入【O(1)】，所以总的为【O(logn)】），删除也是同理为 O(logn)</li>
+<li>每个节点的插入层次是通过 getRandomLevel()随机出来的，插入层次互不影响<br>以下模拟节点插入：</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1650878213036-208043fc-90e4-4488-9f5a-f34c509d4da0.png#clientId=uea216351-f775-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ud81fee3f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=844&originWidth=720&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=303815&status=done&style=none&taskId=ufcbbd68e-b657-41d6-8b58-9f316527db1&title=" alt="image.png"></p>
+<ul>
+<li>查找</li>
+</ul>
+<p>查找节点时，从高索引层往低索引层查找：<br>一开始元素在高层从链表由前往后查找，直到要查找的目标元素在该层的某两个相邻元素之间，就会往下跳到下层的同一个位置，继续从同一位置向链表尾方向遍历查询-&gt;重复上面的过程，直到查找到目标元素<br>查找时每一层都跳过部分元素，进而加快了查找效率，以下模拟节点查找：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1650878212874-468dd1ea-91cb-4de3-ad77-c50e53f6b687.png#clientId=uea216351-f775-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uc4457562&margin=%5Bobject%20Object%5D&name=image.png&originHeight=222&originWidth=704&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=90372&status=done&style=none&taskId=uc93f278f-d867-40f2-ba7b-1a90e738d29&title=" alt="image.png"></p>
+<h2 id="跳表简单实现"><a href="#跳表简单实现" class="headerlink" title="跳表简单实现"></a>跳表简单实现</h2><pre class="line-numbers language-java" data-language="java"><code class="language-java">import java.util.Random;
+
+public class SkipList &#123;
+    private static final int MAX_LEVEL &#x3D; 16;
+    private int levelCount &#x3D; 1;
+    private Node head &#x3D; new Node();
+    private Random random &#x3D; new Random();
+
+    public Node find(int value)&#123;
+        Node p &#x3D; head;
+        for(int i &#x3D; levelCount - 1; i &gt;&#x3D; 0; i--)&#123;
+            &#x2F;&#x2F;如果在这一个level上存在下一个数据节点且下一个数据节点的值小于value，p往后挪一个
+            &#x2F;&#x2F;直到这一个level走完或者值在区间内，切换下一个层级
+            while(p.forwards[i] !&#x3D; null &amp;&amp; p.forwards[i].data &lt; value)&#123;
+                p &#x3D; p.forwards[i];
+            &#125;
+        &#125;
+        &#x2F;&#x2F;到最下层依照上面的索引找到的位置往后找一位即可判断
+        if(p.forwards[0] !&#x3D; null &amp;&amp; p.forwards[0].data &#x3D;&#x3D; value) return p.forwards[0];
+        return null;
+    &#125;
+
+    public void insert(int value)&#123;
+        Node p &#x3D; head;
+        int level &#x3D; randomLevel();
+        Node node &#x3D; new Node();
+        node.data &#x3D; value;
+        node.maxLevel &#x3D; level;
+        &#x2F;&#x2F;记录要更新的node
+        Node update[] &#x3D; new Node[level];
+        &#x2F;&#x2F;插入一个新的node，主要目标更新保存的forwards
+        for(int i &#x3D; level; i &gt;&#x3D; 0; i--)&#123;
+            &#x2F;&#x2F;在计算得到的level中依次找适合的位置
+            while(p.forwards[i] !&#x3D; null &amp;&amp; p.forwards[i].data &lt; value)&#123;
+                p &#x3D; p.forwards[i];
+            &#125;
+            update[i] &#x3D; p;
+        &#125;
+        &#x2F;&#x2F;更新指向
+        for(int i &#x3D; 0; i &lt; level; i++)&#123;
+            node.forwards[i] &#x3D; update[i].forwards[i];
+            update[i].forwards[i] &#x3D; node;
+        &#125;
+        if(levelCount &lt; level) levelCount &#x3D; level;
+    &#125;
+
+    public void delete(int value)&#123;
+        Node[] deleteNode &#x3D; new Node[MAX_LEVEL];
+        Node p &#x3D; head;
+        for(int i &#x3D; levelCount - 1; i &gt;&#x3D;0; i--)&#123;
+            &#x2F;&#x2F;确定每个层级中要删除的value对应的node
+            while(p.forwards[i] !&#x3D; null &amp;&amp; p.forwards[i].data &lt; value)&#123;
+                p &#x3D; p.forwards[i];
+            &#125;
+            &#x2F;&#x2F;当前level中要删除的p，更新到node数组中
+            deleteNode[i] &#x3D; p;
+        &#125;
+        &#x2F;&#x2F;从底层扫，每层删除
+        if(p.forwards[0] !&#x3D; null &amp;&amp; p.forwards[0].data &#x3D;&#x3D; value)&#123;
+            &#x2F;&#x2F;根据上面deleteNode[]中保存的要删除的node，更新前后的指向
+            for(int i &#x3D; levelCount - 1; i &gt;&#x3D; 0; i--)&#123;
+                if(deleteNode[i] !&#x3D; null &amp;&amp; deleteNode[i].forwards[i].data &#x3D;&#x3D; value)&#123;
+                    deleteNode[i].forwards[i] &#x3D; deleteNode[i].forwards[i].forwards[i];
+                &#125;
+            &#125;
+        &#125;
+    &#125;
+
+    public void printAll()&#123;
+        Node p &#x3D; head;
+        while(p.forwards[0] !&#x3D; null)&#123;
+            System.out.print(p.forwards[0] + &quot; &quot;);
+            p &#x3D; p.forwards[0];
+        &#125;
+        System.out.println();
+    &#125;
+
+    private int randomLevel() &#123;
+        int level &#x3D; 0;
+        for(int i &#x3D; 0; i &lt; MAX_LEVEL; i++)&#123;
+            if(random.nextInt()%2 &#x3D;&#x3D; 1)&#123;
+                level++;
+            &#125;
+        &#125;
+        return level;
+    &#125;
+
+    class Node&#123;
+        private int data;
+        &#x2F;&#x2F;核心在这个forwards数组，他存放了各个level索引的下一个数据节点
+        private Node[] forwards &#x3D; new Node[MAX_LEVEL];
+        private int maxLevel;
+
+        public String toString()&#123;
+            StringBuilder sb &#x3D; new StringBuilder();
+            sb.append(&quot;&#123;data: &quot;);
+            sb.append(data);
+            sb.append(&quot;; level: &quot;);
+            sb.append(maxLevel);
+            sb.append(&quot; &#125;&quot;);
+            return sb.toString();
+        &#125;
+    &#125;
+
+&#125;</code></pre>
+
+</div>
+<footer class="post-meta">
+    <span class="post-tag">
+        
+        <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Cache/" itemprop="url" rel="index">
+                  <span itemprop="name">Cache</span>
+                </a>
+            </span>
+        
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Redis/" itemprop="url" rel="index">
+                  <span itemprop="name">Redis</span>
+                </a>
+            </span>
+        
+        
+    </span>
+</footer>
+
+<div class="author">
+    <!--个人信息-->
+    
+    <img class="author-image qrcode" itemprop="image"
+         src="https://cdn.alicharles.com/static/images/mp_qrcode.jpg"
+         alt="https://cdn.alicharles.com/static/images/mp_qrcode.jpg"/>
+    
+</div>
+
+
+<div class="post-nav">
+    <div class="post-nav-next post-nav-item">
+        
+        <a href="/article/redis/redis-large-value/" rel="next" title="Redis（七）大key和大value">
+            <i class="fa far fa-chevron-left"></i> Redis（七）大key和大value
+        </a>
+        
+    </div>
+    <span class="post-nav-divider"></span>
+    <div class="post-nav-prev post-nav-item">
+        
+        <a href="/article/raft/" rel="prev" title="分布式一致性Raft算法">
+            分布式一致性Raft算法 <i class="fa far fa-chevron-right"></i>
+        </a>
+        
+    </div>
+</div>
+
+        </section>
+    </div>
+    <div id="post-toc" class="post-toc">
+        <div class="post-toc-title">文章目录</div>
+        <div class="post-toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Zset-%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-text">Zset 的两种数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%8B%E7%BC%A9%E8%A1%A8-ziplist"><span class="toc-text">压缩表 ziplist</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%B3%E8%A1%A8-skiplist"><span class="toc-text">跳表 skiplist</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%B3%E8%A1%A8%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="toc-text">跳表简单实现</span></a></li></ol>
+        </div>
+    </div>
+    
+</div>
+
+  <!-- footer -->
+  <div class="footer">
+    <div class="container justify-content-center py-4">
+        Charles &copy;2022 &nbsp <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备14035515号-1</a></span> &nbsp
+        <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1253510913'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1253510913%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+    </div>
+
+    <!-- scrollTop -->
+    <div class="go-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- js -->
+    <script src="//cdn.alicharles.com/static/lib/jquery/jquery.min.js"></script>
+    <script src="//cdn.alicharles.com/static/lib/popper.js/popper.js"></script>
+    <script src="//cdn.alicharles.com/static/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="//cdn.alicharles.com/static/lib/prism/js/prism.js"></script>
+    <script src="//cdn.alicharles.com/static/js/app.js"></script>
+
+    
+</div>
+</body>
+
+</html>

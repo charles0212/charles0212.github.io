@@ -462,6 +462,86 @@ Redis 的大 key 有什么危害？一个 key 的 value 较大时的情况，比
                 <article class="post post-type">
     <header class="post-header">
         <h3 class="post-title">
+            <a class="list-item" target="_blank" href="/article/redis/redis-zset/">
+                Redis（八）Zset结构和跳表SkipList
+            </a>
+        </h3>
+    </header>
+    <div class="post-body">
+        
+        zset 是 redis 中一种有序、不重复的数据类型，每个元素都有一个分值，它可用于实现排行榜单，其底层采用压缩表 ziplist 或跳表 skiplist 的数据结构实现
+Zset 的两种数据结构压缩表 ziplist当 redis 插入第一个元素时，同时满足以下条件，就会以 ziplist 创建跳表
+
+节点数量&amp;lt;128 （可通过 server.zset_max_ziplist_entries 设置）
+节点的长度&amp;lt;64（可通过 server.zset_max_ziplist_value 设置）
+
+当选择用 ziplist 实现 zset 后，以后插入的节点若不满足以上任一个条件
+        
+        ...
+        
+    </div>
+    <footer class="post-meta">
+        <span class="post-time">
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-user"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2020-07-28T00:00:00+08:00">
+                2020-07-28
+            </time>
+        </span>
+        <span class="post-category">
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-calendar-alt"></i>
+            </span>
+            <span class="post-meta-item-text">分类</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/cache/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">cache</span>
+                    </a>
+                </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                    <a href="/categories/cache/redis/" itemprop="url" rel="index" target="_blank">
+                      <span itemprop="name">redis</span>
+                    </a>
+                </span>
+            
+            
+            
+            &nbsp;  &nbsp;
+            <span class="post-meta-item-icon">
+                <i class="fa far fa-folder-open"></i>
+            </span>
+            <span class="post-meta-item-text">标签</span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Cache/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Cache</span>
+                </a>
+            </span>
+            
+            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <a href="/tags/Redis/" itemprop="url" rel="index" target="_blank">
+                  <span itemprop="name">Redis</span>
+                </a>
+            </span>
+            
+            
+
+            <a class="read-more float-end mr-3" target="_blank" href="/article/redis/redis-zset/">
+                继续阅读 &raquo;
+            </a>
+        </span>
+    </footer>
+</article>
+                
+                <article class="post post-type">
+    <header class="post-header">
+        <h3 class="post-title">
             <a class="list-item" target="_blank" href="/article/redis/redis-large-value/">
                 Redis（七）大key和大value
             </a>
@@ -701,98 +781,6 @@ Redis 的大 key 有什么危害？一个 key 的 value 较大时的情况，比
     </footer>
 </article>
                 
-                <article class="post post-type">
-    <header class="post-header">
-        <h3 class="post-title">
-            <a class="list-item" target="_blank" href="/article/redis/redis-storage-structure/">
-                Redis（四）存储结构
-            </a>
-        </h3>
-    </header>
-    <div class="post-body">
-        
-        前言Redis 作为一款高性能数据库，表现在：它接收到一个键值对操作后， 能以微秒级别的速度找到数据，并快速完成操作。其高性能得奥秘来缘于以下两点：
-
-Redis 是内存数据库， 所有操作都在内存上完成，内存的访问速度本身就很快
-Reids 通过高效的数据结构来组织数据。
-
-本章节可以让你在最短的时间了解如下内容：
-
-Redis 支持五大数据类型
-Redis 组织 Key-Value 数据结构
-Redis5 大值类型数据存储结构
-
-一、五大数据类型
-String(字符串)
-List(列表)
-Set(集合)
-Hash（哈希）
-Zset（有序集合）
-
-二、组织 Key-Value 数据结构在 re
-        
-        ...
-        
-    </div>
-    <footer class="post-meta">
-        <span class="post-time">
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-user"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2020-06-25T00:00:00+08:00">
-                2020-06-25
-            </time>
-        </span>
-        <span class="post-category">
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-calendar-alt"></i>
-            </span>
-            <span class="post-meta-item-text">分类</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/cache/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">cache</span>
-                    </a>
-                </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                    <a href="/categories/cache/redis/" itemprop="url" rel="index" target="_blank">
-                      <span itemprop="name">redis</span>
-                    </a>
-                </span>
-            
-            
-            
-            &nbsp;  &nbsp;
-            <span class="post-meta-item-icon">
-                <i class="fa far fa-folder-open"></i>
-            </span>
-            <span class="post-meta-item-text">标签</span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Cache/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Cache</span>
-                </a>
-            </span>
-            
-            <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                <a href="/tags/Redis/" itemprop="url" rel="index" target="_blank">
-                  <span itemprop="name">Redis</span>
-                </a>
-            </span>
-            
-            
-
-            <a class="read-more float-end mr-3" target="_blank" href="/article/redis/redis-storage-structure/">
-                继续阅读 &raquo;
-            </a>
-        </span>
-    </footer>
-</article>
-                
             </section>
         </div>
         <div class="col px-lg-3 py-lg-2">
@@ -817,7 +805,7 @@ Zset（有序集合）
         
         <div class="state-item state-posts">
             <a href="/archives">
-                <span class="state-item-count">99</span>
+                <span class="state-item-count">102</span>
                 <span class="state-item-name">文章</span>
             </a>
         </div>
