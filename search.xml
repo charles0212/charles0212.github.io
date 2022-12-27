@@ -462,6 +462,59 @@ classLoaderHash  ae13544</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>DDD（四）整洁架构</title>
+    <url>/article/ddd/clean-architecture/</url>
+    <content><![CDATA[<blockquote>
+<p>原文：<a href="https://herbertograca.com/2017/09/28/clean-architecture-standing-on-the-shoulders-of-giants/">https://herbertograca.com/2017/09/28/clean-architecture-standing-on-the-shoulders-of-giants/</a> &gt; <a href="https://www.jianshu.com/p/b565f0c00c0c">https://www.jianshu.com/p/b565f0c00c0c</a></p>
+</blockquote>
+<p>这篇文章是<a href="https://herbertograca.com/2017/07/03/the-software-architecture-chronicles/">软件架构编年史</a>(<a href="https://www.jianshu.com/p/b477b2cc6cfa">译</a>)的一部分，这部编年史由<a href="https://herbertograca.com/category/development/series/software-architecture/">一系列关于软件架构的文章</a>组成。在这一系列文章中，我将写下我对软件架构的学习和思考，以及我是如何运用这些知识的。如果你阅读了这个系列中之前的文章，本篇文章的的内容将更有意义。<br>Robert C. Martin(大名鼎鼎的 Uncle Bob)于 2012 年在<a href="https://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html">他的一篇博客</a>中发表了整洁架构的观点，并在一些会议上做了关于该架构的演讲。<br>整洁架构借助了许多或熟悉或陌生的概念、规则和模式，说明了如何将它们融会贯通产生出一种构建应用的标准套路。</p>
+<h2 id="站在-EBI-架构、六边形架构和洋葱架构的肩膀上"><a href="#站在-EBI-架构、六边形架构和洋葱架构的肩膀上" class="headerlink" title="站在 EBI 架构、六边形架构和洋葱架构的肩膀上"></a>站在 EBI 架构、六边形架构和洋葱架构的肩膀上</h2><p>整洁架构的核心目标与端口和适配器(六边形)架构以及洋葱架构是一致的：</p>
+<ul>
+<li>工具无关</li>
+<li>传达机制无关</li>
+<li>独立的可测试性</li>
+</ul>
+<p>下面这张图发表在整洁架构的博客中，揭示了该架构的总体思路：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608398336-9a577acc-186f-403a-8690-645706753ebd.png#clientId=u0810918f-6dc4-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=284&id=udfe816b8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=567&originWidth=772&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=463984&status=done&style=none&taskId=ub1e28296-c043-409a-87e1-6404a90d2d7&title=&width=386" alt="image.png" width="386"><br>Robert C. Martin 2012, <a href="https://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html">The Clean Architecture</a></p>
+<p>正如 Uncle Bob 自己在博客中所说，上面这张图试图将最新的架构观点整合成一个可操作的思路。<br>我们来对比一下整洁架构和六边形架构以及洋葱架构的示意图，看看它们在哪些方面是一致的：</p>
+<table><thead><tr>
+<th><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608428873-c6a319c5-c039-4f6e-90d5-a6917d8088da.png#clientId=u0810918f-6dc4-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=161&id=uc137bb4f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=321&originWidth=490&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=127029&status=done&style=none&taskId=u74efedda-759a-47bb-be0f-764ef1b5264&title=&width=245" alt="image.png" width="245"></th>
+<th><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608433866-107f20dd-f413-47a7-9cd9-69aff68eddbb.png#clientId=u0810918f-6dc4-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=130&id=u741aac26&margin=%5Bobject%20Object%5D&name=image.png&originHeight=259&originWidth=366&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=104824&status=done&style=none&taskId=u85f3cc37-69c3-452c-9dbd-8300d3d728c&title=&width=183" alt="image.png" width="183"></th>
+</tr>
+</thead><tbody></tbody></table><h3 id="外化工具和传达机制"><a href="#外化工具和传达机制" class="headerlink" title="外化工具和传达机制"></a>外化工具和传达机制</h3><p>六边形架构聚焦于使用接口和适配器将工具和传达机制从应用中外化出去。这也是洋葱架构的核心基石之一，就像图中呈现的那样，UI、基础设置和测试全部都在示意图的最外层。整洁架构也有完全一致的特征，UI、Web、DB 等等都在最外层。最终，所有的应用核心代码都是独立于框架&#x2F;库的。</p>
+<h3 id="依赖方向"><a href="#依赖方向" class="headerlink" title="依赖方向"></a>依赖方向</h3><p>六边形架构中并没有明确地告知我们依赖的方向。然而，我们可以轻易地推测出来：应用拥有接口，它们必须由适配器实现或使用。所以适配器依赖接口，依赖位于圆心的应用。外部依赖内部，依赖的方向就指向圆心。在洋葱架构的示意图中，也没有发现关于依赖方向的表示，但是，Jeffrey Palermo 在他的第二篇博客中清楚地表明了所以依赖都指向圆心。整洁架构则非常明确的指出依赖的方向是指向圆心的。它们都在架构层级引入了依赖倒置原则。内圈不能知道外圈的任何信息。还有，当数据跨越界限进行传递时，数据总是以最方便内圈使用的格式提供。</p>
+<h3 id="分层"><a href="#分层" class="headerlink" title="分层"></a>分层</h3><p>六边形架构示意图只展现了两个层次：应用内部和应用外部。而洋葱架构引入了 DDD 中定义的应用层次的混合：控制用例逻辑的应用服务；封装了领域逻辑的领域服务，这些逻辑既不属于实体也不属于值对象；还有实体、值对象等等…和洋葱架构相比，整洁架构保留了应用服务层(用例)和实体层，当好像漏掉了领域服务层。然而，读过 Uncle Bob 的博客后，我们会发现，他认为任何领域对象都是实体，而非只有 DDD 中的“实体”才是实体：“一个实体可以是一个拥有方法的对象，或者是一组数据结构和函数”。实际上，他为了简化示意图而将最中间的两层合并了。</p>
+<h3 id="独立的可测试性"><a href="#独立的可测试性" class="headerlink" title="独立的可测试性"></a>独立的可测试性</h3><p>三种架构风格共同遵守的规则，让它们将应用和业务逻辑隔离了出来。这意味着任何情况下我们都可以简单地 mock 外部工具和传达机制，独立地对应用的代码进行测试，而不需要使用数据库或 HTTP 请求。<br>正如我们所见，整洁架构包含了六边形架构和洋葱架构的规则。截至目前，整洁架构好像没有加入什么新鲜的概念。但是，在整洁架构示意图的右下角，还有一张小图…</p>
+<h2 id="站在-MVC-和-EBI-的肩膀上"><a href="#站在-MVC-和-EBI-的肩膀上" class="headerlink" title="站在 MVC 和 EBI 的肩膀上"></a>站在 MVC 和 EBI 的肩膀上</h2><p>整洁架构示意图的右下角的这张小图说明了控制流是如何工作的。这张小图并没还有提供太多信息，但博客中的说明和 Robert C. Martin 的会议演讲拓展了该话题。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608511165-12df652a-976a-45f0-a771-55b48137f02b.png#clientId=u0810918f-6dc4-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=218&id=ua9bdbccc&margin=%5Bobject%20Object%5D&name=image.png&originHeight=436&originWidth=847&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=275211&status=done&style=none&taskId=ua6c270c1-da18-4ee0-bf06-4a21b28ba89&title=&width=423.5" alt="image.png" width="423.5"><br>我们在上图的左侧看到的是 MVC 中的视图和控制器。双实线另一层的所有形状都是 MVC 中的模型。这些模型也代表着 EBI 架构(我们可以清楚的看到边界、交互器和实体)，六边形架构中的“应用”、洋葱架构中的“应用核心”，以及前面整洁架构示意图中的“实体”层和“用例”层。</p>
+<p>假设有一个 HTTP 请求按照控制流到达了控制器。控制器接下来会：</p>
+<ol>
+<li>拆解请求；</li>
+<li>使用相关数据创建一个请求模型；</li>
+<li>执行交互器(作为交互器接口的，即边界的，实例被注入到控制器中)中的方法并将请求模型传递给它；</li>
+<li>交互器会：<br>4.1. 使用实体网关实现(作为实体网关接口的实例被注入到交互器中)查找相关实体；<br>4.2. 编排实体之间的交互；<br>4.3 用操作的数据结果创建响应模型；<br>4.4 将响应模型交给展示器进行填充；<br>4.5 将展示器返回给控制器；</li>
+<li>使用展示器生成视图模型；</li>
+<li>将视图模型绑定到视图；</li>
+<li>将视图返回给客户端。</li>
+</ol>
+<p>这里只有“展示器”的用法我有些疑问，我在项目中的实际做法和这里不太一样。我会某种 DTO 类型的数据返回给交互器，而不是注入一个填充了数据的展示器对象。<br>我通常会采用实际上是一种 MVP 实现，控制器在其中负责从客户端接收数据并响应它。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我不认为整洁架构是革命性的，因为它实际上并没有带来突破性的概念或模式。<br>但是，我认为它是相当重要的成果：</p>
+<ul>
+<li>它发掘了某种程度上被遗忘了的概念、规则和模式；</li>
+<li>它澄清了一些实用且重要的概念、规则和模式；</li>
+<li>它告诉我们如何把所有的概念、规则和模式整合起来，形成一种构建复杂应用并保持可维护性的标准套路</li>
+</ul>
+<p>Uncle Bob 关于整洁架构的工作总会让我想起牛顿。引力始终是存在的，每个人都知道松手让苹果远离地面的高处落下，它会落向地面。牛顿做的事情“只不过”是写了一篇论文披露这个事实。这件事请很“简单”，但却让人们开始思考它并基于它创造更新的想法。<br>换句话说，我认为 Robert C. Martin 就是软件开发领域的牛顿！</p>
+<h2 id="引用来源"><a href="#引用来源" class="headerlink" title="引用来源"></a>引用来源</h2><blockquote>
+<p>2012 – Robert C. Martin – <a href="https://youtu.be/Nltqi7ODZTM">Clean Architecture (NDC 2012)</a><br>2012 – Robert C. Martin – <a href="https://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html">The Clean Architecture</a><br>2012 – Benjamin Eberlei – <a href="https://beberlei.de/2012/08/13/oop_business_applications_entity_boundary_interactor.html">OOP Business Applications: Entity, Boundary, Interactor</a><br>2017 – Lieven Doclo – <a href="https://www.insaneprogramming.be/article/2017/02/14/thoughts-on-clean-architecture/">A couple of thoughts on Clean Architecture</a><br>2017 – Grzegorz Ziemoński – <a href="https://dzone.com/articles/clean-architecture-is-screaming">Clean Architecture Is Screaming</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>ddd</category>
+      </categories>
+      <tags>
+        <tag>DDD</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>DDD（六）清晰架构</title>
     <url>/article/ddd/explicit-architecture/</url>
     <content><![CDATA[<blockquote>
@@ -539,59 +592,6 @@ classLoaderHash  ae13544</code></pre>
 <p>地图并非疆域。——阿尔弗雷德·柯日布斯基</p>
 </blockquote>
 <p>这只是一份指南！<strong>应用才是你的疆域，现实情况和具体用例才是运用这些知识的地方，它们才能勾勒出实际架构的轮廓！</strong><br><strong>我们需要理解所有这些模式，但我们还时常需要思考和理解我们的应用需要什么，我们应该在追求解耦和内聚的道路上走多远。</strong>这个决定可能受到许多因素的影响，包括项目的功能需求，也包括构建应用的时间期限，应用寿命，开发团队的体验等等因素。<br>就到这里，这是我对一切的理解。这就是我脑海中对这一切的梳理。<br>在下篇文章中我将更深入地展开这些话题: <a href="https://links.jianshu.com/go?to=https://herbertograca.com/2018/07/07/more-than-concentric-layers/">超越同心圆分层</a>(<a href="https://www.jianshu.com/p/fcf5bb27a60b">译</a>)。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649609322759-17736d9b-f927-4c06-a357-3b260c6c5f1a.png#clientId=ubff85c3b-7100-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=221&id=u13f8c854&margin=%5Bobject%20Object%5D&name=image.png&originHeight=441&originWidth=600&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=281325&status=done&style=none&taskId=u4a61d459-4e84-4250-839f-c135bae6c57&title=&width=300" alt="image.png" width="300"><br>这种架构方式问题是实际上只适用于系统中的少数典型请求。此外，我倾向于看到这些架构严重拟合，严格遵守依赖关系管理规则。在实践中，我发现这些规则很少有用，并且你开始得到很多关于真正不应该被抽象的抽象（控制器必须与必须使用存储库的服务进行对话）。<br>相反，我想对我的系统采用量身定制的方法，我将每个请求视为如何处理其代码的独特用例。因为我的系统整齐地分解为“命令”请求和“查询”请求（HTTP-land 中的 GET 与 POST &#x2F; PUT &#x2F; DELETE），所以向垂直切片架构的移动使我使用了 CQRS。<br>什么是“垂直切片架构”？在这种风格中，我的架构是围绕不同的具体请求功能而构建的，通过这种方法，我们的每个垂直切片都可以自行决定如何最好地满足请求：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649609329202-0086d13e-25bc-4464-859b-96d8ebadbb6d.png#clientId=ubff85c3b-7100-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=140&id=u7d1ef354&margin=%5Bobject%20Object%5D&name=image.png&originHeight=280&originWidth=917&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=176143&status=done&style=none&taskId=u38fa88d0-38ad-4012-8395-358f8696549&title=&width=458.5" alt="image.png" width="458.5"><br>(banq 注：对于获取订单，直接使用 ORM 转换为 DTO，对于订单细节使用原生 SQL 转换为 DTO，对于发票，使用基于聚合根的<a href="https://links.jianshu.com/go?to=https://www.jdon.com/tags/17268">事件溯源</a>，取消订单使用存储过程，这是一种<a href="https://links.jianshu.com/go?to=https://www.jdon.com/tags/25407">微服务</a>风格)<br>在所谓正常的“n 层”或六边形或任何架构中，通过垂直切片移除这些层障碍，并沿着变化轴聚合在一起：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649609338400-a7650183-7d95-435c-b141-aa5190cda3f4.png#clientId=ubff85c3b-7100-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=190&id=u97952df0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=379&originWidth=581&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=71059&status=done&style=none&taskId=u21248bf5-6f8f-4a2c-abc8-4519905ddb3&title=&width=290.5" alt="image.png" width="290.5"><br>在应用程序中添加或更改功能时，通常会在应用程序中涉及到许多不同的“层”。现在改为沿着切片垂直将这些功能聚合在一起。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649609346344-25cd5ce3-0128-4281-ba42-bcae3af392de.png#clientId=ubff85c3b-7100-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=301&id=u3e0c3d77&margin=%5Bobject%20Object%5D&name=image.png&originHeight=602&originWidth=802&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=134840&status=done&style=none&taskId=uaf78b0ed-44bb-49e1-a993-acab577be3b&title=&width=401" alt="image.png" width="401"></p>
-]]></content>
-      <categories>
-        <category>ddd</category>
-      </categories>
-      <tags>
-        <tag>DDD</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>DDD（四）整洁架构</title>
-    <url>/article/ddd/clean-architecture/</url>
-    <content><![CDATA[<blockquote>
-<p>原文：<a href="https://herbertograca.com/2017/09/28/clean-architecture-standing-on-the-shoulders-of-giants/">https://herbertograca.com/2017/09/28/clean-architecture-standing-on-the-shoulders-of-giants/</a> &gt; <a href="https://www.jianshu.com/p/b565f0c00c0c">https://www.jianshu.com/p/b565f0c00c0c</a></p>
-</blockquote>
-<p>这篇文章是<a href="https://herbertograca.com/2017/07/03/the-software-architecture-chronicles/">软件架构编年史</a>(<a href="https://www.jianshu.com/p/b477b2cc6cfa">译</a>)的一部分，这部编年史由<a href="https://herbertograca.com/category/development/series/software-architecture/">一系列关于软件架构的文章</a>组成。在这一系列文章中，我将写下我对软件架构的学习和思考，以及我是如何运用这些知识的。如果你阅读了这个系列中之前的文章，本篇文章的的内容将更有意义。<br>Robert C. Martin(大名鼎鼎的 Uncle Bob)于 2012 年在<a href="https://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html">他的一篇博客</a>中发表了整洁架构的观点，并在一些会议上做了关于该架构的演讲。<br>整洁架构借助了许多或熟悉或陌生的概念、规则和模式，说明了如何将它们融会贯通产生出一种构建应用的标准套路。</p>
-<h2 id="站在-EBI-架构、六边形架构和洋葱架构的肩膀上"><a href="#站在-EBI-架构、六边形架构和洋葱架构的肩膀上" class="headerlink" title="站在 EBI 架构、六边形架构和洋葱架构的肩膀上"></a>站在 EBI 架构、六边形架构和洋葱架构的肩膀上</h2><p>整洁架构的核心目标与端口和适配器(六边形)架构以及洋葱架构是一致的：</p>
-<ul>
-<li>工具无关</li>
-<li>传达机制无关</li>
-<li>独立的可测试性</li>
-</ul>
-<p>下面这张图发表在整洁架构的博客中，揭示了该架构的总体思路：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608398336-9a577acc-186f-403a-8690-645706753ebd.png#clientId=u0810918f-6dc4-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=284&id=udfe816b8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=567&originWidth=772&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=463984&status=done&style=none&taskId=ub1e28296-c043-409a-87e1-6404a90d2d7&title=&width=386" alt="image.png" width="386"><br>Robert C. Martin 2012, <a href="https://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html">The Clean Architecture</a></p>
-<p>正如 Uncle Bob 自己在博客中所说，上面这张图试图将最新的架构观点整合成一个可操作的思路。<br>我们来对比一下整洁架构和六边形架构以及洋葱架构的示意图，看看它们在哪些方面是一致的：</p>
-<table><thead><tr>
-<th><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608428873-c6a319c5-c039-4f6e-90d5-a6917d8088da.png#clientId=u0810918f-6dc4-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=161&id=uc137bb4f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=321&originWidth=490&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=127029&status=done&style=none&taskId=u74efedda-759a-47bb-be0f-764ef1b5264&title=&width=245" alt="image.png" width="245"></th>
-<th><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608433866-107f20dd-f413-47a7-9cd9-69aff68eddbb.png#clientId=u0810918f-6dc4-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=130&id=u741aac26&margin=%5Bobject%20Object%5D&name=image.png&originHeight=259&originWidth=366&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=104824&status=done&style=none&taskId=u85f3cc37-69c3-452c-9dbd-8300d3d728c&title=&width=183" alt="image.png" width="183"></th>
-</tr>
-</thead><tbody></tbody></table><h3 id="外化工具和传达机制"><a href="#外化工具和传达机制" class="headerlink" title="外化工具和传达机制"></a>外化工具和传达机制</h3><p>六边形架构聚焦于使用接口和适配器将工具和传达机制从应用中外化出去。这也是洋葱架构的核心基石之一，就像图中呈现的那样，UI、基础设置和测试全部都在示意图的最外层。整洁架构也有完全一致的特征，UI、Web、DB 等等都在最外层。最终，所有的应用核心代码都是独立于框架&#x2F;库的。</p>
-<h3 id="依赖方向"><a href="#依赖方向" class="headerlink" title="依赖方向"></a>依赖方向</h3><p>六边形架构中并没有明确地告知我们依赖的方向。然而，我们可以轻易地推测出来：应用拥有接口，它们必须由适配器实现或使用。所以适配器依赖接口，依赖位于圆心的应用。外部依赖内部，依赖的方向就指向圆心。在洋葱架构的示意图中，也没有发现关于依赖方向的表示，但是，Jeffrey Palermo 在他的第二篇博客中清楚地表明了所以依赖都指向圆心。整洁架构则非常明确的指出依赖的方向是指向圆心的。它们都在架构层级引入了依赖倒置原则。内圈不能知道外圈的任何信息。还有，当数据跨越界限进行传递时，数据总是以最方便内圈使用的格式提供。</p>
-<h3 id="分层"><a href="#分层" class="headerlink" title="分层"></a>分层</h3><p>六边形架构示意图只展现了两个层次：应用内部和应用外部。而洋葱架构引入了 DDD 中定义的应用层次的混合：控制用例逻辑的应用服务；封装了领域逻辑的领域服务，这些逻辑既不属于实体也不属于值对象；还有实体、值对象等等…和洋葱架构相比，整洁架构保留了应用服务层(用例)和实体层，当好像漏掉了领域服务层。然而，读过 Uncle Bob 的博客后，我们会发现，他认为任何领域对象都是实体，而非只有 DDD 中的“实体”才是实体：“一个实体可以是一个拥有方法的对象，或者是一组数据结构和函数”。实际上，他为了简化示意图而将最中间的两层合并了。</p>
-<h3 id="独立的可测试性"><a href="#独立的可测试性" class="headerlink" title="独立的可测试性"></a>独立的可测试性</h3><p>三种架构风格共同遵守的规则，让它们将应用和业务逻辑隔离了出来。这意味着任何情况下我们都可以简单地 mock 外部工具和传达机制，独立地对应用的代码进行测试，而不需要使用数据库或 HTTP 请求。<br>正如我们所见，整洁架构包含了六边形架构和洋葱架构的规则。截至目前，整洁架构好像没有加入什么新鲜的概念。但是，在整洁架构示意图的右下角，还有一张小图…</p>
-<h2 id="站在-MVC-和-EBI-的肩膀上"><a href="#站在-MVC-和-EBI-的肩膀上" class="headerlink" title="站在 MVC 和 EBI 的肩膀上"></a>站在 MVC 和 EBI 的肩膀上</h2><p>整洁架构示意图的右下角的这张小图说明了控制流是如何工作的。这张小图并没还有提供太多信息，但博客中的说明和 Robert C. Martin 的会议演讲拓展了该话题。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649608511165-12df652a-976a-45f0-a771-55b48137f02b.png#clientId=u0810918f-6dc4-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=218&id=ua9bdbccc&margin=%5Bobject%20Object%5D&name=image.png&originHeight=436&originWidth=847&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=275211&status=done&style=none&taskId=ua6c270c1-da18-4ee0-bf06-4a21b28ba89&title=&width=423.5" alt="image.png" width="423.5"><br>我们在上图的左侧看到的是 MVC 中的视图和控制器。双实线另一层的所有形状都是 MVC 中的模型。这些模型也代表着 EBI 架构(我们可以清楚的看到边界、交互器和实体)，六边形架构中的“应用”、洋葱架构中的“应用核心”，以及前面整洁架构示意图中的“实体”层和“用例”层。</p>
-<p>假设有一个 HTTP 请求按照控制流到达了控制器。控制器接下来会：</p>
-<ol>
-<li>拆解请求；</li>
-<li>使用相关数据创建一个请求模型；</li>
-<li>执行交互器(作为交互器接口的，即边界的，实例被注入到控制器中)中的方法并将请求模型传递给它；</li>
-<li>交互器会：<br>4.1. 使用实体网关实现(作为实体网关接口的实例被注入到交互器中)查找相关实体；<br>4.2. 编排实体之间的交互；<br>4.3 用操作的数据结果创建响应模型；<br>4.4 将响应模型交给展示器进行填充；<br>4.5 将展示器返回给控制器；</li>
-<li>使用展示器生成视图模型；</li>
-<li>将视图模型绑定到视图；</li>
-<li>将视图返回给客户端。</li>
-</ol>
-<p>这里只有“展示器”的用法我有些疑问，我在项目中的实际做法和这里不太一样。我会某种 DTO 类型的数据返回给交互器，而不是注入一个填充了数据的展示器对象。<br>我通常会采用实际上是一种 MVP 实现，控制器在其中负责从客户端接收数据并响应它。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我不认为整洁架构是革命性的，因为它实际上并没有带来突破性的概念或模式。<br>但是，我认为它是相当重要的成果：</p>
-<ul>
-<li>它发掘了某种程度上被遗忘了的概念、规则和模式；</li>
-<li>它澄清了一些实用且重要的概念、规则和模式；</li>
-<li>它告诉我们如何把所有的概念、规则和模式整合起来，形成一种构建复杂应用并保持可维护性的标准套路</li>
-</ul>
-<p>Uncle Bob 关于整洁架构的工作总会让我想起牛顿。引力始终是存在的，每个人都知道松手让苹果远离地面的高处落下，它会落向地面。牛顿做的事情“只不过”是写了一篇论文披露这个事实。这件事请很“简单”，但却让人们开始思考它并基于它创造更新的想法。<br>换句话说，我认为 Robert C. Martin 就是软件开发领域的牛顿！</p>
-<h2 id="引用来源"><a href="#引用来源" class="headerlink" title="引用来源"></a>引用来源</h2><blockquote>
-<p>2012 – Robert C. Martin – <a href="https://youtu.be/Nltqi7ODZTM">Clean Architecture (NDC 2012)</a><br>2012 – Robert C. Martin – <a href="https://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html">The Clean Architecture</a><br>2012 – Benjamin Eberlei – <a href="https://beberlei.de/2012/08/13/oop_business_applications_entity_boundary_interactor.html">OOP Business Applications: Entity, Boundary, Interactor</a><br>2017 – Lieven Doclo – <a href="https://www.insaneprogramming.be/article/2017/02/14/thoughts-on-clean-architecture/">A couple of thoughts on Clean Architecture</a><br>2017 – Grzegorz Ziemoński – <a href="https://dzone.com/articles/clean-architecture-is-screaming">Clean Architecture Is Screaming</a></p>
-</blockquote>
 ]]></content>
       <categories>
         <category>ddd</category>
@@ -1857,6 +1857,99 @@ docker-compose rm -v</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>HBase 系统架构</title>
+    <url>/article/hbase/hbase-architecture/</url>
+    <content><![CDATA[<p>本文基本是对 MapR 的官网文章<a href="https://mapr.com/blog/in-depth-look-hbase-architecture/">An In-Depth Look at the HBase Architecture</a>的翻译</p>
+<h2 id="HBase-存储架构"><a href="#HBase-存储架构" class="headerlink" title="HBase 存储架构"></a>HBase 存储架构</h2><p>HBase 采用 Master&#x2F;Slave 架构搭建集群，它隶属于 Hadoop 生态系统，由一下类型节点组成：HMaster 节点、HRegionServer 节点、ZooKeeper 集群，而在底层，它将数据存储于 HDFS 中，因而涉及到 HDFS 的 NameNode、DataNode 等，总体结构如下：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916578858-a17a0bfb-0f8d-419b-885f-148ebbca588f.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u723b4673&margin=%5Bobject%20Object%5D&name=image.png&originHeight=411&originWidth=711&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=240958&status=done&style=none&taskId=u454e491c-809a-4e79-83c8-a5682ce06d5&title=" alt="image.png"></p>
+<h3 id="HMaster-节点"><a href="#HMaster-节点" class="headerlink" title="HMaster 节点"></a>HMaster 节点</h3><ul>
+<li>管理 HRegionServer，实现其负载均衡。</li>
+<li>管理和分配 HRegion，比如在 HRegion split 时分配新的 HRegion；在 HRegionServer 退出时迁移其内的 HRegion 到其他 HRegionServer 上。</li>
+<li>实现 DDL 操作（Data Definition Language，namespace 和 table 的增删改，column familiy 的增删改等）。</li>
+<li>管理 namespace 和 table 的元数据（实际存储在 HDFS 上）。</li>
+<li>权限控制（ACL）。</li>
+</ul>
+<h3 id="HRegionServer-节点"><a href="#HRegionServer-节点" class="headerlink" title="HRegionServer 节点"></a>HRegionServer 节点</h3><ul>
+<li>存放和管理本地 HRegion。</li>
+<li>读写 HDFS，管理 Table 中的数据。</li>
+<li>Client 直接通过 HRegionServer 读写数据（从 HMaster 中获取元数据，找到 RowKey 所在的 HRegion&#x2F;HRegionServer 后）。</li>
+</ul>
+<h3 id="ZooKeeper-集群协调系统"><a href="#ZooKeeper-集群协调系统" class="headerlink" title="ZooKeeper 集群协调系统"></a>ZooKeeper 集群协调系统</h3><ul>
+<li>存放整个 HBase 集群的元数据以及集群的状态信息。</li>
+<li>实现 HMaster 主从节点的 failover。</li>
+</ul>
+<p>HBase Client 通过 RPC 方式和 HMaster、HRegionServer 通信；一个 HRegionServer 可以存放 1000 个 HRegion；底层 Table 数据存储于 HDFS 中，而 HRegion 所处理的数据尽量和数据所在的 DataNode 在一起，实现数据的本地化；数据本地化并不是总能实现，比如在 HRegion 移动(如因 Split)时，需要等下一次 Compact 才能继续回到本地化。<br>《An In-Depth Look At The HBase Architecture》的架构图<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916578621-e7f149be-14ec-4a2d-b62e-6fcbe2acacf7.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u8bc90172&margin=%5Bobject%20Object%5D&name=image.png&originHeight=343&originWidth=632&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=108396&status=done&style=none&taskId=u04136b8b-47ca-414a-99ef-8f070c7ddb5&title=" alt="image.png"><br>这个架构图比较清晰的表达了 HMaster 和 NameNode 都支持多个热备份，使用 ZooKeeper 来做协调；ZooKeeper 并不是云般神秘，它一般由三台机器组成一个集群，内部使用 PAXOS 算法支持三台 Server 中的一台宕机，也有使用五台机器的，此时则可以支持同时两台宕机，既少于半数的宕机，然而随着机器的增加，它的性能也会下降；RegionServer 和 DataNode 一般会放在相同的 Server 上实现数据的本地化。</p>
+<h2 id="HRegion"><a href="#HRegion" class="headerlink" title="HRegion"></a>HRegion</h2><p>HBase 使用 RowKey 将表水平切割成多个 HRegion，从 HMaster 的角度，每个 HRegion 都纪录了它的 StartKey 和 EndKey（第一个 HRegion 的 StartKey 为空，最后一个 HRegion 的 EndKey 为空），由于 RowKey 是排序的，因而 Client 可以通过 HMaster 快速的定位每个 RowKey 在哪个 HRegion 中。HRegion 由 HMaster 分配到相应的 HRegionServer 中，然后由 HRegionServer 负责 HRegion 的启动和管理，和 Client 的通信，负责数据的读(使用 HDFS)。每个 HRegionServer 可以同时管理 1000 个左右的 HRegion（这个数字怎么来的？没有从代码中看到限制，难道是出于经验？超过 1000 个会引起性能问题？来回答这个问题：感觉这个 1000 的数字是从 BigTable 的论文中来的（5 Implementation 节）：Each tablet server manages a set of tablets(typically we have somewhere between ten to a thousand tablets per tablet server)）。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916578679-bdc90194-2fa0-4548-9d6a-dc05c68b2b28.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uf01c9495&margin=%5Bobject%20Object%5D&name=image.png&originHeight=337&originWidth=724&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=108162&status=done&style=none&taskId=u6b6133cb-a01c-4ce1-9c25-07763a60d97&title=" alt="image.png"></p>
+<h2 id="HMaster"><a href="#HMaster" class="headerlink" title="HMaster"></a>HMaster</h2><p>HMaster 没有单点故障问题，可以启动多个 HMaster，通过 ZooKeeper 的 Master Election 机制保证同时只有一个 HMaster 出于 Active 状态，其他的 HMaster 则处于热备份状态。一般情况下会启动两个 HMaster，非 Active 的 HMaster 会定期的和 Active HMaster 通信以获取其最新状态，从而保证它是实时更新的，因而如果启动了多个 HMaster 反而增加了 Active HMaster 的负担。前文已经介绍过了 HMaster 的主要用于 HRegion 的分配和管理，DDL(Data Definition Language，既 Table 的新建、删除、修改等)的实现等，既它主要有两方面的职责：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916578676-90123c3d-eef5-4a0f-9854-893368a11cb3.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u78a55d4e&margin=%5Bobject%20Object%5D&name=image.png&originHeight=367&originWidth=722&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=86163&status=done&style=none&taskId=u176d4cf8-2a32-44ce-89a5-46dfff7582d&title=" alt="image.png"></p>
+<h3 id="协调-HRegionServer"><a href="#协调-HRegionServer" class="headerlink" title="协调 HRegionServer"></a>协调 HRegionServer</h3><ul>
+<li>启动时 HRegion 的分配，以及负载均衡和修复时 HRegion 的重新分配。</li>
+<li>监控集群中所有 HRegionServer 的状态(通过 Heartbeat 和监听 ZooKeeper 中的状态)。</li>
+</ul>
+<h3 id="Admin-职能"><a href="#Admin-职能" class="headerlink" title="Admin 职能"></a>Admin 职能</h3><ul>
+<li>创建、删除、修改 Table 的定义。</li>
+</ul>
+<h2 id="ZooKeeper-协调者"><a href="#ZooKeeper-协调者" class="headerlink" title="ZooKeeper 协调者"></a>ZooKeeper 协调者</h2><p>ZooKeeper 为 HBase 集群提供协调服务，它管理着 HMaster 和 HRegionServer 的状态(available&#x2F;alive 等)，并且会在它们宕机时通知给 HMaster，从而 HMaster 可以实现 HMaster 之间的 failover，或对宕机的 HRegionServer 中的 HRegion 集合的修复(将它们分配给其他的 HRegionServer)。ZooKeeper 集群本身使用一致性协议(PAXOS 协议)保证每个节点状态的一致性。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916578733-c859758f-8f4f-4919-a401-76ece989c145.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u355c5a55&margin=%5Bobject%20Object%5D&name=image.png&originHeight=318&originWidth=703&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=100372&status=done&style=none&taskId=u8d5eb963-5e89-4827-87e6-99f933cf92d&title=" alt="image.png"></p>
+<h2 id="How-The-Components-Work-Together"><a href="#How-The-Components-Work-Together" class="headerlink" title="How The Components Work Together"></a>How The Components Work Together</h2><p>ZooKeeper 协调集群所有节点的共享信息，在 HMaster 和 HRegionServer 连接到 ZooKeeper 后创建 Ephemeral 节点，并使用 Heartbeat 机制维持这个节点的存活状态，如果某个 Ephemeral 节点实效，则 HMaster 会收到通知，并做相应的处理。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916580371-8380eb6c-c579-418b-be2b-48b0f83658b0.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u09e4cba8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=329&originWidth=722&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=116454&status=done&style=none&taskId=u3c9ac6e6-13d4-46c1-b3fa-95947b15824&title=" alt="image.png"><br>另外，HMaster 通过监听 ZooKeeper 中的 Ephemeral 节点(默认：&#x2F;hbase&#x2F;rs&#x2F;*)来监控 HRegionServer 的加入和宕机。在第一个 HMaster 连接到 ZooKeeper 时会创建 Ephemeral 节点(默认：&#x2F;hbasae&#x2F;master)来表示 Active 的 HMaster，其后加进来的 HMaster 则监听该 Ephemeral 节点，如果当前 Active 的 HMaster 宕机，则该节点消失，因而其他 HMaster 得到通知，而将自身转换成 Active 的 HMaster，在变为 Active 的 HMaster 之前，它会创建在&#x2F;hbase&#x2F;back-masters&#x2F;下创建自己的 Ephemeral 节点。</p>
+<h3 id="HBase-的第一次读写"><a href="#HBase-的第一次读写" class="headerlink" title="HBase 的第一次读写"></a>HBase 的第一次读写</h3><p>在 HBase 0.96 以前，HBase 有两个特殊的 Table：-ROOT-和.META.（如<a href="http://research.google.com/archive/bigtable-osdi06.pdf">BigTable</a>中的设计），其中-ROOT- Table 的位置存储在 ZooKeeper，它存储了.META. Table 的 RegionInfo 信息，并且它只能存在一个 HRegion，而.META. Table 则存储了用户 Table 的 RegionInfo 信息，它可以被切分成多个 HRegion，因而对第一次访问用户 Table 时，首先从 ZooKeeper 中读取-ROOT- Table 所在 HRegionServer；然后从该 HRegionServer 中根据请求的 TableName，RowKey 读取.META. Table 所在 HRegionServer；最后从该 HRegionServer 中读取.META. Table 的内容而获取此次请求需要访问的 HRegion 所在的位置，然后访问该 HRegionSever 获取请求的数据，这需要三次请求才能找到用户 Table 所在的位置，然后第四次请求开始获取真正的数据。当然为了提升性能，客户端会缓存-ROOT- Table 位置以及-ROOT-&#x2F;.META. Table 的内容。如下图所示：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916580326-61fe3d03-5e26-4113-a242-d514c6e314a2.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u6618f3ca&margin=%5Bobject%20Object%5D&name=image.png&originHeight=228&originWidth=399&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=45988&status=done&style=none&taskId=uc4946914-9a62-4a41-aab7-e197f2ede54&title=" alt="image.png"><br>可是即使客户端有缓存，在初始阶段需要三次请求才能直到用户 Table 真正所在的位置也是性能低下的，而且真的有必要支持那么多的 HRegion 吗？或许对 Google 这样的公司来说是需要的，但是对一般的集群来说好像并没有这个必要。在 BigTable 的论文中说，每行 METADATA 存储 1KB 左右数据，中等大小的 Tablet(HRegion)在 128MB 左右，3 层位置的 Schema 设计可以支持 2^34 个 Tablet(HRegion)。即使去掉-ROOT- Table，也还可以支持 2^17(131072)个 HRegion， 如果每个 HRegion 还是 128MB，那就是 16TB，这个貌似不够大，但是现在的 HRegion 的最大大小都会设置的比较大，比如我们设置了 2GB，此时支持的大小则变成了 4PB，对一般的集群来说已经够了，因而在 HBase 0.96 以后去掉了-ROOT- Table，只剩下这个特殊的目录表叫做 Meta Table(hbase:meta)，它存储了集群中所有用户 HRegion 的位置信息，而 ZooKeeper 的节点中(&#x2F;hbase&#x2F;meta-region-server)存储的则直接是这个 Meta Table 的位置，并且这个 Meta Table 如以前的-ROOT- Table 一样是不可 split 的。这样，客户端在第一次访问用户 Table 的流程就变成了：</p>
+<ul>
+<li>从 ZooKeeper(&#x2F;hbase&#x2F;meta-region-server)中获取 hbase:meta 的位置（HRegionServer 的位置），缓存该位置信息。</li>
+<li>从 HRegionServer 中查询用户 Table 对应请求的 RowKey 所在的 HRegionServer，缓存该位置信息。</li>
+<li>从查询到 HRegionServer 中读取 Row。</li>
+</ul>
+<p>从这个过程中，我们发现客户会缓存这些位置信息，然而第二步它只是缓存当前 RowKey 对应的 HRegion 的位置，因而如果下一个要查的 RowKey 不在同一个 HRegion 中，则需要继续查询 hbase:meta 所在的 HRegion，然而随着时间的推移，客户端缓存的位置信息越来越多，以至于不需要再次查找 hbase:meta Table 的信息，除非某个 HRegion 因为宕机或 Split 被移动，此时需要重新查询并且更新缓存。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916580741-c98bab14-3341-4784-9af5-cbad496ba448.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u2d56a83a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=356&originWidth=590&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=75992&status=done&style=none&taskId=u1bb7d5f9-92df-4a3c-a110-20319264562&title=" alt="image.png"></p>
+<h3 id="hbase-meta-表"><a href="#hbase-meta-表" class="headerlink" title="hbase:meta 表"></a>hbase:meta 表</h3><p>hbase:meta 表存储了所有用户 HRegion 的位置信息，它的 RowKey 是：tableName,regionStartKey,regionId,replicaId 等，它只有 info 列族，这个列族包含三个列，他们分别是：info:regioninfo 列是 RegionInfo 的 proto 格式：regionId,tableName,startKey,endKey,offline,split,replicaId；info:server 格式：HRegionServer 对应的 server:port；info:serverstartcode 格式是 HRegionServer 的启动时间戳。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916580891-6feb81e6-8d18-4d3c-9583-be28019444e0.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u9776aea4&margin=%5Bobject%20Object%5D&name=image.png&originHeight=362&originWidth=736&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=115586&status=done&style=none&taskId=u6aecdbed-2fa8-4c2d-9f07-d26905069e2&title=" alt="image.png"></p>
+<h2 id="HRegionServer-详解"><a href="#HRegionServer-详解" class="headerlink" title="HRegionServer 详解"></a>HRegionServer 详解</h2><p>HRegionServer 一般和 DataNode 在同一台机器上运行，实现数据的本地性。HRegionServer 包含多个 HRegion，由 WAL(HLog)、BlockCache、MemStore、HFile 组成。</p>
+<ol>
+<li>WAL 即 Write Ahead Log，在早期版本中称为 HLog，它是 HDFS 上的一个文件，如其名字所表示的，所有写操作都会先保证将数据写入这个 Log 文件后，才会真正更新 MemStore，最后写入 HFile 中。采用这种模式，可以保证 HRegionServer 宕机后，我们依然可以从该 Log 文件中读取数据，Replay 所有的操作，而不至于数据丢失。这个 Log 文件会定期 Roll 出新的文件而删除旧的文件(那些已持久化到 HFile 中的 Log 可以删除)。WAL 文件存储在&#x2F;hbase&#x2F;WALs&#x2F;${HRegionServer_Name}的目录中(在 0.94 之前，存储在&#x2F;hbase&#x2F;.logs&#x2F;目录中)，一般一个 HRegionServer 只有一个 WAL 实例，也就是说一个 HRegionServer 的所有 WAL 写都是串行的(就像 log4j 的日志写也是串行的)，这当然会引起性能问题，因而在 HBase 1.0 之后，通过 <a href="https://issues.apache.org/jira/browse/HBASE-5699">HBASE-5699</a> 实现了多个 WAL 并行写(MultiWAL)，该实现采用 HDFS 的多个管道写，以单个 HRegion 为单位。关于 WAL 可以参考 Wikipedia 的 <a href="https://en.wikipedia.org/wiki/Write-ahead_logging">Write-Ahead Logging</a> 。顺便吐槽一句，英文版的维基百科竟然能毫无压力的正常访问了，这是某个 GFW 的疏忽还是以后的常态？</li>
+<li>BlockCache 是一个读缓存，即“引用局部性”原理（也应用于 CPU，<a href="http://baike.baidu.com/link?url=Dh2u9KvowXcl2PloHJFTB9vEOoVS3WxPhDCVvbQGL_piyKFQ2iTHYAYf5mLAsFrcBUig6NC7A4-Aki61qnGCTK#3_1">分空间局部性和时间局部性</a>，空间局部性是指 CPU 在某一时刻需要某个数据，那么有很大的概率在一下时刻它需要的数据在其附近；时间局部性是指某个数据在被访问过一次后，它有很大的概率在不久的将来会被再次的访问），将数据预读取到内存中，以提升读的性能。HBase 中提供两种 BlockCache 的实现：默认 on-heap LruBlockCache 和 BucketCache(通常是 off-heap)。通常 BucketCache 的性能要差于 LruBlockCache，然而由于 GC 的影响，LruBlockCache 的延迟会变的不稳定，而 BucketCache 由于是自己管理 BlockCache，而不需要 GC，因而它的延迟通常比较稳定，这也是有些时候需要选用 BucketCache 的原因。这篇文章 <a href="http://www.n10k.com/blog/blockcache-101/">BlockCache101</a> 对 on-heap 和 off-heap 的 BlockCache 做了详细的比较。</li>
+<li>HRegion 是一个 Table 中的一个 Region 在一个 HRegionServer 中的表达。一个 Table 可以有一个或多个 Region，他们可以在一个相同的 HRegionServer 上，也可以分布在不同的 HRegionServer 上，一个 HRegionServer 可以有多个 HRegion，他们分别属于不同的 Table。HRegion 由多个 Store(HStore)构成，每个 HStore 对应了一个 Table 在这个 HRegion 中的一个 Column Family，即每个 Column Family 就是一个集中的存储单元，因而最好将具有相近 IO 特性的 Column 存储在一个 Column Family，以实现高效读取(数据局部性原理，可以提高缓存的命中率)。HStore 是 HBase 中存储的核心，它实现了读写 HDFS 功能，一个 HStore 由一个 MemStore 和 0 个或多个 StoreFile 组成。<ul>
+<li>MemStore 是一个写缓存(In Memory Sorted Buffer)，所有数据的写在完成 WAL 日志写后，会 写入 MemStore 中，由 MemStore 根据一定的算法将数据 Flush 到地层 HDFS 文件中(HFile)，通常每个 HRegion 中的每个 Column Family 有一个自己的 MemStore。</li>
+<li>HFile(StoreFile) 用于存储 HBase 的数据(Cell&#x2F;KeyValue)。在 HFile 中的数据是按 RowKey、Column Family、Column 排序，对相同的 Cell(即这三个值都一样)，则按 timestamp 倒序排列。</li>
+</ul>
+</li>
+</ol>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916581299-289e4273-4207-453d-9a8f-664f4911c72c.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u35254fb8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=366&originWidth=675&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=95333&status=done&style=none&taskId=u12039456-1add-4c7c-958a-c13ce2debd8&title=" alt="image.png"><br>虽然上面这张图展现的是最新的 HRegionServer 的架构(但是并不是那么的精确)，但是我一直比较喜欢看以下这张图，即使它展现的应该是 0.94 以前的架构。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916581512-9c74e462-666b-434c-8a29-8d2dcc9afd98.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u71a1066c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=347&originWidth=553&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=214681&status=done&style=none&taskId=u3a1655c4-b13b-4c95-a9d6-3fc382b506b&title=" alt="image.png"></p>
+<h3 id="HRegionServer-中数据写流程图解"><a href="#HRegionServer-中数据写流程图解" class="headerlink" title="HRegionServer 中数据写流程图解"></a>HRegionServer 中数据写流程图解</h3><p>当客户端发起一个 Put 请求时，首先它从 hbase:meta 表中查出该 Put 数据最终需要去的 HRegionServer。然后客户端将 Put 请求发送给相应的 HRegionServer，在 HRegionServer 中它首先会将该 Put 操作写入 WAL 日志文件中(Flush 到磁盘中)。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916582098-1768ce69-621c-42ab-8e9f-c088e8777cca.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ub4d83a95&margin=%5Bobject%20Object%5D&name=image.png&originHeight=363&originWidth=716&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=71683&status=done&style=none&taskId=u8836b841-21cd-45ad-ad75-2b5427b07bb&title=" alt="image.png"><br>写完 WAL 日志文件后，HRegionServer 根据 Put 中的 TableName 和 RowKey 找到对应的 HRegion，并根据 Column Family 找到对应的 HStore，并将 Put 写入到该 HStore 的 MemStore 中。此时写成功，并返回通知客户端。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916582636-fd38aaea-d523-4b11-b13c-1efdef987fd7.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uf32f92cc&margin=%5Bobject%20Object%5D&name=image.png&originHeight=298&originWidth=664&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=63155&status=done&style=none&taskId=u30b36f42-9271-4e99-b1dd-7ce3205c36d&title=" alt="image.png"></p>
+<h3 id="MemStore-Flush"><a href="#MemStore-Flush" class="headerlink" title="MemStore Flush"></a>MemStore Flush</h3><p>MemStore 是一个 In Memory Sorted Buffer，在每个 HStore 中都有一个 MemStore，即它是一个 HRegion 的一个 Column Family 对应一个实例。它的排列顺序以 RowKey、Column Family、Column 的顺序以及 Timestamp 的倒序，如下所示：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916582832-94bc8fd5-adc7-418c-9d39-f165199fa60e.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u512fd7af&margin=%5Bobject%20Object%5D&name=image.png&originHeight=351&originWidth=719&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=106803&status=done&style=none&taskId=u85f74483-7f18-4a00-a4e7-60cabcf63e6&title=" alt="image.png"><br>每一次 Put&#x2F;Delete 请求都是先写入到 MemStore 中，当 MemStore 满后会 Flush 成一个新的 StoreFile(底层实现是 HFile)，即一个 HStore(Column Family)可以有 0 个或多个 StoreFile(HFile)。有以下三种情况可以触发 MemStore 的 Flush 动作，需要注意的是 MemStore 的最小 Flush 单元是 HRegion 而不是单个 MemStore。据说这是 Column Family 有个数限制的其中一个原因，估计是因为太多的 Column Family 一起 Flush 会引起性能问题？具体原因有待考证。</p>
+<ol>
+<li>当一个 HRegion 中的所有 MemStore 的大小总和超过了 hbase.hregion.memstore.flush.size 的大小，默认 128MB。此时当前的 HRegion 中所有的 MemStore 会 Flush 到 HDFS 中。</li>
+<li>当全局 MemStore 的大小超过了 hbase.regionserver.global.memstore.upperLimit 的大小，默认 40％的内存使用量。此时当前 HRegionServer 中所有 HRegion 中的 MemStore 都会 Flush 到 HDFS 中，Flush 顺序是 MemStore 大小的倒序（一个 HRegion 中所有 MemStore 总和作为该 HRegion 的 MemStore 的大小还是选取最大的 MemStore 作为参考？有待考证），直到总体的 MemStore 使用量低于 hbase.regionserver.global.memstore.lowerLimit，默认 38%的内存使用量。</li>
+<li>当前 HRegionServer 中 WAL 的大小超过了 hbase.regionserver.hlog.blocksize _ hbase.regionserver.max.logs 的数量，当前 HRegionServer 中所有 HRegion 中的 MemStore 都会 Flush 到 HDFS 中，Flush 使用时间顺序，最早的 MemStore 先 Flush 直到 WAL 的数量少于 hbase.regionserver.hlog.blocksize _ hbase.regionserver.max.logs。<a href="http://blog.sematext.com/2012/07/16/hbase-memstore-what-you-should-know/">这里</a>说这两个相乘的默认大小是 2GB，查代码，hbase.regionserver.max.logs 默认值是 32，而 hbase.regionserver.hlog.blocksize 是 HDFS 的默认 blocksize，32MB。但不管怎么样，因为这个大小超过限制引起的 Flush 不是一件好事，可能引起长时间的延迟，因而这篇文章给的建议：“Hint: keep hbase.regionserver.hlog.blocksize _ hbase.regionserver.maxlogs just a bit above hbase.regionserver.global.memstore.lowerLimit _ HBASE_HEAPSIZE.”。并且需要注意，<a href="http://hbase.apache.org/book.html#_memstore_flush">这里</a>给的描述是有错的(虽然它是官方的文档)。</li>
+</ol>
+<p>在 MemStore Flush 过程中，还会在尾部追加一些 meta 数据，其中就包括 Flush 时最大的 WAL sequence 值，以告诉 HBase 这个 StoreFile 写入的最新数据的序列，那么在 Recover 时就直到从哪里开始。在 HRegion 启动时，这个 sequence 会被读取，并取最大的作为下一次更新时的起始 sequence。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916583046-e073a721-456c-4607-89f7-ec5a222e50f0.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u8e41b38a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=248&originWidth=622&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=64652&status=done&style=none&taskId=u01119a37-ba73-457e-89cf-4e03d0108f9&title=" alt="image.png"></p>
+<h2 id="HFile-格式"><a href="#HFile-格式" class="headerlink" title="HFile 格式"></a>HFile 格式</h2><p>HBase 的数据以 KeyValue(Cell)的形式顺序的存储在 HFile 中，在 MemStore 的 Flush 过程中生成 HFile，由于 MemStore 中存储的 Cell 遵循相同的排列顺序，因而 Flush 过程是顺序写，我们直到磁盘的顺序写性能很高，因为不需要不停的移动磁盘指针。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916583239-35f30a61-6003-4baa-b78e-d0406b53f458.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uec0329c3&margin=%5Bobject%20Object%5D&name=image.png&originHeight=351&originWidth=698&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=115221&status=done&style=none&taskId=u3b84bd8d-8533-4733-9068-58f3d383a88&title=" alt="image.png"><br>HFile 参考 BigTable 的 SSTable 和 Hadoop 的<a href="http://hadoop.apache.org/docs/current/api/org/apache/hadoop/io/file/tfile/TFile.html">TFile</a>实现，从 HBase 开始到现在，HFile 经历了三个版本，其中 V2 在 0.92 引入，V3 在 0.98 引入。首先我们来看一下 V1 的格式：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916583656-2174688c-da96-443f-a46f-d8e391ffc97b.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u9844c88d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=160&originWidth=554&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=72628&status=done&style=none&taskId=u55f4c3b1-daf2-4893-935c-09a8dd5acb9&title=" alt="image.png"><br>V1 的 HFile 由多个 Data Block、Meta Block、FileInfo、Data Index、Meta Index、Trailer 组成，其中 Data Block 是 HBase 的最小存储单元，在前文中提到的 BlockCache 就是基于 Data Block 的缓存的。一个 Data Block 由一个魔数和一系列的 KeyValue(Cell)组成，魔数是一个随机的数字，用于表示这是一个 Data Block 类型，以快速监测这个 Data Block 的格式，防止数据的破坏。Data Block 的大小可以在创建 Column Family 时设置(HColumnDescriptor.setBlockSize())，默认值是 64KB，大号的 Block 有利于顺序 Scan，小号 Block 利于随机查询，因而需要权衡。Meta 块是可选的，FileInfo 是固定长度的块，它纪录了文件的一些 Meta 信息，例如：AVG_KEY_LEN, AVG_VALUE_LEN, LAST_KEY, COMPARATOR, MAX_SEQ_ID_KEY 等。Data Index 和 Meta Index 纪录了每个 Data 块和 Meta 块的其实点、未压缩时大小、Key(起始 RowKey？)等。Trailer 纪录了 FileInfo、Data Index、Meta Index 块的起始位置，Data Index 和 Meta Index 索引的数量等。其中 FileInfo 和 Trailer 是固定长度的。<br>HFile 里面的每个 KeyValue 对就是一个简单的 byte 数组。但是这个 byte 数组里面包含了很多项，并且有固定的结构。我们来看看里面的具体结构：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916583953-34c63a35-4c72-417a-bb89-8902777196ee.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ufac2071c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=93&originWidth=553&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=68710&status=done&style=none&taskId=u99911b0c-045d-4a97-bbe0-73cbdafbed4&title=" alt="image.png"><br>开始是两个固定长度的数值，分别表示 Key 的长度和 Value 的长度。紧接着是 Key，开始是固定长度的数值，表示 RowKey 的长度，紧接着是 RowKey，然后是固定长度的数值，表示 Family 的长度，然后是 Family，接着是 Qualifier，然后是两个固定长度的数值，表示 Time Stamp 和 Key Type（Put&#x2F;Delete）。Value 部分没有这么复杂的结构，就是纯粹的二进制数据了。随着 HFile 版本迁移，KeyValue(Cell)的格式并未发生太多变化，只是在 V3 版本，尾部添加了一个可选的 Tag 数组。<br>HFileV1 版本的在实际使用过程中发现它占用内存多，并且 Bloom File 和 Block Index 会变的很大，而引起启动时间变长。其中每个 HFile 的 Bloom Filter 可以增长到 100MB，这在查询时会引起性能问题，因为每次查询时需要加载并查询 Bloom Filter，100MB 的 Bloom Filer 会引起很大的延迟；另一个，Block Index 在一个 HRegionServer 可能会增长到总共 6GB，HRegionServer 在启动时需要先加载所有这些 Block Index，因而增加了启动时间。为了解决这些问题，在 0.92 版本中引入 HFileV2 版本：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916584996-bbbb6bb6-fc78-4a2c-8547-8ec1dbf366a1.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u7e338f01&margin=%5Bobject%20Object%5D&name=image.png&originHeight=418&originWidth=566&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=59249&status=done&style=none&taskId=u3169ce73-eb5d-4b8b-8c12-fe22df00816&title=" alt="image.png"><br>在这个版本中，Block Index 和 Bloom Filter 添加到了 Data Block 中间，而这种设计同时也减少了写的内存使用量；另外，为了提升启动速度，在这个版本中还引入了延迟读的功能，即在 HFile 真正被使用时才对其进行解析。<br>FileV3 版本基本和 V2 版本相比，并没有太大的改变，它在 KeyValue(Cell)层面上添加了 Tag 数组的支持；并在 FileInfo 结构中添加了和 Tag 相关的两个字段。关于具体 HFile 格式演化介绍，可以参考<a href="http://hbase.apache.org/book.html#_hfile_format_2">这里</a>。<br>对 HFileV2 格式具体分析，它是一个多层的类 B+树索引，采用这种设计，可以实现查找不需要读取整个文件：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916585756-2c38fca8-e68c-4d91-a8dd-7d557a9b30bc.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u667d00a9&margin=%5Bobject%20Object%5D&name=image.png&originHeight=349&originWidth=688&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=107524&status=done&style=none&taskId=u8dc1ef81-99a0-428d-b317-b7c86f91e80&title=" alt="image.png"><br>Data Block 中的 Cell 都是升序排列，每个 block 都有它自己的 Leaf-Index，每个 Block 的最后一个 Key 被放入 Intermediate-Index 中，Root-Index 指向 Intermediate-Index。在 HFile 的末尾还有 Bloom Filter 用于快速定位那么没有在某个 Data Block 中的 Row；TimeRange 信息用于给那些使用时间查询的参考。在 HFile 打开时，这些索引信息都被加载并保存在内存中，以增加以后的读取性能。</p>
+<h2 id="HBase-读的实现"><a href="#HBase-读的实现" class="headerlink" title="HBase 读的实现"></a>HBase 读的实现</h2><p>通过前文的描述，我们知道在 HBase 写时，相同 Cell(RowKey&#x2F;ColumnFamily&#x2F;Column 相同)并不保证在一起，甚至删除一个 Cell 也只是写入一个新的 Cell，它含有 Delete 标记，而不一定将一个 Cell 真正删除了，因而这就引起了一个问题，如何实现读的问题？要解决这个问题，我们先来分析一下相同的 Cell 可能存在的位置：首先对新写入的 Cell，它会存在于 MemStore 中；然后对之前已经 Flush 到 HDFS 中的 Cell，它会存在于某个或某些 StoreFile(HFile)中；最后，对刚读取过的 Cell，它可能存在于 BlockCache 中。既然相同的 Cell 可能存储在三个地方，在读取的时候只需要扫瞄这三个地方，然后将结果合并即可(Merge Read)，在 HBase 中扫瞄的顺序依次是：BlockCache、MemStore、StoreFile(HFile)。其中 StoreFile 的扫瞄先会使用 Bloom Filter 过滤那些不可能符合条件的 HFile，然后使用 Block Index 快速定位 Cell，并将其加载到 BlockCache 中，然后从 BlockCache 中读取。我们知道一个 HStore 可能存在多个 StoreFile(HFile)，此时需要扫瞄多个 HFile，如果 HFile 过多又是会引起性能问题。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916585461-55084b02-31ea-4bb5-9df2-2ab8931fad2c.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u650f6de0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=278&originWidth=769&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=107309&status=done&style=none&taskId=ueb6d7da0-a4dc-47eb-bce5-8a4918d43e7&title=" alt="image.png"></p>
+<h2 id="Compaction"><a href="#Compaction" class="headerlink" title="Compaction"></a>Compaction</h2><p>MemStore 每次 Flush 会创建新的 HFile，而过多的 HFile 会引起读的性能问题，那么如何解决这个问题呢？HBase 采用 Compaction 机制来解决这个问题，有点类似 Java 中的 GC 机制，起初 Java 不停的申请内存而不释放，增加性能，然而天下没有免费的午餐，最终我们还是要在某个条件下去收集垃圾，很多时候需要 Stop-The-World，这种 Stop-The-World 有些时候也会引起很大的问题，因而设计是一种权衡，没有完美的。还是类似 Java 中的 GC，在 HBase 中 Compaction 分为两种：Minor Compaction 和 Major Compaction。</p>
+<ol>
+<li>Minor Compaction 是指选取一些小的、相邻的 StoreFile 将他们合并成一个更大的 StoreFile，在这个过程中不会处理已经 Deleted 或 Expired 的 Cell。一次 Minor Compaction 的结果是更少并且更大的 StoreFile。（这个是对的吗？BigTable 中是这样描述 Minor Compaction 的：As write operations execute, the size of the memtable in- creases. When the memtable size reaches a threshold, the memtable is frozen, a new memtable is created, and the frozen memtable is converted to an SSTable and written to GFS. This minor compaction process has two goals: it shrinks the memory usage of the tablet server, and it reduces the amount of data that has to be read from the commit log during recovery if this server dies. Incom- ing read and write operations can continue while com- pactions occur. 也就是说它将 memtable 的数据 flush 的一个 HFile&#x2F;SSTable 称为一次 Minor Compaction）</li>
+<li>Major Compaction 是指将所有的 StoreFile 合并成一个 StoreFile，在这个过程中，标记为 Deleted 的 Cell 会被删除，而那些已经 Expired 的 Cell 会被丢弃，那些已经超过最多版本数的 Cell 会被丢弃。一次 Major Compaction 的结果是一个 HStore 只有一个 StoreFile 存在。Major Compaction 可以手动或自动触发，然而由于它会引起很多的 IO 操作而引起性能问题，因而它一般会被安排在周末、凌晨等集群比较闲的时间。</li>
+</ol>
+<p>更形象一点，如下面两张图分别表示 Minor Compaction 和 Major Compaction。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916585472-7b9745d6-455b-458e-a5e5-a751cc03fadd.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ub1833466&margin=%5Bobject%20Object%5D&name=image.png&originHeight=329&originWidth=723&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=94709&status=done&style=none&taskId=u8358d499-81ee-4051-817d-9540dc51bc5&title=" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916585518-f8e5d988-133a-4f90-b87d-3370099c3bb1.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua80b4458&margin=%5Bobject%20Object%5D&name=image.png&originHeight=339&originWidth=653&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=93417&status=done&style=none&taskId=u2201da79-e7a4-4e5e-af63-b9e178ad60a&title=" alt="image.png"></p>
+<h2 id="HRegion-Split"><a href="#HRegion-Split" class="headerlink" title="HRegion Split"></a>HRegion Split</h2><p>最初，一个 Table 只有一个 HRegion，随着数据写入增加，如果一个 HRegion 到达一定的大小，就需要 Split 成两个 HRegion，这个大小由 hbase.hregion.max.filesize 指定，默认为 10GB。当 split 时，两个新的 HRegion 会在同一个 HRegionServer 中创建，它们各自包含父 HRegion 一半的数据，当 Split 完成后，父 HRegion 会下线，而新的两个子 HRegion 会向 HMaster 注册上线，处于负载均衡的考虑，这两个新的 HRegion 可能会被 HMaster 分配到其他的 HRegionServer 中。关于 Split 的详细信息，可以参考这篇文章：<a href="http://hortonworks.com/blog/apache-hbase-region-splitting-and-merging/">《Apache HBase Region Splitting and Merging》</a>。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916586158-3ba24d92-6644-4a0f-91a1-d00da5867a28.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u7d90fe99&margin=%5Bobject%20Object%5D&name=image.png&originHeight=361&originWidth=675&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=85469&status=done&style=none&taskId=u7e157502-2bf1-4daf-9c17-071a1dc9564&title=" alt="image.png"></p>
+<h2 id="HRegion-负载均衡"><a href="#HRegion-负载均衡" class="headerlink" title="HRegion 负载均衡"></a>HRegion 负载均衡</h2><p>在 HRegion Split 后，两个新的 HRegion 最初会和之前的父 HRegion 在相同的 HRegionServer 上，出于负载均衡的考虑，HMaster 可能会将其中的一个甚至两个重新分配的其他的 HRegionServer 中，此时会引起有些 HRegionServer 处理的数据在其他节点上，直到下一次 Major Compaction 将数据从远端的节点移动到本地节点。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916586722-3a111ac3-cc8a-4dfd-ab85-4e6f68fe4306.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ucfafb6f6&margin=%5Bobject%20Object%5D&name=image.png&originHeight=358&originWidth=714&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=113593&status=done&style=none&taskId=u3068847b-f220-4283-af84-153c8256a06&title=" alt="image.png"></p>
+<h2 id="HRegionServer-Recovery"><a href="#HRegionServer-Recovery" class="headerlink" title="HRegionServer Recovery"></a>HRegionServer Recovery</h2><p>当一台 HRegionServer 宕机时，由于它不再发送 Heartbeat 给 ZooKeeper 而被监测到，此时 ZooKeeper 会通知 HMaster，HMaster 会检测到哪台 HRegionServer 宕机，它将宕机的 HRegionServer 中的 HRegion 重新分配给其他的 HRegionServer，同时 HMaster 会把宕机的 HRegionServer 相关的 WAL 拆分分配给相应的 HRegionServer(将拆分出的 WAL 文件写入对应的目的 HRegionServer 的 WAL 目录中，并并写入对应的 DataNode 中），从而这些 HRegionServer 可以 Replay 分到的 WAL 来重建 MemStore。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916587040-3b89bd6c-f56a-4d12-b005-539cdc9e8aae.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u53643cd9&margin=%5Bobject%20Object%5D&name=image.png&originHeight=368&originWidth=708&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=133786&status=done&style=none&taskId=ued635896-8d3d-47e9-aaa1-848ae861ace&title=" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916587014-ac39bb9d-e5ab-48af-9f60-8389745baa26.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u22d50009&margin=%5Bobject%20Object%5D&name=image.png&originHeight=378&originWidth=724&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=79489&status=done&style=none&taskId=u3d4037a7-ea2b-4d85-8a02-fa381b36016&title=" alt="image.png"><br>HBase 架构简单总结 在 NoSQL 中，存在著名的 CAP 理论，即 Consistency、Availability、Partition Tolerance 不可全得，目前市场上基本上的 NoSQL 都采用 Partition Tolerance 以实现数据得水平扩展，来处理 Relational DataBase 遇到的无法处理数据量太大的问题，或引起的性能问题。因而只有剩下 C 和 A 可以选择。HBase 在两者之间选择了 Consistency，然后使用多个 HMaster 以及支持 HRegionServer 的 failure 监控、ZooKeeper 引入作为协调者等各种手段来解决 Availability 问题，然而当网络的 Split-Brain(Network Partition)发生时，它还是无法完全解决 Availability 的问题。从这个角度上，Cassandra 选择了 A，即它在网络 Split-Brain 时还是能正常写，而使用其他技术来解决 Consistency 的问题，如读的时候触发 Consistency 判断和处理。这是设计上的限制。<br>从实现上的优点</p>
+<ol>
+<li>HBase 采用强一致性模型，在一个写返回后，保证所有的读都读到相同的数据。</li>
+<li>通过 HRegion 动态 Split 和 Merge 实现自动扩展，并使用 HDFS 提供的多个数据备份功能，实现高可用性。</li>
+<li>采用 HRegionServer 和 DataNode 运行在相同的服务器上实现数据的本地化，提升读写性能，并减少网络压力。</li>
+<li>内建 HRegionServer 的宕机自动恢复。采用 WAL 来 Replay 还未持久化到 HDFS 的数据。</li>
+<li>可以无缝的和 Hadoop&#x2F;MapReduce 集成。</li>
+</ol>
+<p>实现上的缺点</p>
+<ol>
+<li>WAL 的 Replay 过程可能会很慢。</li>
+<li>灾难恢复比较复杂，也会比较慢。</li>
+<li>Major Compaction 会引起 IO Storm。</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.mapr.com/blog/in-depth-look-hbase-architecture/">https://www.mapr.com/blog/in-depth-look-hbase-architecture/</a><br><a href="http://jimbojw.com/wiki/index.php?title=Understanding_Hbase_and_BigTable">http://jimbojw.com/wiki/index.php?title=Understanding_Hbase_and_BigTable</a><br><a href="http://hbase.apache.org/book.html">http://hbase.apache.org/book.html</a><br><a href="http://www.searchtb.com/2011/01/understanding-hbase.html">http://www.searchtb.com/2011/01/understanding-hbase.html</a><br><a href="http://research.google.com/archive/bigtable-osdi06.pdf">http://research.google.com/archive/bigtable-osdi06.pdf</a></p>
+]]></content>
+      <categories>
+        <category>hbase</category>
+      </categories>
+      <tags>
+        <tag>HBase</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>HBase （一）系统架构</title>
     <url>/article/hbase/hbase-architecture/</url>
     <content><![CDATA[<p>本文基本是对 MapR 的官网文章<a href="https://mapr.com/blog/in-depth-look-hbase-architecture/">An In-Depth Look at the HBase Architecture</a>的翻译</p>
@@ -1951,99 +2044,6 @@ docker-compose rm -v</code></pre>
   </entry>
   <entry>
     <title>HBase（一）系统架构</title>
-    <url>/article/hbase/hbase-architecture/</url>
-    <content><![CDATA[<p>本文基本是对 MapR 的官网文章<a href="https://mapr.com/blog/in-depth-look-hbase-architecture/">An In-Depth Look at the HBase Architecture</a>的翻译</p>
-<h2 id="HBase-存储架构"><a href="#HBase-存储架构" class="headerlink" title="HBase 存储架构"></a>HBase 存储架构</h2><p>HBase 采用 Master&#x2F;Slave 架构搭建集群，它隶属于 Hadoop 生态系统，由一下类型节点组成：HMaster 节点、HRegionServer 节点、ZooKeeper 集群，而在底层，它将数据存储于 HDFS 中，因而涉及到 HDFS 的 NameNode、DataNode 等，总体结构如下：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916578858-a17a0bfb-0f8d-419b-885f-148ebbca588f.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u723b4673&margin=%5Bobject%20Object%5D&name=image.png&originHeight=411&originWidth=711&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=240958&status=done&style=none&taskId=u454e491c-809a-4e79-83c8-a5682ce06d5&title=" alt="image.png"></p>
-<h3 id="HMaster-节点"><a href="#HMaster-节点" class="headerlink" title="HMaster 节点"></a>HMaster 节点</h3><ul>
-<li>管理 HRegionServer，实现其负载均衡。</li>
-<li>管理和分配 HRegion，比如在 HRegion split 时分配新的 HRegion；在 HRegionServer 退出时迁移其内的 HRegion 到其他 HRegionServer 上。</li>
-<li>实现 DDL 操作（Data Definition Language，namespace 和 table 的增删改，column familiy 的增删改等）。</li>
-<li>管理 namespace 和 table 的元数据（实际存储在 HDFS 上）。</li>
-<li>权限控制（ACL）。</li>
-</ul>
-<h3 id="HRegionServer-节点"><a href="#HRegionServer-节点" class="headerlink" title="HRegionServer 节点"></a>HRegionServer 节点</h3><ul>
-<li>存放和管理本地 HRegion。</li>
-<li>读写 HDFS，管理 Table 中的数据。</li>
-<li>Client 直接通过 HRegionServer 读写数据（从 HMaster 中获取元数据，找到 RowKey 所在的 HRegion&#x2F;HRegionServer 后）。</li>
-</ul>
-<h3 id="ZooKeeper-集群协调系统"><a href="#ZooKeeper-集群协调系统" class="headerlink" title="ZooKeeper 集群协调系统"></a>ZooKeeper 集群协调系统</h3><ul>
-<li>存放整个 HBase 集群的元数据以及集群的状态信息。</li>
-<li>实现 HMaster 主从节点的 failover。</li>
-</ul>
-<p>HBase Client 通过 RPC 方式和 HMaster、HRegionServer 通信；一个 HRegionServer 可以存放 1000 个 HRegion；底层 Table 数据存储于 HDFS 中，而 HRegion 所处理的数据尽量和数据所在的 DataNode 在一起，实现数据的本地化；数据本地化并不是总能实现，比如在 HRegion 移动(如因 Split)时，需要等下一次 Compact 才能继续回到本地化。<br>《An In-Depth Look At The HBase Architecture》的架构图<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916578621-e7f149be-14ec-4a2d-b62e-6fcbe2acacf7.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u8bc90172&margin=%5Bobject%20Object%5D&name=image.png&originHeight=343&originWidth=632&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=108396&status=done&style=none&taskId=u04136b8b-47ca-414a-99ef-8f070c7ddb5&title=" alt="image.png"><br>这个架构图比较清晰的表达了 HMaster 和 NameNode 都支持多个热备份，使用 ZooKeeper 来做协调；ZooKeeper 并不是云般神秘，它一般由三台机器组成一个集群，内部使用 PAXOS 算法支持三台 Server 中的一台宕机，也有使用五台机器的，此时则可以支持同时两台宕机，既少于半数的宕机，然而随着机器的增加，它的性能也会下降；RegionServer 和 DataNode 一般会放在相同的 Server 上实现数据的本地化。</p>
-<h2 id="HRegion"><a href="#HRegion" class="headerlink" title="HRegion"></a>HRegion</h2><p>HBase 使用 RowKey 将表水平切割成多个 HRegion，从 HMaster 的角度，每个 HRegion 都纪录了它的 StartKey 和 EndKey（第一个 HRegion 的 StartKey 为空，最后一个 HRegion 的 EndKey 为空），由于 RowKey 是排序的，因而 Client 可以通过 HMaster 快速的定位每个 RowKey 在哪个 HRegion 中。HRegion 由 HMaster 分配到相应的 HRegionServer 中，然后由 HRegionServer 负责 HRegion 的启动和管理，和 Client 的通信，负责数据的读(使用 HDFS)。每个 HRegionServer 可以同时管理 1000 个左右的 HRegion（这个数字怎么来的？没有从代码中看到限制，难道是出于经验？超过 1000 个会引起性能问题？来回答这个问题：感觉这个 1000 的数字是从 BigTable 的论文中来的（5 Implementation 节）：Each tablet server manages a set of tablets(typically we have somewhere between ten to a thousand tablets per tablet server)）。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916578679-bdc90194-2fa0-4548-9d6a-dc05c68b2b28.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uf01c9495&margin=%5Bobject%20Object%5D&name=image.png&originHeight=337&originWidth=724&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=108162&status=done&style=none&taskId=u6b6133cb-a01c-4ce1-9c25-07763a60d97&title=" alt="image.png"></p>
-<h2 id="HMaster"><a href="#HMaster" class="headerlink" title="HMaster"></a>HMaster</h2><p>HMaster 没有单点故障问题，可以启动多个 HMaster，通过 ZooKeeper 的 Master Election 机制保证同时只有一个 HMaster 出于 Active 状态，其他的 HMaster 则处于热备份状态。一般情况下会启动两个 HMaster，非 Active 的 HMaster 会定期的和 Active HMaster 通信以获取其最新状态，从而保证它是实时更新的，因而如果启动了多个 HMaster 反而增加了 Active HMaster 的负担。前文已经介绍过了 HMaster 的主要用于 HRegion 的分配和管理，DDL(Data Definition Language，既 Table 的新建、删除、修改等)的实现等，既它主要有两方面的职责：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916578676-90123c3d-eef5-4a0f-9854-893368a11cb3.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u78a55d4e&margin=%5Bobject%20Object%5D&name=image.png&originHeight=367&originWidth=722&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=86163&status=done&style=none&taskId=u176d4cf8-2a32-44ce-89a5-46dfff7582d&title=" alt="image.png"></p>
-<h3 id="协调-HRegionServer"><a href="#协调-HRegionServer" class="headerlink" title="协调 HRegionServer"></a>协调 HRegionServer</h3><ul>
-<li>启动时 HRegion 的分配，以及负载均衡和修复时 HRegion 的重新分配。</li>
-<li>监控集群中所有 HRegionServer 的状态(通过 Heartbeat 和监听 ZooKeeper 中的状态)。</li>
-</ul>
-<h3 id="Admin-职能"><a href="#Admin-职能" class="headerlink" title="Admin 职能"></a>Admin 职能</h3><ul>
-<li>创建、删除、修改 Table 的定义。</li>
-</ul>
-<h2 id="ZooKeeper-协调者"><a href="#ZooKeeper-协调者" class="headerlink" title="ZooKeeper 协调者"></a>ZooKeeper 协调者</h2><p>ZooKeeper 为 HBase 集群提供协调服务，它管理着 HMaster 和 HRegionServer 的状态(available&#x2F;alive 等)，并且会在它们宕机时通知给 HMaster，从而 HMaster 可以实现 HMaster 之间的 failover，或对宕机的 HRegionServer 中的 HRegion 集合的修复(将它们分配给其他的 HRegionServer)。ZooKeeper 集群本身使用一致性协议(PAXOS 协议)保证每个节点状态的一致性。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916578733-c859758f-8f4f-4919-a401-76ece989c145.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u355c5a55&margin=%5Bobject%20Object%5D&name=image.png&originHeight=318&originWidth=703&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=100372&status=done&style=none&taskId=u8d5eb963-5e89-4827-87e6-99f933cf92d&title=" alt="image.png"></p>
-<h2 id="How-The-Components-Work-Together"><a href="#How-The-Components-Work-Together" class="headerlink" title="How The Components Work Together"></a>How The Components Work Together</h2><p>ZooKeeper 协调集群所有节点的共享信息，在 HMaster 和 HRegionServer 连接到 ZooKeeper 后创建 Ephemeral 节点，并使用 Heartbeat 机制维持这个节点的存活状态，如果某个 Ephemeral 节点实效，则 HMaster 会收到通知，并做相应的处理。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916580371-8380eb6c-c579-418b-be2b-48b0f83658b0.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u09e4cba8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=329&originWidth=722&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=116454&status=done&style=none&taskId=u3c9ac6e6-13d4-46c1-b3fa-95947b15824&title=" alt="image.png"><br>另外，HMaster 通过监听 ZooKeeper 中的 Ephemeral 节点(默认：&#x2F;hbase&#x2F;rs&#x2F;*)来监控 HRegionServer 的加入和宕机。在第一个 HMaster 连接到 ZooKeeper 时会创建 Ephemeral 节点(默认：&#x2F;hbasae&#x2F;master)来表示 Active 的 HMaster，其后加进来的 HMaster 则监听该 Ephemeral 节点，如果当前 Active 的 HMaster 宕机，则该节点消失，因而其他 HMaster 得到通知，而将自身转换成 Active 的 HMaster，在变为 Active 的 HMaster 之前，它会创建在&#x2F;hbase&#x2F;back-masters&#x2F;下创建自己的 Ephemeral 节点。</p>
-<h3 id="HBase-的第一次读写"><a href="#HBase-的第一次读写" class="headerlink" title="HBase 的第一次读写"></a>HBase 的第一次读写</h3><p>在 HBase 0.96 以前，HBase 有两个特殊的 Table：-ROOT-和.META.（如<a href="http://research.google.com/archive/bigtable-osdi06.pdf">BigTable</a>中的设计），其中-ROOT- Table 的位置存储在 ZooKeeper，它存储了.META. Table 的 RegionInfo 信息，并且它只能存在一个 HRegion，而.META. Table 则存储了用户 Table 的 RegionInfo 信息，它可以被切分成多个 HRegion，因而对第一次访问用户 Table 时，首先从 ZooKeeper 中读取-ROOT- Table 所在 HRegionServer；然后从该 HRegionServer 中根据请求的 TableName，RowKey 读取.META. Table 所在 HRegionServer；最后从该 HRegionServer 中读取.META. Table 的内容而获取此次请求需要访问的 HRegion 所在的位置，然后访问该 HRegionSever 获取请求的数据，这需要三次请求才能找到用户 Table 所在的位置，然后第四次请求开始获取真正的数据。当然为了提升性能，客户端会缓存-ROOT- Table 位置以及-ROOT-&#x2F;.META. Table 的内容。如下图所示：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916580326-61fe3d03-5e26-4113-a242-d514c6e314a2.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u6618f3ca&margin=%5Bobject%20Object%5D&name=image.png&originHeight=228&originWidth=399&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=45988&status=done&style=none&taskId=uc4946914-9a62-4a41-aab7-e197f2ede54&title=" alt="image.png"><br>可是即使客户端有缓存，在初始阶段需要三次请求才能直到用户 Table 真正所在的位置也是性能低下的，而且真的有必要支持那么多的 HRegion 吗？或许对 Google 这样的公司来说是需要的，但是对一般的集群来说好像并没有这个必要。在 BigTable 的论文中说，每行 METADATA 存储 1KB 左右数据，中等大小的 Tablet(HRegion)在 128MB 左右，3 层位置的 Schema 设计可以支持 2^34 个 Tablet(HRegion)。即使去掉-ROOT- Table，也还可以支持 2^17(131072)个 HRegion， 如果每个 HRegion 还是 128MB，那就是 16TB，这个貌似不够大，但是现在的 HRegion 的最大大小都会设置的比较大，比如我们设置了 2GB，此时支持的大小则变成了 4PB，对一般的集群来说已经够了，因而在 HBase 0.96 以后去掉了-ROOT- Table，只剩下这个特殊的目录表叫做 Meta Table(hbase:meta)，它存储了集群中所有用户 HRegion 的位置信息，而 ZooKeeper 的节点中(&#x2F;hbase&#x2F;meta-region-server)存储的则直接是这个 Meta Table 的位置，并且这个 Meta Table 如以前的-ROOT- Table 一样是不可 split 的。这样，客户端在第一次访问用户 Table 的流程就变成了：</p>
-<ul>
-<li>从 ZooKeeper(&#x2F;hbase&#x2F;meta-region-server)中获取 hbase:meta 的位置（HRegionServer 的位置），缓存该位置信息。</li>
-<li>从 HRegionServer 中查询用户 Table 对应请求的 RowKey 所在的 HRegionServer，缓存该位置信息。</li>
-<li>从查询到 HRegionServer 中读取 Row。</li>
-</ul>
-<p>从这个过程中，我们发现客户会缓存这些位置信息，然而第二步它只是缓存当前 RowKey 对应的 HRegion 的位置，因而如果下一个要查的 RowKey 不在同一个 HRegion 中，则需要继续查询 hbase:meta 所在的 HRegion，然而随着时间的推移，客户端缓存的位置信息越来越多，以至于不需要再次查找 hbase:meta Table 的信息，除非某个 HRegion 因为宕机或 Split 被移动，此时需要重新查询并且更新缓存。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916580741-c98bab14-3341-4784-9af5-cbad496ba448.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u2d56a83a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=356&originWidth=590&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=75992&status=done&style=none&taskId=u1bb7d5f9-92df-4a3c-a110-20319264562&title=" alt="image.png"></p>
-<h3 id="hbase-meta-表"><a href="#hbase-meta-表" class="headerlink" title="hbase:meta 表"></a>hbase:meta 表</h3><p>hbase:meta 表存储了所有用户 HRegion 的位置信息，它的 RowKey 是：tableName,regionStartKey,regionId,replicaId 等，它只有 info 列族，这个列族包含三个列，他们分别是：info:regioninfo 列是 RegionInfo 的 proto 格式：regionId,tableName,startKey,endKey,offline,split,replicaId；info:server 格式：HRegionServer 对应的 server:port；info:serverstartcode 格式是 HRegionServer 的启动时间戳。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916580891-6feb81e6-8d18-4d3c-9583-be28019444e0.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u9776aea4&margin=%5Bobject%20Object%5D&name=image.png&originHeight=362&originWidth=736&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=115586&status=done&style=none&taskId=u6aecdbed-2fa8-4c2d-9f07-d26905069e2&title=" alt="image.png"></p>
-<h2 id="HRegionServer-详解"><a href="#HRegionServer-详解" class="headerlink" title="HRegionServer 详解"></a>HRegionServer 详解</h2><p>HRegionServer 一般和 DataNode 在同一台机器上运行，实现数据的本地性。HRegionServer 包含多个 HRegion，由 WAL(HLog)、BlockCache、MemStore、HFile 组成。</p>
-<ol>
-<li>WAL 即 Write Ahead Log，在早期版本中称为 HLog，它是 HDFS 上的一个文件，如其名字所表示的，所有写操作都会先保证将数据写入这个 Log 文件后，才会真正更新 MemStore，最后写入 HFile 中。采用这种模式，可以保证 HRegionServer 宕机后，我们依然可以从该 Log 文件中读取数据，Replay 所有的操作，而不至于数据丢失。这个 Log 文件会定期 Roll 出新的文件而删除旧的文件(那些已持久化到 HFile 中的 Log 可以删除)。WAL 文件存储在&#x2F;hbase&#x2F;WALs&#x2F;${HRegionServer_Name}的目录中(在 0.94 之前，存储在&#x2F;hbase&#x2F;.logs&#x2F;目录中)，一般一个 HRegionServer 只有一个 WAL 实例，也就是说一个 HRegionServer 的所有 WAL 写都是串行的(就像 log4j 的日志写也是串行的)，这当然会引起性能问题，因而在 HBase 1.0 之后，通过 <a href="https://issues.apache.org/jira/browse/HBASE-5699">HBASE-5699</a> 实现了多个 WAL 并行写(MultiWAL)，该实现采用 HDFS 的多个管道写，以单个 HRegion 为单位。关于 WAL 可以参考 Wikipedia 的 <a href="https://en.wikipedia.org/wiki/Write-ahead_logging">Write-Ahead Logging</a> 。顺便吐槽一句，英文版的维基百科竟然能毫无压力的正常访问了，这是某个 GFW 的疏忽还是以后的常态？</li>
-<li>BlockCache 是一个读缓存，即“引用局部性”原理（也应用于 CPU，<a href="http://baike.baidu.com/link?url=Dh2u9KvowXcl2PloHJFTB9vEOoVS3WxPhDCVvbQGL_piyKFQ2iTHYAYf5mLAsFrcBUig6NC7A4-Aki61qnGCTK#3_1">分空间局部性和时间局部性</a>，空间局部性是指 CPU 在某一时刻需要某个数据，那么有很大的概率在一下时刻它需要的数据在其附近；时间局部性是指某个数据在被访问过一次后，它有很大的概率在不久的将来会被再次的访问），将数据预读取到内存中，以提升读的性能。HBase 中提供两种 BlockCache 的实现：默认 on-heap LruBlockCache 和 BucketCache(通常是 off-heap)。通常 BucketCache 的性能要差于 LruBlockCache，然而由于 GC 的影响，LruBlockCache 的延迟会变的不稳定，而 BucketCache 由于是自己管理 BlockCache，而不需要 GC，因而它的延迟通常比较稳定，这也是有些时候需要选用 BucketCache 的原因。这篇文章 <a href="http://www.n10k.com/blog/blockcache-101/">BlockCache101</a> 对 on-heap 和 off-heap 的 BlockCache 做了详细的比较。</li>
-<li>HRegion 是一个 Table 中的一个 Region 在一个 HRegionServer 中的表达。一个 Table 可以有一个或多个 Region，他们可以在一个相同的 HRegionServer 上，也可以分布在不同的 HRegionServer 上，一个 HRegionServer 可以有多个 HRegion，他们分别属于不同的 Table。HRegion 由多个 Store(HStore)构成，每个 HStore 对应了一个 Table 在这个 HRegion 中的一个 Column Family，即每个 Column Family 就是一个集中的存储单元，因而最好将具有相近 IO 特性的 Column 存储在一个 Column Family，以实现高效读取(数据局部性原理，可以提高缓存的命中率)。HStore 是 HBase 中存储的核心，它实现了读写 HDFS 功能，一个 HStore 由一个 MemStore 和 0 个或多个 StoreFile 组成。<ul>
-<li>MemStore 是一个写缓存(In Memory Sorted Buffer)，所有数据的写在完成 WAL 日志写后，会 写入 MemStore 中，由 MemStore 根据一定的算法将数据 Flush 到地层 HDFS 文件中(HFile)，通常每个 HRegion 中的每个 Column Family 有一个自己的 MemStore。</li>
-<li>HFile(StoreFile) 用于存储 HBase 的数据(Cell&#x2F;KeyValue)。在 HFile 中的数据是按 RowKey、Column Family、Column 排序，对相同的 Cell(即这三个值都一样)，则按 timestamp 倒序排列。</li>
-</ul>
-</li>
-</ol>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916581299-289e4273-4207-453d-9a8f-664f4911c72c.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u35254fb8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=366&originWidth=675&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=95333&status=done&style=none&taskId=u12039456-1add-4c7c-958a-c13ce2debd8&title=" alt="image.png"><br>虽然上面这张图展现的是最新的 HRegionServer 的架构(但是并不是那么的精确)，但是我一直比较喜欢看以下这张图，即使它展现的应该是 0.94 以前的架构。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916581512-9c74e462-666b-434c-8a29-8d2dcc9afd98.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u71a1066c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=347&originWidth=553&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=214681&status=done&style=none&taskId=u3a1655c4-b13b-4c95-a9d6-3fc382b506b&title=" alt="image.png"></p>
-<h3 id="HRegionServer-中数据写流程图解"><a href="#HRegionServer-中数据写流程图解" class="headerlink" title="HRegionServer 中数据写流程图解"></a>HRegionServer 中数据写流程图解</h3><p>当客户端发起一个 Put 请求时，首先它从 hbase:meta 表中查出该 Put 数据最终需要去的 HRegionServer。然后客户端将 Put 请求发送给相应的 HRegionServer，在 HRegionServer 中它首先会将该 Put 操作写入 WAL 日志文件中(Flush 到磁盘中)。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916582098-1768ce69-621c-42ab-8e9f-c088e8777cca.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ub4d83a95&margin=%5Bobject%20Object%5D&name=image.png&originHeight=363&originWidth=716&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=71683&status=done&style=none&taskId=u8836b841-21cd-45ad-ad75-2b5427b07bb&title=" alt="image.png"><br>写完 WAL 日志文件后，HRegionServer 根据 Put 中的 TableName 和 RowKey 找到对应的 HRegion，并根据 Column Family 找到对应的 HStore，并将 Put 写入到该 HStore 的 MemStore 中。此时写成功，并返回通知客户端。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916582636-fd38aaea-d523-4b11-b13c-1efdef987fd7.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uf32f92cc&margin=%5Bobject%20Object%5D&name=image.png&originHeight=298&originWidth=664&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=63155&status=done&style=none&taskId=u30b36f42-9271-4e99-b1dd-7ce3205c36d&title=" alt="image.png"></p>
-<h3 id="MemStore-Flush"><a href="#MemStore-Flush" class="headerlink" title="MemStore Flush"></a>MemStore Flush</h3><p>MemStore 是一个 In Memory Sorted Buffer，在每个 HStore 中都有一个 MemStore，即它是一个 HRegion 的一个 Column Family 对应一个实例。它的排列顺序以 RowKey、Column Family、Column 的顺序以及 Timestamp 的倒序，如下所示：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916582832-94bc8fd5-adc7-418c-9d39-f165199fa60e.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u512fd7af&margin=%5Bobject%20Object%5D&name=image.png&originHeight=351&originWidth=719&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=106803&status=done&style=none&taskId=u85f74483-7f18-4a00-a4e7-60cabcf63e6&title=" alt="image.png"><br>每一次 Put&#x2F;Delete 请求都是先写入到 MemStore 中，当 MemStore 满后会 Flush 成一个新的 StoreFile(底层实现是 HFile)，即一个 HStore(Column Family)可以有 0 个或多个 StoreFile(HFile)。有以下三种情况可以触发 MemStore 的 Flush 动作，需要注意的是 MemStore 的最小 Flush 单元是 HRegion 而不是单个 MemStore。据说这是 Column Family 有个数限制的其中一个原因，估计是因为太多的 Column Family 一起 Flush 会引起性能问题？具体原因有待考证。</p>
-<ol>
-<li>当一个 HRegion 中的所有 MemStore 的大小总和超过了 hbase.hregion.memstore.flush.size 的大小，默认 128MB。此时当前的 HRegion 中所有的 MemStore 会 Flush 到 HDFS 中。</li>
-<li>当全局 MemStore 的大小超过了 hbase.regionserver.global.memstore.upperLimit 的大小，默认 40％的内存使用量。此时当前 HRegionServer 中所有 HRegion 中的 MemStore 都会 Flush 到 HDFS 中，Flush 顺序是 MemStore 大小的倒序（一个 HRegion 中所有 MemStore 总和作为该 HRegion 的 MemStore 的大小还是选取最大的 MemStore 作为参考？有待考证），直到总体的 MemStore 使用量低于 hbase.regionserver.global.memstore.lowerLimit，默认 38%的内存使用量。</li>
-<li>当前 HRegionServer 中 WAL 的大小超过了 hbase.regionserver.hlog.blocksize _ hbase.regionserver.max.logs 的数量，当前 HRegionServer 中所有 HRegion 中的 MemStore 都会 Flush 到 HDFS 中，Flush 使用时间顺序，最早的 MemStore 先 Flush 直到 WAL 的数量少于 hbase.regionserver.hlog.blocksize _ hbase.regionserver.max.logs。<a href="http://blog.sematext.com/2012/07/16/hbase-memstore-what-you-should-know/">这里</a>说这两个相乘的默认大小是 2GB，查代码，hbase.regionserver.max.logs 默认值是 32，而 hbase.regionserver.hlog.blocksize 是 HDFS 的默认 blocksize，32MB。但不管怎么样，因为这个大小超过限制引起的 Flush 不是一件好事，可能引起长时间的延迟，因而这篇文章给的建议：“Hint: keep hbase.regionserver.hlog.blocksize _ hbase.regionserver.maxlogs just a bit above hbase.regionserver.global.memstore.lowerLimit _ HBASE_HEAPSIZE.”。并且需要注意，<a href="http://hbase.apache.org/book.html#_memstore_flush">这里</a>给的描述是有错的(虽然它是官方的文档)。</li>
-</ol>
-<p>在 MemStore Flush 过程中，还会在尾部追加一些 meta 数据，其中就包括 Flush 时最大的 WAL sequence 值，以告诉 HBase 这个 StoreFile 写入的最新数据的序列，那么在 Recover 时就直到从哪里开始。在 HRegion 启动时，这个 sequence 会被读取，并取最大的作为下一次更新时的起始 sequence。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916583046-e073a721-456c-4607-89f7-ec5a222e50f0.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u8e41b38a&margin=%5Bobject%20Object%5D&name=image.png&originHeight=248&originWidth=622&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=64652&status=done&style=none&taskId=u01119a37-ba73-457e-89cf-4e03d0108f9&title=" alt="image.png"></p>
-<h2 id="HFile-格式"><a href="#HFile-格式" class="headerlink" title="HFile 格式"></a>HFile 格式</h2><p>HBase 的数据以 KeyValue(Cell)的形式顺序的存储在 HFile 中，在 MemStore 的 Flush 过程中生成 HFile，由于 MemStore 中存储的 Cell 遵循相同的排列顺序，因而 Flush 过程是顺序写，我们直到磁盘的顺序写性能很高，因为不需要不停的移动磁盘指针。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916583239-35f30a61-6003-4baa-b78e-d0406b53f458.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uec0329c3&margin=%5Bobject%20Object%5D&name=image.png&originHeight=351&originWidth=698&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=115221&status=done&style=none&taskId=u3b84bd8d-8533-4733-9068-58f3d383a88&title=" alt="image.png"><br>HFile 参考 BigTable 的 SSTable 和 Hadoop 的<a href="http://hadoop.apache.org/docs/current/api/org/apache/hadoop/io/file/tfile/TFile.html">TFile</a>实现，从 HBase 开始到现在，HFile 经历了三个版本，其中 V2 在 0.92 引入，V3 在 0.98 引入。首先我们来看一下 V1 的格式：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916583656-2174688c-da96-443f-a46f-d8e391ffc97b.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u9844c88d&margin=%5Bobject%20Object%5D&name=image.png&originHeight=160&originWidth=554&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=72628&status=done&style=none&taskId=u55f4c3b1-daf2-4893-935c-09a8dd5acb9&title=" alt="image.png"><br>V1 的 HFile 由多个 Data Block、Meta Block、FileInfo、Data Index、Meta Index、Trailer 组成，其中 Data Block 是 HBase 的最小存储单元，在前文中提到的 BlockCache 就是基于 Data Block 的缓存的。一个 Data Block 由一个魔数和一系列的 KeyValue(Cell)组成，魔数是一个随机的数字，用于表示这是一个 Data Block 类型，以快速监测这个 Data Block 的格式，防止数据的破坏。Data Block 的大小可以在创建 Column Family 时设置(HColumnDescriptor.setBlockSize())，默认值是 64KB，大号的 Block 有利于顺序 Scan，小号 Block 利于随机查询，因而需要权衡。Meta 块是可选的，FileInfo 是固定长度的块，它纪录了文件的一些 Meta 信息，例如：AVG_KEY_LEN, AVG_VALUE_LEN, LAST_KEY, COMPARATOR, MAX_SEQ_ID_KEY 等。Data Index 和 Meta Index 纪录了每个 Data 块和 Meta 块的其实点、未压缩时大小、Key(起始 RowKey？)等。Trailer 纪录了 FileInfo、Data Index、Meta Index 块的起始位置，Data Index 和 Meta Index 索引的数量等。其中 FileInfo 和 Trailer 是固定长度的。<br>HFile 里面的每个 KeyValue 对就是一个简单的 byte 数组。但是这个 byte 数组里面包含了很多项，并且有固定的结构。我们来看看里面的具体结构：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916583953-34c63a35-4c72-417a-bb89-8902777196ee.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ufac2071c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=93&originWidth=553&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=68710&status=done&style=none&taskId=u99911b0c-045d-4a97-bbe0-73cbdafbed4&title=" alt="image.png"><br>开始是两个固定长度的数值，分别表示 Key 的长度和 Value 的长度。紧接着是 Key，开始是固定长度的数值，表示 RowKey 的长度，紧接着是 RowKey，然后是固定长度的数值，表示 Family 的长度，然后是 Family，接着是 Qualifier，然后是两个固定长度的数值，表示 Time Stamp 和 Key Type（Put&#x2F;Delete）。Value 部分没有这么复杂的结构，就是纯粹的二进制数据了。随着 HFile 版本迁移，KeyValue(Cell)的格式并未发生太多变化，只是在 V3 版本，尾部添加了一个可选的 Tag 数组。<br>HFileV1 版本的在实际使用过程中发现它占用内存多，并且 Bloom File 和 Block Index 会变的很大，而引起启动时间变长。其中每个 HFile 的 Bloom Filter 可以增长到 100MB，这在查询时会引起性能问题，因为每次查询时需要加载并查询 Bloom Filter，100MB 的 Bloom Filer 会引起很大的延迟；另一个，Block Index 在一个 HRegionServer 可能会增长到总共 6GB，HRegionServer 在启动时需要先加载所有这些 Block Index，因而增加了启动时间。为了解决这些问题，在 0.92 版本中引入 HFileV2 版本：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916584996-bbbb6bb6-fc78-4a2c-8547-8ec1dbf366a1.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u7e338f01&margin=%5Bobject%20Object%5D&name=image.png&originHeight=418&originWidth=566&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=59249&status=done&style=none&taskId=u3169ce73-eb5d-4b8b-8c12-fe22df00816&title=" alt="image.png"><br>在这个版本中，Block Index 和 Bloom Filter 添加到了 Data Block 中间，而这种设计同时也减少了写的内存使用量；另外，为了提升启动速度，在这个版本中还引入了延迟读的功能，即在 HFile 真正被使用时才对其进行解析。<br>FileV3 版本基本和 V2 版本相比，并没有太大的改变，它在 KeyValue(Cell)层面上添加了 Tag 数组的支持；并在 FileInfo 结构中添加了和 Tag 相关的两个字段。关于具体 HFile 格式演化介绍，可以参考<a href="http://hbase.apache.org/book.html#_hfile_format_2">这里</a>。<br>对 HFileV2 格式具体分析，它是一个多层的类 B+树索引，采用这种设计，可以实现查找不需要读取整个文件：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916585756-2c38fca8-e68c-4d91-a8dd-7d557a9b30bc.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u667d00a9&margin=%5Bobject%20Object%5D&name=image.png&originHeight=349&originWidth=688&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=107524&status=done&style=none&taskId=u8dc1ef81-99a0-428d-b317-b7c86f91e80&title=" alt="image.png"><br>Data Block 中的 Cell 都是升序排列，每个 block 都有它自己的 Leaf-Index，每个 Block 的最后一个 Key 被放入 Intermediate-Index 中，Root-Index 指向 Intermediate-Index。在 HFile 的末尾还有 Bloom Filter 用于快速定位那么没有在某个 Data Block 中的 Row；TimeRange 信息用于给那些使用时间查询的参考。在 HFile 打开时，这些索引信息都被加载并保存在内存中，以增加以后的读取性能。</p>
-<h2 id="HBase-读的实现"><a href="#HBase-读的实现" class="headerlink" title="HBase 读的实现"></a>HBase 读的实现</h2><p>通过前文的描述，我们知道在 HBase 写时，相同 Cell(RowKey&#x2F;ColumnFamily&#x2F;Column 相同)并不保证在一起，甚至删除一个 Cell 也只是写入一个新的 Cell，它含有 Delete 标记，而不一定将一个 Cell 真正删除了，因而这就引起了一个问题，如何实现读的问题？要解决这个问题，我们先来分析一下相同的 Cell 可能存在的位置：首先对新写入的 Cell，它会存在于 MemStore 中；然后对之前已经 Flush 到 HDFS 中的 Cell，它会存在于某个或某些 StoreFile(HFile)中；最后，对刚读取过的 Cell，它可能存在于 BlockCache 中。既然相同的 Cell 可能存储在三个地方，在读取的时候只需要扫瞄这三个地方，然后将结果合并即可(Merge Read)，在 HBase 中扫瞄的顺序依次是：BlockCache、MemStore、StoreFile(HFile)。其中 StoreFile 的扫瞄先会使用 Bloom Filter 过滤那些不可能符合条件的 HFile，然后使用 Block Index 快速定位 Cell，并将其加载到 BlockCache 中，然后从 BlockCache 中读取。我们知道一个 HStore 可能存在多个 StoreFile(HFile)，此时需要扫瞄多个 HFile，如果 HFile 过多又是会引起性能问题。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916585461-55084b02-31ea-4bb5-9df2-2ab8931fad2c.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u650f6de0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=278&originWidth=769&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=107309&status=done&style=none&taskId=ueb6d7da0-a4dc-47eb-bce5-8a4918d43e7&title=" alt="image.png"></p>
-<h2 id="Compaction"><a href="#Compaction" class="headerlink" title="Compaction"></a>Compaction</h2><p>MemStore 每次 Flush 会创建新的 HFile，而过多的 HFile 会引起读的性能问题，那么如何解决这个问题呢？HBase 采用 Compaction 机制来解决这个问题，有点类似 Java 中的 GC 机制，起初 Java 不停的申请内存而不释放，增加性能，然而天下没有免费的午餐，最终我们还是要在某个条件下去收集垃圾，很多时候需要 Stop-The-World，这种 Stop-The-World 有些时候也会引起很大的问题，因而设计是一种权衡，没有完美的。还是类似 Java 中的 GC，在 HBase 中 Compaction 分为两种：Minor Compaction 和 Major Compaction。</p>
-<ol>
-<li>Minor Compaction 是指选取一些小的、相邻的 StoreFile 将他们合并成一个更大的 StoreFile，在这个过程中不会处理已经 Deleted 或 Expired 的 Cell。一次 Minor Compaction 的结果是更少并且更大的 StoreFile。（这个是对的吗？BigTable 中是这样描述 Minor Compaction 的：As write operations execute, the size of the memtable in- creases. When the memtable size reaches a threshold, the memtable is frozen, a new memtable is created, and the frozen memtable is converted to an SSTable and written to GFS. This minor compaction process has two goals: it shrinks the memory usage of the tablet server, and it reduces the amount of data that has to be read from the commit log during recovery if this server dies. Incom- ing read and write operations can continue while com- pactions occur. 也就是说它将 memtable 的数据 flush 的一个 HFile&#x2F;SSTable 称为一次 Minor Compaction）</li>
-<li>Major Compaction 是指将所有的 StoreFile 合并成一个 StoreFile，在这个过程中，标记为 Deleted 的 Cell 会被删除，而那些已经 Expired 的 Cell 会被丢弃，那些已经超过最多版本数的 Cell 会被丢弃。一次 Major Compaction 的结果是一个 HStore 只有一个 StoreFile 存在。Major Compaction 可以手动或自动触发，然而由于它会引起很多的 IO 操作而引起性能问题，因而它一般会被安排在周末、凌晨等集群比较闲的时间。</li>
-</ol>
-<p>更形象一点，如下面两张图分别表示 Minor Compaction 和 Major Compaction。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916585472-7b9745d6-455b-458e-a5e5-a751cc03fadd.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ub1833466&margin=%5Bobject%20Object%5D&name=image.png&originHeight=329&originWidth=723&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=94709&status=done&style=none&taskId=u8358d499-81ee-4051-817d-9540dc51bc5&title=" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916585518-f8e5d988-133a-4f90-b87d-3370099c3bb1.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua80b4458&margin=%5Bobject%20Object%5D&name=image.png&originHeight=339&originWidth=653&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=93417&status=done&style=none&taskId=u2201da79-e7a4-4e5e-af63-b9e178ad60a&title=" alt="image.png"></p>
-<h2 id="HRegion-Split"><a href="#HRegion-Split" class="headerlink" title="HRegion Split"></a>HRegion Split</h2><p>最初，一个 Table 只有一个 HRegion，随着数据写入增加，如果一个 HRegion 到达一定的大小，就需要 Split 成两个 HRegion，这个大小由 hbase.hregion.max.filesize 指定，默认为 10GB。当 split 时，两个新的 HRegion 会在同一个 HRegionServer 中创建，它们各自包含父 HRegion 一半的数据，当 Split 完成后，父 HRegion 会下线，而新的两个子 HRegion 会向 HMaster 注册上线，处于负载均衡的考虑，这两个新的 HRegion 可能会被 HMaster 分配到其他的 HRegionServer 中。关于 Split 的详细信息，可以参考这篇文章：<a href="http://hortonworks.com/blog/apache-hbase-region-splitting-and-merging/">《Apache HBase Region Splitting and Merging》</a>。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916586158-3ba24d92-6644-4a0f-91a1-d00da5867a28.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u7d90fe99&margin=%5Bobject%20Object%5D&name=image.png&originHeight=361&originWidth=675&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=85469&status=done&style=none&taskId=u7e157502-2bf1-4daf-9c17-071a1dc9564&title=" alt="image.png"></p>
-<h2 id="HRegion-负载均衡"><a href="#HRegion-负载均衡" class="headerlink" title="HRegion 负载均衡"></a>HRegion 负载均衡</h2><p>在 HRegion Split 后，两个新的 HRegion 最初会和之前的父 HRegion 在相同的 HRegionServer 上，出于负载均衡的考虑，HMaster 可能会将其中的一个甚至两个重新分配的其他的 HRegionServer 中，此时会引起有些 HRegionServer 处理的数据在其他节点上，直到下一次 Major Compaction 将数据从远端的节点移动到本地节点。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916586722-3a111ac3-cc8a-4dfd-ab85-4e6f68fe4306.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ucfafb6f6&margin=%5Bobject%20Object%5D&name=image.png&originHeight=358&originWidth=714&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=113593&status=done&style=none&taskId=u3068847b-f220-4283-af84-153c8256a06&title=" alt="image.png"></p>
-<h2 id="HRegionServer-Recovery"><a href="#HRegionServer-Recovery" class="headerlink" title="HRegionServer Recovery"></a>HRegionServer Recovery</h2><p>当一台 HRegionServer 宕机时，由于它不再发送 Heartbeat 给 ZooKeeper 而被监测到，此时 ZooKeeper 会通知 HMaster，HMaster 会检测到哪台 HRegionServer 宕机，它将宕机的 HRegionServer 中的 HRegion 重新分配给其他的 HRegionServer，同时 HMaster 会把宕机的 HRegionServer 相关的 WAL 拆分分配给相应的 HRegionServer(将拆分出的 WAL 文件写入对应的目的 HRegionServer 的 WAL 目录中，并并写入对应的 DataNode 中），从而这些 HRegionServer 可以 Replay 分到的 WAL 来重建 MemStore。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916587040-3b89bd6c-f56a-4d12-b005-539cdc9e8aae.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u53643cd9&margin=%5Bobject%20Object%5D&name=image.png&originHeight=368&originWidth=708&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=133786&status=done&style=none&taskId=ued635896-8d3d-47e9-aaa1-848ae861ace&title=" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916587014-ac39bb9d-e5ab-48af-9f60-8389745baa26.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u22d50009&margin=%5Bobject%20Object%5D&name=image.png&originHeight=378&originWidth=724&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=79489&status=done&style=none&taskId=u3d4037a7-ea2b-4d85-8a02-fa381b36016&title=" alt="image.png"><br>HBase 架构简单总结 在 NoSQL 中，存在著名的 CAP 理论，即 Consistency、Availability、Partition Tolerance 不可全得，目前市场上基本上的 NoSQL 都采用 Partition Tolerance 以实现数据得水平扩展，来处理 Relational DataBase 遇到的无法处理数据量太大的问题，或引起的性能问题。因而只有剩下 C 和 A 可以选择。HBase 在两者之间选择了 Consistency，然后使用多个 HMaster 以及支持 HRegionServer 的 failure 监控、ZooKeeper 引入作为协调者等各种手段来解决 Availability 问题，然而当网络的 Split-Brain(Network Partition)发生时，它还是无法完全解决 Availability 的问题。从这个角度上，Cassandra 选择了 A，即它在网络 Split-Brain 时还是能正常写，而使用其他技术来解决 Consistency 的问题，如读的时候触发 Consistency 判断和处理。这是设计上的限制。<br>从实现上的优点</p>
-<ol>
-<li>HBase 采用强一致性模型，在一个写返回后，保证所有的读都读到相同的数据。</li>
-<li>通过 HRegion 动态 Split 和 Merge 实现自动扩展，并使用 HDFS 提供的多个数据备份功能，实现高可用性。</li>
-<li>采用 HRegionServer 和 DataNode 运行在相同的服务器上实现数据的本地化，提升读写性能，并减少网络压力。</li>
-<li>内建 HRegionServer 的宕机自动恢复。采用 WAL 来 Replay 还未持久化到 HDFS 的数据。</li>
-<li>可以无缝的和 Hadoop&#x2F;MapReduce 集成。</li>
-</ol>
-<p>实现上的缺点</p>
-<ol>
-<li>WAL 的 Replay 过程可能会很慢。</li>
-<li>灾难恢复比较复杂，也会比较慢。</li>
-<li>Major Compaction 会引起 IO Storm。</li>
-</ol>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.mapr.com/blog/in-depth-look-hbase-architecture/">https://www.mapr.com/blog/in-depth-look-hbase-architecture/</a><br><a href="http://jimbojw.com/wiki/index.php?title=Understanding_Hbase_and_BigTable">http://jimbojw.com/wiki/index.php?title=Understanding_Hbase_and_BigTable</a><br><a href="http://hbase.apache.org/book.html">http://hbase.apache.org/book.html</a><br><a href="http://www.searchtb.com/2011/01/understanding-hbase.html">http://www.searchtb.com/2011/01/understanding-hbase.html</a><br><a href="http://research.google.com/archive/bigtable-osdi06.pdf">http://research.google.com/archive/bigtable-osdi06.pdf</a></p>
-]]></content>
-      <categories>
-        <category>hbase</category>
-      </categories>
-      <tags>
-        <tag>HBase</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>HBase 系统架构</title>
     <url>/article/hbase/hbase-architecture/</url>
     <content><![CDATA[<p>本文基本是对 MapR 的官网文章<a href="https://mapr.com/blog/in-depth-look-hbase-architecture/">An In-Depth Look at the HBase Architecture</a>的翻译</p>
 <h2 id="HBase-存储架构"><a href="#HBase-存储架构" class="headerlink" title="HBase 存储架构"></a>HBase 存储架构</h2><p>HBase 采用 Master&#x2F;Slave 架构搭建集群，它隶属于 Hadoop 生态系统，由一下类型节点组成：HMaster 节点、HRegionServer 节点、ZooKeeper 集群，而在底层，它将数据存储于 HDFS 中，因而涉及到 HDFS 的 NameNode、DataNode 等，总体结构如下：<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1647916578858-a17a0bfb-0f8d-419b-885f-148ebbca588f.png#clientId=u7e4f54de-bf6f-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u723b4673&margin=%5Bobject%20Object%5D&name=image.png&originHeight=411&originWidth=711&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=240958&status=done&style=none&taskId=u454e491c-809a-4e79-83c8-a5682ce06d5&title=" alt="image.png"></p>
@@ -2441,6 +2441,61 @@ SET hive.default.fileformat&#x3D;Orc</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>JDK中的设计模式</title>
+    <url>/article/design-pattern/jdk-design-pattern/</url>
+    <content><![CDATA[<p>本文主要是归纳了 JDK 中所包含的设计模式，包括作用和其设计类图。</p>
+<h2 id="一、设计模式的作用"><a href="#一、设计模式的作用" class="headerlink" title="一、设计模式的作用"></a>一、设计模式的作用</h2><ol>
+<li>反复出现问题的解决方案</li>
+<li>增强软件的灵活性</li>
+<li>适应软件不断变化</li>
+</ol>
+<h2 id="二、设计模式的七大原则"><a href="#二、设计模式的七大原则" class="headerlink" title="二、设计模式的七大原则"></a>二、设计模式的七大原则</h2><ol>
+<li><strong>开闭原则 OCP</strong>（Open Close Principle），一个软件实体如类、模块和函数应该对扩展开放，对修改关闭。</li>
+<li><strong>里氏代换原则 LSP</strong>（Liskov Substitution Principle），子类可以扩展父类的功能，但不能改变父类原有的功能</li>
+<li><strong>依赖倒转原则 DIP</strong>（Dependence Inversion Principle），面向接口编程，依赖于抽象而不依赖于具体。</li>
+<li><strong>接口隔离原则 ISP</strong>（Interface Segregation Principle），建立单一接口，不要建立庞大臃肿的接口，尽量细化接口，接口中的方法尽量少。</li>
+<li><strong>合成复用原则 CRP</strong>（Composite Reuse Principle），要尽量的使用合成和聚合，而不是继承关系达到复用的目的</li>
+<li><strong>迪米特法则 LOD</strong>（Law Of Demeter），也叫最少知识原则 LKP(Least Knowledge Principle)，一个对象应该对其他对象保持最少的了解。</li>
+<li><strong>单一职责原则 SRP</strong>（Single Responsibility Principle），一个类只负责一项职责，应该仅有一个引起它变化的原因</li>
+</ol>
+<h2 id="三、JDK-中使用到的设计模式以及分析"><a href="#三、JDK-中使用到的设计模式以及分析" class="headerlink" title="三、JDK 中使用到的设计模式以及分析"></a>三、JDK 中使用到的设计模式以及分析</h2><h3 id="创建型模式"><a href="#创建型模式" class="headerlink" title="创建型模式"></a><strong>创建型模式</strong></h3><ol>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-singleton-pattern/">单例模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-factory-pattern/">简单工厂、工厂方法、抽象工厂模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-builder-pattern/">建造者模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-prototype-pattern/">原型模式</a></li>
+</ol>
+<h3 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a><strong>结构型模式</strong></h3><ol>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-adapter-pattern/">适配器模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-bridge-pattern/">桥接模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-composite-pattern/">组合模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-decorator-pattern/">装饰模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-facade-pattern/">外观模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-flyweight-pattern/">享元模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-proxy-pattern/">代理模式</a></li>
+</ol>
+<h3 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a><strong>行为型模式</strong></h3><ol>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-strategy-pattern/">策略模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-template-method-pattern/">模板方法模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-observer-pattern/">观察者模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-iterator-pattern/">迭代器模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-responsibility-pattern/">责任链模式</a></li>
+<li><a href="https://www.alicharles.com/article/design-pattern/jdk-command-pattern/">命令模式</a></li>
+<li>访问者模式</li>
+<li>状态模式</li>
+<li>备忘录模式</li>
+<li>中介者模式</li>
+<li>解释器模式</li>
+</ol>
+]]></content>
+      <categories>
+        <category>design-pattern</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>InnoDB中的页合并与分裂</title>
     <url>/article/mysql/mysql-page-merge-and-split/</url>
     <content><![CDATA[<p>原文链接：<br><a href="https://www.percona.com/blog/2017/04/10/innodb-page-merging-and-page-splitting/">https://www.percona.com/blog/2017/04/10/innodb-page-merging-and-page-splitting/</a><br><a href="https://www.percona.com/blog/2020/06/24/mysql-table-fragmentation-beware-of-bulk-insert-with-failure-or-rollback/">https://www.percona.com/blog/2020/06/24/mysql-table-fragmentation-beware-of-bulk-insert-with-failure-or-rollback/</a></p>
@@ -2503,61 +2558,6 @@ LEAF NODE #5: 57 records, 7524 bytes
       <tags>
         <tag>Mysql</tag>
         <tag>InnoDB</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>JDK中的设计模式</title>
-    <url>/article/design-pattern/jdk-design-pattern/</url>
-    <content><![CDATA[<p>本文主要是归纳了 JDK 中所包含的设计模式，包括作用和其设计类图。</p>
-<h2 id="一、设计模式的作用"><a href="#一、设计模式的作用" class="headerlink" title="一、设计模式的作用"></a>一、设计模式的作用</h2><ol>
-<li>反复出现问题的解决方案</li>
-<li>增强软件的灵活性</li>
-<li>适应软件不断变化</li>
-</ol>
-<h2 id="二、设计模式的七大原则"><a href="#二、设计模式的七大原则" class="headerlink" title="二、设计模式的七大原则"></a>二、设计模式的七大原则</h2><ol>
-<li><strong>开闭原则 OCP</strong>（Open Close Principle），一个软件实体如类、模块和函数应该对扩展开放，对修改关闭。</li>
-<li><strong>里氏代换原则 LSP</strong>（Liskov Substitution Principle），子类可以扩展父类的功能，但不能改变父类原有的功能</li>
-<li><strong>依赖倒转原则 DIP</strong>（Dependence Inversion Principle），面向接口编程，依赖于抽象而不依赖于具体。</li>
-<li><strong>接口隔离原则 ISP</strong>（Interface Segregation Principle），建立单一接口，不要建立庞大臃肿的接口，尽量细化接口，接口中的方法尽量少。</li>
-<li><strong>合成复用原则 CRP</strong>（Composite Reuse Principle），要尽量的使用合成和聚合，而不是继承关系达到复用的目的</li>
-<li><strong>迪米特法则 LOD</strong>（Law Of Demeter），也叫最少知识原则 LKP(Least Knowledge Principle)，一个对象应该对其他对象保持最少的了解。</li>
-<li><strong>单一职责原则 SRP</strong>（Single Responsibility Principle），一个类只负责一项职责，应该仅有一个引起它变化的原因</li>
-</ol>
-<h2 id="三、JDK-中使用到的设计模式以及分析"><a href="#三、JDK-中使用到的设计模式以及分析" class="headerlink" title="三、JDK 中使用到的设计模式以及分析"></a>三、JDK 中使用到的设计模式以及分析</h2><h3 id="创建型模式"><a href="#创建型模式" class="headerlink" title="创建型模式"></a><strong>创建型模式</strong></h3><ol>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-singleton-pattern/">单例模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-factory-pattern/">简单工厂、工厂方法、抽象工厂模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-builder-pattern/">建造者模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-prototype-pattern/">原型模式</a></li>
-</ol>
-<h3 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a><strong>结构型模式</strong></h3><ol>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-adapter-pattern/">适配器模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-bridge-pattern/">桥接模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-composite-pattern/">组合模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-decorator-pattern/">装饰模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-facade-pattern/">外观模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-flyweight-pattern/">享元模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-proxy-pattern/">代理模式</a></li>
-</ol>
-<h3 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a><strong>行为型模式</strong></h3><ol>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-strategy-pattern/">策略模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-template-method-pattern/">模板方法模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-observer-pattern/">观察者模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-iterator-pattern/">迭代器模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-responsibility-pattern/">责任链模式</a></li>
-<li><a href="https://www.alicharles.com/article/design-pattern/jdk-command-pattern/">命令模式</a></li>
-<li>访问者模式</li>
-<li>状态模式</li>
-<li>备忘录模式</li>
-<li>中介者模式</li>
-<li>解释器模式</li>
-</ol>
-]]></content>
-      <categories>
-        <category>design-pattern</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
@@ -2810,26 +2810,6 @@ public class Leaf extends Component&#123;
       </tags>
   </entry>
   <entry>
-    <title>JDK设计模式（五）适配器模式</title>
-    <url>/article/design-pattern/jdk-adapter-pattern/</url>
-    <content><![CDATA[<h2 id="1、定义"><a href="#1、定义" class="headerlink" title="1、定义"></a>1、定义</h2><p>将一个类的接口转换成客户希望的另外一个接口。Adapter 模式使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。</p>
-<h2 id="2、解决的问题"><a href="#2、解决的问题" class="headerlink" title="2、解决的问题"></a>2、解决的问题</h2><p>即 Adapter 模式使得原本由于接口不兼容而不能一起工作的那些类可以在一起工作。</p>
-<h2 id="3、模式中的角色"><a href="#3、模式中的角色" class="headerlink" title="3、模式中的角色"></a>3、模式中的角色</h2><p>目标接口（Target）：客户所期待的接口。目标可以是具体的或抽象的类，也可以是接口。<br>需要适配的类（Adaptee）：需要适配的类或适配者类。<br>适配器（Adapter）：通过包装一个需要适配的对象，把原接口转换成目标接口。</p>
-<h2 id="4、模式解读"><a href="#4、模式解读" class="headerlink" title="4、模式解读"></a>4、模式解读</h2><p>在 GoF 的设计模式中，对适配器模式讲了两种类型，类适配器模式和对象适配器模式。由于类适配器模式通过多重继承对一个接口与另一个接口进行匹配，而 C&#x3D;、java 等语言都不支持多重继承，因而这里只是介绍对象适配器。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648394415478-ce34ebc6-c75e-495c-a027-99fcaad03f52.png#clientId=udc1a5ed7-d307-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uc724e000&margin=%5Bobject%20Object%5D&name=image.png&originHeight=456&originWidth=861&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=53638&status=done&style=none&taskId=u2ad79016-5006-42e5-b81f-69fc567e84e&title=" alt="image.png"></p>
-<h2 id="5、JDK-涉及到的设计模式"><a href="#5、JDK-涉及到的设计模式" class="headerlink" title="5、JDK 涉及到的设计模式"></a>5、JDK 涉及到的设计模式</h2><p>InputStreamReader 类实现面向字节的输入输出向面向字符的输入输出的转换，使用适配器模式，以字符的方式从输入流中读取。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648394415547-22152ac8-e1bd-4b87-b5f8-2bb14a6d93c9.png#clientId=udc1a5ed7-d307-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua9a7001b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=382&originWidth=882&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=57629&status=done&style=none&taskId=u3ef724bd-031e-44d5-bcdf-12f0cb083d3&title=" alt="image.png"></p>
-<h2 id="6、模式总结"><a href="#6、模式总结" class="headerlink" title="6、模式总结"></a>6、模式总结</h2><h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><p>1、 通过适配器，客户端可以调用同一接口，因而对客户端来说是透明的。这样做更简单、更直接、更紧凑。<br>2、 复用了现存的类，解决了现存类和复用环境要求不一致的问题。<br>3、将目标类和适配者类解耦，通过引入一个适配器类重用现有的适配者类，而无需修改原有代码。<br>4、 一个对象适配器可以把多个不同的适配者类适配到同一个目标，也就是说，同一个适配器可以把适配者类和它的子类都适配到目标接口。</p>
-<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><p>对于对象适配器来说，更换适配器的实现过程比较复杂。</p>
-<h3 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h3><p>1、 系统需要使用现有的类，而这些类的接口不符合系统的接口。<br>2、 想要建立一个可以重用的类，用于与一些彼此之间没有太大关联的一些类，包括一些可能在将来引进的类一起工作。<br>3、 两个类所做的事情相同或相似，但是具有不同接口的时候。<br>4、 旧的系统开发的类已经实现了一些功能，但是客户端却只能以另外接口的形式访问，但我们不希望手动更改原有类的时候。<br>5、 使用第三方组件，组件接口定义和自己定义的不同，不希望修改自己的接口，但是要使用第三方组件接口的功能。</p>
-]]></content>
-      <categories>
-        <category>design-pattern</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JDK设计模式（八）装饰模式</title>
     <url>/article/design-pattern/jdk-decorator-pattern/</url>
     <content><![CDATA[<h2 id="1、定义"><a href="#1、定义" class="headerlink" title="1、定义"></a>1、定义</h2><p>动态地将责任附加到对象上，若要扩展功能，装饰者提供了比继承更有弹性的替代方案。</p>
@@ -2841,6 +2821,26 @@ public class Leaf extends Component&#123;
 <h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><p>1、 装饰模式与继承关系的目的都是要扩展对象的功能，但是装饰模式可以提供比继承更多的灵活性。装饰模式允许系统动态决定“贴上”一个需要的“装饰”，或者除掉一个不需要的“装饰”。继承关系则不同，继承关系是静态的，它在系统运行前就决定了。<br>2、通过使用不同的具体装饰类以及这些装饰类的排列组合，设计师可以创造出很多不同行为的组合。</p>
 <h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><p>由于使用装饰模式，可以比使用继承关系需要较少数目的类。使用较少的类，当然使设计比较易于进行。但是，在另一方面，使用装饰模式会产生比使用继承关系更多的对象。更多的对象会使得查错变得困难，特别是这些对象看上去都很相像。</p>
 <h3 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h3><p>1、 在不影响其他对象的情况下，以动态、透明的方式给单个对象添加职责。<br>2、处理那些可以撤消的职责。<br>3、当不能采用生成子类的方法进行扩充时。一种情况是，可能有大量独立的扩展，为支持每一种组合将产生大量的子类，使得子类数目呈爆炸性增长。另一种情况可能是因为类定义被隐藏，或类定义不能用于生成子类。</p>
+]]></content>
+      <categories>
+        <category>design-pattern</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JDK设计模式（五）适配器模式</title>
+    <url>/article/design-pattern/jdk-adapter-pattern/</url>
+    <content><![CDATA[<h2 id="1、定义"><a href="#1、定义" class="headerlink" title="1、定义"></a>1、定义</h2><p>将一个类的接口转换成客户希望的另外一个接口。Adapter 模式使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。</p>
+<h2 id="2、解决的问题"><a href="#2、解决的问题" class="headerlink" title="2、解决的问题"></a>2、解决的问题</h2><p>即 Adapter 模式使得原本由于接口不兼容而不能一起工作的那些类可以在一起工作。</p>
+<h2 id="3、模式中的角色"><a href="#3、模式中的角色" class="headerlink" title="3、模式中的角色"></a>3、模式中的角色</h2><p>目标接口（Target）：客户所期待的接口。目标可以是具体的或抽象的类，也可以是接口。<br>需要适配的类（Adaptee）：需要适配的类或适配者类。<br>适配器（Adapter）：通过包装一个需要适配的对象，把原接口转换成目标接口。</p>
+<h2 id="4、模式解读"><a href="#4、模式解读" class="headerlink" title="4、模式解读"></a>4、模式解读</h2><p>在 GoF 的设计模式中，对适配器模式讲了两种类型，类适配器模式和对象适配器模式。由于类适配器模式通过多重继承对一个接口与另一个接口进行匹配，而 C&#x3D;、java 等语言都不支持多重继承，因而这里只是介绍对象适配器。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648394415478-ce34ebc6-c75e-495c-a027-99fcaad03f52.png#clientId=udc1a5ed7-d307-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uc724e000&margin=%5Bobject%20Object%5D&name=image.png&originHeight=456&originWidth=861&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=53638&status=done&style=none&taskId=u2ad79016-5006-42e5-b81f-69fc567e84e&title=" alt="image.png"></p>
+<h2 id="5、JDK-涉及到的设计模式"><a href="#5、JDK-涉及到的设计模式" class="headerlink" title="5、JDK 涉及到的设计模式"></a>5、JDK 涉及到的设计模式</h2><p>InputStreamReader 类实现面向字节的输入输出向面向字符的输入输出的转换，使用适配器模式，以字符的方式从输入流中读取。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648394415547-22152ac8-e1bd-4b87-b5f8-2bb14a6d93c9.png#clientId=udc1a5ed7-d307-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ua9a7001b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=382&originWidth=882&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=57629&status=done&style=none&taskId=u3ef724bd-031e-44d5-bcdf-12f0cb083d3&title=" alt="image.png"></p>
+<h2 id="6、模式总结"><a href="#6、模式总结" class="headerlink" title="6、模式总结"></a>6、模式总结</h2><h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><p>1、 通过适配器，客户端可以调用同一接口，因而对客户端来说是透明的。这样做更简单、更直接、更紧凑。<br>2、 复用了现存的类，解决了现存类和复用环境要求不一致的问题。<br>3、将目标类和适配者类解耦，通过引入一个适配器类重用现有的适配者类，而无需修改原有代码。<br>4、 一个对象适配器可以把多个不同的适配者类适配到同一个目标，也就是说，同一个适配器可以把适配者类和它的子类都适配到目标接口。</p>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><p>对于对象适配器来说，更换适配器的实现过程比较复杂。</p>
+<h3 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h3><p>1、 系统需要使用现有的类，而这些类的接口不符合系统的接口。<br>2、 想要建立一个可以重用的类，用于与一些彼此之间没有太大关联的一些类，包括一些可能在将来引进的类一起工作。<br>3、 两个类所做的事情相同或相似，但是具有不同接口的时候。<br>4、 旧的系统开发的类已经实现了一些功能，但是客户端却只能以另外接口的形式访问，但我们不希望手动更改原有类的时候。<br>5、 使用第三方组件，组件接口定义和自己定义的不同，不希望修改自己的接口，但是要使用第三方组件接口的功能。</p>
 ]]></content>
       <categories>
         <category>design-pattern</category>
@@ -4216,6 +4216,29 @@ public final static String[] __dftServerClasses &#x3D;
       </tags>
   </entry>
   <entry>
+    <title>Java并发编程之锁</title>
+    <url>/article/java/java-lock/</url>
+    <content><![CDATA[<blockquote>
+<p>作为一个 java 开发者，并发编程是不可或缺的，在并发的过程，Lock 是并发的关键，<br>本文主要从排它锁和共享锁的实例来讲解锁的机制。</p>
+</blockquote>
+<p>本文主要从以下方面来讲解锁的原理及使用：</p>
+<ol>
+<li><a href="https://alicharles.com/article/java/java-aqs/">AbstractQueuedSynchronizer 分析</a></li>
+<li><a href="https://alicharles.com/article/java/java-reentrantlock/">ReentrantLock 独占锁分析</a></li>
+<li><a href="https://alicharles.com/article/java/java-countdownlatch/">CountDownLatch 共享锁分析</a></li>
+<li><a href="https://alicharles.com/article/java/java-conditionobject/">ConditionObject 分析</a></li>
+<li><a href="https://alicharles.com/article/java/java-cyclicbarrier/">CyclicBarrier 分析</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Lock</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JVM（四）类文件结构解析</title>
     <url>/article/jvm/jvm-class/</url>
     <content><![CDATA[<h2 id="Java-Class-文件结构"><a href="#Java-Class-文件结构" class="headerlink" title="Java Class 文件结构"></a>Java Class 文件结构</h2><p>如下图所示<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648398732871-52f4c2d6-8314-4223-b07a-ea59ac0f6ce7.png#clientId=u0e59f31f-479e-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u3b5ec65e&margin=%5Bobject%20Object%5D&name=image.png&originHeight=924&originWidth=1244&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=101607&status=done&style=none&taskId=ufab1464f-fa80-4848-9d69-094bca2ea40&title=" alt="image.png"><br>对于以下 java 源文件代码</p>
@@ -4449,29 +4472,6 @@ Constant pool:
       <tags>
         <tag>Java</tag>
         <tag>JVM</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java并发编程之锁</title>
-    <url>/article/java/java-lock/</url>
-    <content><![CDATA[<blockquote>
-<p>作为一个 java 开发者，并发编程是不可或缺的，在并发的过程，Lock 是并发的关键，<br>本文主要从排它锁和共享锁的实例来讲解锁的机制。</p>
-</blockquote>
-<p>本文主要从以下方面来讲解锁的原理及使用：</p>
-<ol>
-<li><a href="https://alicharles.com/article/java/java-aqs/">AbstractQueuedSynchronizer 分析</a></li>
-<li><a href="https://alicharles.com/article/java/java-reentrantlock/">ReentrantLock 独占锁分析</a></li>
-<li><a href="https://alicharles.com/article/java/java-countdownlatch/">CountDownLatch 共享锁分析</a></li>
-<li><a href="https://alicharles.com/article/java/java-conditionobject/">ConditionObject 分析</a></li>
-<li><a href="https://alicharles.com/article/java/java-cyclicbarrier/">CyclicBarrier 分析</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>Lock</tag>
       </tags>
   </entry>
   <entry>
@@ -6655,6 +6655,31 @@ public NacosConfigService(Properties properties) throws NacosException &#123;
       </tags>
   </entry>
   <entry>
+    <title>Netty（一）网络IO基础</title>
+    <url>/article/netty/netty-io-basic/</url>
+    <content><![CDATA[<p>在讨论 IO 的时候，参与者通常有两个角色：系统内核和用户进程。用户进程发送 IO 请求过后，系统内核在准备好 IO 数据后，会通过内存拷贝的方式，将准备好的缓存 IO 数据共享给用户进程缓存。</p>
+<h2 id="网络-I-x2F-O-模型简介"><a href="#网络-I-x2F-O-模型简介" class="headerlink" title="网络 I&#x2F;O 模型简介"></a>网络 I&#x2F;O 模型简介</h2><p>根据 UNIX 网络编程对 I&#x2F;O 模型的分类，提供了阻塞 I&#x2F;O 模型、非阻塞 I&#x2F;O 模型、I&#x2F;O 复用模型、信号驱动 I&#x2F;O 模型、异步 I&#x2F;O 这 5 种 I&#x2F;O 模型。</p>
+<h3 id="1、阻塞-I-x2F-O-模型"><a href="#1、阻塞-I-x2F-O-模型" class="headerlink" title="1、阻塞 I&#x2F;O 模型"></a>1、阻塞 I&#x2F;O 模型</h3><p>最常用的模型，所有文件操作都是阻塞的。套接字 socket 在进程空间中调用 recvfrom，其系统调用直到数据包到达，且被复制到应用进程的缓冲区或者发生错误的时候才返回，在此期间一直会等待，进程从调用 recvfrom 开始到它返回的整段时间内都是被阻塞的，因此被称为阻塞 I&#x2F;O 模型。常用 IO 模型交互图如图所示。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649522297797-a008ac08-3d0a-4496-b71c-859877a8f126.png#clientId=ub2077674-f022-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u615c264e&margin=%5Bobject%20Object%5D&name=image.png&originHeight=371&originWidth=651&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=25891&status=done&style=none&taskId=u93741eac-ecb5-4749-938e-320cc6521af&title=" alt="image.png"><br>首先应用程序调用 recvfrom()转入内核，注意内核有 2 个过程，等待数据就绪和拷贝内核数据到用户空间，直到最后复制完成后，recvfrom()才返回，此过程一直是阻塞的。</p>
+<h3 id="2、非阻塞-I-x2F-O-模型"><a href="#2、非阻塞-I-x2F-O-模型" class="headerlink" title="2、非阻塞 I&#x2F;O 模型"></a>2、非阻塞 I&#x2F;O 模型</h3><p>recvfrom 从应用层到内核的时候，如果该缓冲区没有数据的话，就直接返回一个 EWOULDBLOCK 错误，一般都对非阻塞 I&#x2F;O 模型进行轮询检查这个状态，看内核是不是有数据到来，如图所示。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649522297809-96fbb845-1f64-40b3-81a3-7555b3ce6dad.png#clientId=ub2077674-f022-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u5190db18&margin=%5Bobject%20Object%5D&name=image.png&originHeight=409&originWidth=644&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=33416&status=done&style=none&taskId=u4bef8f22-7374-4e98-93ba-b421a70499b&title=" alt="image.png"></p>
+<h3 id="3、I-x2F-O-复用模型"><a href="#3、I-x2F-O-复用模型" class="headerlink" title="3、I&#x2F;O 复用模型"></a>3、I&#x2F;O 复用模型</h3><p>Linux 提供 select&#x2F;poll，进程通过将一个或者多个 fd 传递给 select 或者 poll 系统调用，阻塞在 select 操作上，这样 select&#x2F;poll 可以帮我们侦测多个文件描述符 fd 是否处于就绪状态。select&#x2F;poll 是顺序扫描 fd 是否就绪，而且支持的 fd 数量有限，因此它的使用受到一些限制。Linux 还提供了一个 epoll 系统调用，epoll 基于事件驱动方式代替顺序扫描，性能更高，当有 fd 就绪时，立即回调函数 rollback，如图所示。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649522297845-994a9ff3-7d25-4bb7-be1b-57edd48ed76f.png#clientId=ub2077674-f022-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u83c97bf2&margin=%5Bobject%20Object%5D&name=image.png&originHeight=371&originWidth=679&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=31919&status=done&style=none&taskId=u3f714429-101e-49b6-974f-52e54aa8635&title=" alt="image.png"><br>select 先阻塞，有活动套接字才返回。与 blocking I&#x2F;O 相比，select 会有两次系统调用，但是 select 能处理多个套接字。</p>
+<h3 id="4、信号驱动-I-x2F-O-模型"><a href="#4、信号驱动-I-x2F-O-模型" class="headerlink" title="4、信号驱动 I&#x2F;O 模型"></a>4、信号驱动 I&#x2F;O 模型</h3><p>首先开启套接字信号驱动 I&#x2F;O 功能，并通过系统调用 sigaction 执行一个信号处理函数（此系统调用立即返回，进程继续工作，它是非阻塞的）。当数据准备就绪时，就为该进程生成一个 SIGIO 信号，通过信号回调通知应用程序调用 recvfrom 来读取数据，并通知主循环函数处理数据，如图所示。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649522297987-78a42b20-0dee-437e-bf35-c57ef1ca2622.png#clientId=ub2077674-f022-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ucf548bc6&margin=%5Bobject%20Object%5D&name=image.png&originHeight=375&originWidth=639&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=30623&status=done&style=none&taskId=ubdaab16a-9e8a-4b97-939a-95fff3cd504&title=" alt="image.png"><br>只有 Unix 系统支持，与 I&#x2F;O multiplexing (select and poll)相比，它的优势是，免去了 select 的阻塞与轮询，当有活跃套接字时，由注册的 handler 处理。</p>
+<h3 id="5、异步-I-x2F-O"><a href="#5、异步-I-x2F-O" class="headerlink" title="5、异步 I&#x2F;O"></a>5、异步 I&#x2F;O</h3><p>告知内核启动某个操作，并让内核在整个操作完成之后（包括将数据从内核复制到用户自己的缓冲区）通知我们。这种模型与信号驱动模型的主要区别就是：信号驱动 I&#x2F;O 由内核通知我们何时可以开始一个 I&#x2F;O 操作；异步 I&#x2F;O 模型由内核通知我们 I&#x2F;O 操作何时已经完成。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649522297970-c0f9e82a-847f-4ccd-bb03-5cfaf3343269.png#clientId=ub2077674-f022-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uc03fda2f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=380&originWidth=633&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=26816&status=done&style=none&taskId=u52f71716-8357-4e07-937c-a8672a14a66&title=" alt="image.png"><br>很少有 Linux&#x2F;Unix 系统支持，Windows 的 IOCP 则是此模型，完全异步的 I&#x2F;O 复用机制，纵观上面其它四种模型，至少都会在由 kernel copy data to appliction 时阻塞。而该模型是当 copy 完成后才通知 application，可见是纯异步的，好像只有 Windows 的完成端口是这个模型，效率也很出色。</p>
+<h2 id="I-x2F-O-多路复用技术"><a href="#I-x2F-O-多路复用技术" class="headerlink" title="I&#x2F;O 多路复用技术"></a>I&#x2F;O 多路复用技术</h2><p>I&#x2F;O 多路复用的最大优势是系统开销小，系统不需要创建新的额外进程或者线程，也不需要维护这些进程和线程的运行，降低了系统的维护工作量，节省了系统资源，主要应用场景如下：<br>1、服务器需要同时处理多个处于监听状态或者多个连接状态的套接字。<br>2、服务器需要同时处理多种网络协议的套接字。<br>目前支持 I&#x2F;O 多路复用的系统调用有 select、pselect、poll,、epoll（linux）、kqueue（FreeBSD）、iocp(Windows)，由于 select&#x2F; poll 的一些固有缺陷导致了它的应用受到了很大的限制，Linux 中最终选择了 epoll，来克服 select 的缺点。</p>
+<h3 id="select-模型缺点"><a href="#select-模型缺点" class="headerlink" title="select 模型缺点"></a>select 模型缺点</h3><p>1、最大并发数限制问题，select 中一个进程所打开的 FD（文件描述符）是有限制的，由 FD_SETSIZE 设置，默认值是 1024，对于需要支持上万个 TCP 连接的大型服务器来说显然太少了。<br>2、I&#x2F;O 效率问题，select 每次调用都会线性扫描全部的 FD 集合，效率就会呈现线性下降。<br>3、内存拷贝问题，select 采取了内存拷贝方法，将内核中的 FD 消息通知给用户空间。<br>poll 基本上效率和 select 是相同的，select 缺点的 2 和 3 它都没有改掉。</p>
+<h3 id="epoll-的改进和提升"><a href="#epoll-的改进和提升" class="headerlink" title="epoll 的改进和提升"></a>epoll 的改进和提升</h3><p>1、没有最大并发连接的限制，上限是最大可以打开文件的数目，这个数字一般远大于 2048, 一般来说这个数目和系统内存关系很大，1G 内存的机器上大约有 10 万个句柄左右，具体数目可以 cat &#x2F;proc&#x2F;sys&#x2F;fs&#x2F;file-max 察看。<br>2、I&#x2F;O 效率提升，不会随着 FD 数目的增加而线性下降，它只管你“活跃”的连接，而跟连接总数无关，因此在实际的网络环境中，epoll 的效率就会远远高于 select 和 poll。<br>3、使用 mmap 共享内存加速内核与用户空间的消息传递，内核和用户空间 mmap 共用一块内存来实现，省去了内存拷贝。</p>
+<h2 id="Java-的-I-x2F-O-的演进"><a href="#Java-的-I-x2F-O-的演进" class="headerlink" title="Java 的 I&#x2F;O 的演进"></a>Java 的 I&#x2F;O 的演进</h2><p>从 JDK1.0 到 JDK1.3，Java 的 I&#x2F;O 类库都非常原始，基于 Java 的所有 Socket 通信都采用了同步阻塞模式（BIO），在性能和可靠性方面存在着巨大的瓶颈。<br>2002 年 JDK1.4 发布，NIO 以 JSR-51 的身份随 JDK 发布，增加了 java.nio 包，提供了很多非阻塞 I&#x2F;O 开发的类库，在 JDK1.4 和 1.5 update 10 版本之前，JDK 的 selector 基于 select&#x2F;poll 模型，基于 I&#x2F;O 复用的非阻塞 I&#x2F;O，不是异步 I&#x2F;O。在 JDK1.5 update 10 和 Linux core2.6 以上版本，优化了 selector 的实现，在底层使用 epoll 替换了 select&#x2F;poll，上层 API 没有变化，可认为是 JDK NIO 的一次性能优化。<br>2011 年 JDK1.7 发布，将原来的 NIO 进行了升级，通过 JSR-203 演进而来，称为 NIO2.0，提供异步 I&#x2F;O 开发类库。</p>
+<h3 id="1、Java-同步阻塞-I-x2F-O"><a href="#1、Java-同步阻塞-I-x2F-O" class="headerlink" title="1、Java 同步阻塞 I&#x2F;O"></a>1、Java 同步阻塞 I&#x2F;O</h3><p>在 java 中调用 InputStream.read()或者 OutputStream.write()时，用户进程会阻塞住直到数据就绪，相当于一个线程一个连接的方式。所以在采用 Java IO 时，在 Server 端通常会采用对于每个新连接，起一个新的线程去处理，这样后来的连接就不用等到之前的完成才能操作。但也带来了问题，毕竟线程是系统的稀缺资源，数量上会有瓶颈，达到一定数量后，性能急剧下降，内存崩溃。不能应对大量连接的情况，而且线程切换很耗费系统资源。</p>
+<h3 id="2、Java-NIO-同步非阻塞-IO"><a href="#2、Java-NIO-同步非阻塞-IO" class="headerlink" title="2、Java NIO 同步非阻塞 IO"></a>2、Java NIO 同步非阻塞 IO</h3><p>基于 Java IO 的缺点，NIO 采用了新的设计方式，核心在 ServerSocketChannel, SocketChannel, FileChannel, ByteBuffer, Pipe, Selector。非阻塞主要依靠 Selector，Channel 在 Selector 上注册自己感兴趣的事件，然后 Selector 线程会轮询注册在自己身上的 Channel，当有数据准备就绪时，就通知相应的 Channel。这样一个 Selector 可以管理多个 Channel，但实际上还是阻塞的，现在不阻塞 IO 层面了，阻塞在 Selector 线程上了。而且采用轮询的方式，效率比较低。</p>
+<h3 id="3、Java-AIO-异步非阻塞-IO"><a href="#3、Java-AIO-异步非阻塞-IO" class="headerlink" title="3、Java AIO 异步非阻塞 IO"></a>3、Java AIO 异步非阻塞 IO</h3><p>在 Java NIO 的基础上，增加了 AsynchronousServerSocketChannel, AsynchronousSocketChannel, AsynchronousChannelGroup, CompletionHandler，其中 AsynchronousChannelGroup 起到了事件收集和任务分发的作用，而 CompletionHandler 是绑定在事件上回调机制，从而达到异步。能否真正实现异步，关键还要看系统底层的实现，当前来看只有 window 的 iocp 实现了真正的异步，linux 上还是通过 epoll 来模拟，是一种伪异步。<br>是否异步主要在<strong>系统内核数据拷贝到用户进程这个步骤来区分</strong>，同步的话是通知用户进程数据准备好了，可以拷贝了，然后用户进程阻塞去拷贝数据；异步的话是操作系统帮你把数据拷贝后，然后通知你数据好了，可以直接用了。</p>
+]]></content>
+      <categories>
+        <category>netty</category>
+      </categories>
+      <tags>
+        <tag>Netty</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Nacos简介</title>
     <url>/article/nacos/nacos/</url>
     <content><![CDATA[<blockquote>
@@ -6804,31 +6829,6 @@ listen 8648;
       </categories>
       <tags>
         <tag>Nacos</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Netty（一）网络IO基础</title>
-    <url>/article/netty/netty-io-basic/</url>
-    <content><![CDATA[<p>在讨论 IO 的时候，参与者通常有两个角色：系统内核和用户进程。用户进程发送 IO 请求过后，系统内核在准备好 IO 数据后，会通过内存拷贝的方式，将准备好的缓存 IO 数据共享给用户进程缓存。</p>
-<h2 id="网络-I-x2F-O-模型简介"><a href="#网络-I-x2F-O-模型简介" class="headerlink" title="网络 I&#x2F;O 模型简介"></a>网络 I&#x2F;O 模型简介</h2><p>根据 UNIX 网络编程对 I&#x2F;O 模型的分类，提供了阻塞 I&#x2F;O 模型、非阻塞 I&#x2F;O 模型、I&#x2F;O 复用模型、信号驱动 I&#x2F;O 模型、异步 I&#x2F;O 这 5 种 I&#x2F;O 模型。</p>
-<h3 id="1、阻塞-I-x2F-O-模型"><a href="#1、阻塞-I-x2F-O-模型" class="headerlink" title="1、阻塞 I&#x2F;O 模型"></a>1、阻塞 I&#x2F;O 模型</h3><p>最常用的模型，所有文件操作都是阻塞的。套接字 socket 在进程空间中调用 recvfrom，其系统调用直到数据包到达，且被复制到应用进程的缓冲区或者发生错误的时候才返回，在此期间一直会等待，进程从调用 recvfrom 开始到它返回的整段时间内都是被阻塞的，因此被称为阻塞 I&#x2F;O 模型。常用 IO 模型交互图如图所示。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649522297797-a008ac08-3d0a-4496-b71c-859877a8f126.png#clientId=ub2077674-f022-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u615c264e&margin=%5Bobject%20Object%5D&name=image.png&originHeight=371&originWidth=651&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=25891&status=done&style=none&taskId=u93741eac-ecb5-4749-938e-320cc6521af&title=" alt="image.png"><br>首先应用程序调用 recvfrom()转入内核，注意内核有 2 个过程，等待数据就绪和拷贝内核数据到用户空间，直到最后复制完成后，recvfrom()才返回，此过程一直是阻塞的。</p>
-<h3 id="2、非阻塞-I-x2F-O-模型"><a href="#2、非阻塞-I-x2F-O-模型" class="headerlink" title="2、非阻塞 I&#x2F;O 模型"></a>2、非阻塞 I&#x2F;O 模型</h3><p>recvfrom 从应用层到内核的时候，如果该缓冲区没有数据的话，就直接返回一个 EWOULDBLOCK 错误，一般都对非阻塞 I&#x2F;O 模型进行轮询检查这个状态，看内核是不是有数据到来，如图所示。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649522297809-96fbb845-1f64-40b3-81a3-7555b3ce6dad.png#clientId=ub2077674-f022-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u5190db18&margin=%5Bobject%20Object%5D&name=image.png&originHeight=409&originWidth=644&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=33416&status=done&style=none&taskId=u4bef8f22-7374-4e98-93ba-b421a70499b&title=" alt="image.png"></p>
-<h3 id="3、I-x2F-O-复用模型"><a href="#3、I-x2F-O-复用模型" class="headerlink" title="3、I&#x2F;O 复用模型"></a>3、I&#x2F;O 复用模型</h3><p>Linux 提供 select&#x2F;poll，进程通过将一个或者多个 fd 传递给 select 或者 poll 系统调用，阻塞在 select 操作上，这样 select&#x2F;poll 可以帮我们侦测多个文件描述符 fd 是否处于就绪状态。select&#x2F;poll 是顺序扫描 fd 是否就绪，而且支持的 fd 数量有限，因此它的使用受到一些限制。Linux 还提供了一个 epoll 系统调用，epoll 基于事件驱动方式代替顺序扫描，性能更高，当有 fd 就绪时，立即回调函数 rollback，如图所示。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649522297845-994a9ff3-7d25-4bb7-be1b-57edd48ed76f.png#clientId=ub2077674-f022-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u83c97bf2&margin=%5Bobject%20Object%5D&name=image.png&originHeight=371&originWidth=679&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=31919&status=done&style=none&taskId=u3f714429-101e-49b6-974f-52e54aa8635&title=" alt="image.png"><br>select 先阻塞，有活动套接字才返回。与 blocking I&#x2F;O 相比，select 会有两次系统调用，但是 select 能处理多个套接字。</p>
-<h3 id="4、信号驱动-I-x2F-O-模型"><a href="#4、信号驱动-I-x2F-O-模型" class="headerlink" title="4、信号驱动 I&#x2F;O 模型"></a>4、信号驱动 I&#x2F;O 模型</h3><p>首先开启套接字信号驱动 I&#x2F;O 功能，并通过系统调用 sigaction 执行一个信号处理函数（此系统调用立即返回，进程继续工作，它是非阻塞的）。当数据准备就绪时，就为该进程生成一个 SIGIO 信号，通过信号回调通知应用程序调用 recvfrom 来读取数据，并通知主循环函数处理数据，如图所示。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649522297987-78a42b20-0dee-437e-bf35-c57ef1ca2622.png#clientId=ub2077674-f022-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=ucf548bc6&margin=%5Bobject%20Object%5D&name=image.png&originHeight=375&originWidth=639&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=30623&status=done&style=none&taskId=ubdaab16a-9e8a-4b97-939a-95fff3cd504&title=" alt="image.png"><br>只有 Unix 系统支持，与 I&#x2F;O multiplexing (select and poll)相比，它的优势是，免去了 select 的阻塞与轮询，当有活跃套接字时，由注册的 handler 处理。</p>
-<h3 id="5、异步-I-x2F-O"><a href="#5、异步-I-x2F-O" class="headerlink" title="5、异步 I&#x2F;O"></a>5、异步 I&#x2F;O</h3><p>告知内核启动某个操作，并让内核在整个操作完成之后（包括将数据从内核复制到用户自己的缓冲区）通知我们。这种模型与信号驱动模型的主要区别就是：信号驱动 I&#x2F;O 由内核通知我们何时可以开始一个 I&#x2F;O 操作；异步 I&#x2F;O 模型由内核通知我们 I&#x2F;O 操作何时已经完成。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1649522297970-c0f9e82a-847f-4ccd-bb03-5cfaf3343269.png#clientId=ub2077674-f022-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=uc03fda2f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=380&originWidth=633&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=26816&status=done&style=none&taskId=u52f71716-8357-4e07-937c-a8672a14a66&title=" alt="image.png"><br>很少有 Linux&#x2F;Unix 系统支持，Windows 的 IOCP 则是此模型，完全异步的 I&#x2F;O 复用机制，纵观上面其它四种模型，至少都会在由 kernel copy data to appliction 时阻塞。而该模型是当 copy 完成后才通知 application，可见是纯异步的，好像只有 Windows 的完成端口是这个模型，效率也很出色。</p>
-<h2 id="I-x2F-O-多路复用技术"><a href="#I-x2F-O-多路复用技术" class="headerlink" title="I&#x2F;O 多路复用技术"></a>I&#x2F;O 多路复用技术</h2><p>I&#x2F;O 多路复用的最大优势是系统开销小，系统不需要创建新的额外进程或者线程，也不需要维护这些进程和线程的运行，降低了系统的维护工作量，节省了系统资源，主要应用场景如下：<br>1、服务器需要同时处理多个处于监听状态或者多个连接状态的套接字。<br>2、服务器需要同时处理多种网络协议的套接字。<br>目前支持 I&#x2F;O 多路复用的系统调用有 select、pselect、poll,、epoll（linux）、kqueue（FreeBSD）、iocp(Windows)，由于 select&#x2F; poll 的一些固有缺陷导致了它的应用受到了很大的限制，Linux 中最终选择了 epoll，来克服 select 的缺点。</p>
-<h3 id="select-模型缺点"><a href="#select-模型缺点" class="headerlink" title="select 模型缺点"></a>select 模型缺点</h3><p>1、最大并发数限制问题，select 中一个进程所打开的 FD（文件描述符）是有限制的，由 FD_SETSIZE 设置，默认值是 1024，对于需要支持上万个 TCP 连接的大型服务器来说显然太少了。<br>2、I&#x2F;O 效率问题，select 每次调用都会线性扫描全部的 FD 集合，效率就会呈现线性下降。<br>3、内存拷贝问题，select 采取了内存拷贝方法，将内核中的 FD 消息通知给用户空间。<br>poll 基本上效率和 select 是相同的，select 缺点的 2 和 3 它都没有改掉。</p>
-<h3 id="epoll-的改进和提升"><a href="#epoll-的改进和提升" class="headerlink" title="epoll 的改进和提升"></a>epoll 的改进和提升</h3><p>1、没有最大并发连接的限制，上限是最大可以打开文件的数目，这个数字一般远大于 2048, 一般来说这个数目和系统内存关系很大，1G 内存的机器上大约有 10 万个句柄左右，具体数目可以 cat &#x2F;proc&#x2F;sys&#x2F;fs&#x2F;file-max 察看。<br>2、I&#x2F;O 效率提升，不会随着 FD 数目的增加而线性下降，它只管你“活跃”的连接，而跟连接总数无关，因此在实际的网络环境中，epoll 的效率就会远远高于 select 和 poll。<br>3、使用 mmap 共享内存加速内核与用户空间的消息传递，内核和用户空间 mmap 共用一块内存来实现，省去了内存拷贝。</p>
-<h2 id="Java-的-I-x2F-O-的演进"><a href="#Java-的-I-x2F-O-的演进" class="headerlink" title="Java 的 I&#x2F;O 的演进"></a>Java 的 I&#x2F;O 的演进</h2><p>从 JDK1.0 到 JDK1.3，Java 的 I&#x2F;O 类库都非常原始，基于 Java 的所有 Socket 通信都采用了同步阻塞模式（BIO），在性能和可靠性方面存在着巨大的瓶颈。<br>2002 年 JDK1.4 发布，NIO 以 JSR-51 的身份随 JDK 发布，增加了 java.nio 包，提供了很多非阻塞 I&#x2F;O 开发的类库，在 JDK1.4 和 1.5 update 10 版本之前，JDK 的 selector 基于 select&#x2F;poll 模型，基于 I&#x2F;O 复用的非阻塞 I&#x2F;O，不是异步 I&#x2F;O。在 JDK1.5 update 10 和 Linux core2.6 以上版本，优化了 selector 的实现，在底层使用 epoll 替换了 select&#x2F;poll，上层 API 没有变化，可认为是 JDK NIO 的一次性能优化。<br>2011 年 JDK1.7 发布，将原来的 NIO 进行了升级，通过 JSR-203 演进而来，称为 NIO2.0，提供异步 I&#x2F;O 开发类库。</p>
-<h3 id="1、Java-同步阻塞-I-x2F-O"><a href="#1、Java-同步阻塞-I-x2F-O" class="headerlink" title="1、Java 同步阻塞 I&#x2F;O"></a>1、Java 同步阻塞 I&#x2F;O</h3><p>在 java 中调用 InputStream.read()或者 OutputStream.write()时，用户进程会阻塞住直到数据就绪，相当于一个线程一个连接的方式。所以在采用 Java IO 时，在 Server 端通常会采用对于每个新连接，起一个新的线程去处理，这样后来的连接就不用等到之前的完成才能操作。但也带来了问题，毕竟线程是系统的稀缺资源，数量上会有瓶颈，达到一定数量后，性能急剧下降，内存崩溃。不能应对大量连接的情况，而且线程切换很耗费系统资源。</p>
-<h3 id="2、Java-NIO-同步非阻塞-IO"><a href="#2、Java-NIO-同步非阻塞-IO" class="headerlink" title="2、Java NIO 同步非阻塞 IO"></a>2、Java NIO 同步非阻塞 IO</h3><p>基于 Java IO 的缺点，NIO 采用了新的设计方式，核心在 ServerSocketChannel, SocketChannel, FileChannel, ByteBuffer, Pipe, Selector。非阻塞主要依靠 Selector，Channel 在 Selector 上注册自己感兴趣的事件，然后 Selector 线程会轮询注册在自己身上的 Channel，当有数据准备就绪时，就通知相应的 Channel。这样一个 Selector 可以管理多个 Channel，但实际上还是阻塞的，现在不阻塞 IO 层面了，阻塞在 Selector 线程上了。而且采用轮询的方式，效率比较低。</p>
-<h3 id="3、Java-AIO-异步非阻塞-IO"><a href="#3、Java-AIO-异步非阻塞-IO" class="headerlink" title="3、Java AIO 异步非阻塞 IO"></a>3、Java AIO 异步非阻塞 IO</h3><p>在 Java NIO 的基础上，增加了 AsynchronousServerSocketChannel, AsynchronousSocketChannel, AsynchronousChannelGroup, CompletionHandler，其中 AsynchronousChannelGroup 起到了事件收集和任务分发的作用，而 CompletionHandler 是绑定在事件上回调机制，从而达到异步。能否真正实现异步，关键还要看系统底层的实现，当前来看只有 window 的 iocp 实现了真正的异步，linux 上还是通过 epoll 来模拟，是一种伪异步。<br>是否异步主要在<strong>系统内核数据拷贝到用户进程这个步骤来区分</strong>，同步的话是通知用户进程数据准备好了，可以拷贝了，然后用户进程阻塞去拷贝数据；异步的话是操作系统帮你把数据拷贝后，然后通知你数据好了，可以直接用了。</p>
-]]></content>
-      <categories>
-        <category>netty</category>
-      </categories>
-      <tags>
-        <tag>Netty</tag>
       </tags>
   </entry>
   <entry>
@@ -8548,6 +8548,140 @@ return 空；</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>Sentinel与Hystrix的对比</title>
+    <url>/article/stability/sentinel-hystrix/</url>
+    <content><![CDATA[<p>Sentinel 是阿里中间件团队研发的面向分布式服务架构的轻量级高可用流量控制组件，已开源。Sentinel 主要以流量为切入点，从流量控制、熔断降级、系统负载保护等多个维度来帮助用户保护服务的稳定性。</p>
+<p>大家可能会问：Sentinel 和之前常用的熔断降级库 Netflix Hystrix 有什么异同呢？本文将从多个角度对 Sentinel 和 Hystrix 进行对比，帮助大家进行技术选型。先来看一下 Hystrix 的官方介绍：</p>
+<blockquote>
+<p>Hystrix is a library that helps you control the interactions between these distributed services by adding latency tolerance and fault tolerance logic. Hystrix does this by isolating points of access between the services, stopping cascading failures across them, and providing fallback options, all of which improve your system’s overall resiliency.</p>
+</blockquote>
+<p>Hystrix 是一个库，通过添加延迟容忍和容错逻辑，帮助您控制这些分布式服务之间的交互。Hystrix 通过隔离服务之间的访问点、阻止跨服务的级联故障以及提供回退选项来实现这一点，所有这些都可以提高系统的整体弹性。</p>
+<h2 id="关注点差异"><a href="#关注点差异" class="headerlink" title="关注点差异"></a>关注点差异</h2><p>1、Hystrix 的关注点<br>以 <strong>隔离 和 熔断 <strong>为主的容错机制，</strong>超时或被熔断的调用将会快速失败</strong>，并可以提供 <strong>fallback</strong> 机制。<br>2、Sentinel 的侧重点在于</p>
+<ul>
+<li>多样化的流量控制</li>
+<li>熔断降级</li>
+<li>系统负载保护</li>
+<li>实时监控和控制台</li>
+</ul>
+<p>可以看到两者解决的问题还是有比较大的不同的，下面我们来分别对比一下。</p>
+<h2 id="共同特性"><a href="#共同特性" class="headerlink" title="共同特性"></a>共同特性</h2><h3 id="资源模型和执行模型对比"><a href="#资源模型和执行模型对比" class="headerlink" title="资源模型和执行模型对比"></a>资源模型和执行模型对比</h3><p>1、Hystrix 的资源模型设计上采用<strong>命令模式</strong><br>将对外部资源的调用和 fallback 逻辑封装成一个命令对象（<strong>HystrixCommand</strong> &#x2F; <strong>HystrixObservableCommand</strong>），其底层的执行是基于 RxJava 实现的。每个 Command 创建时都要指定** commandKey** 和 <strong>groupKey</strong>（用于区分资源）以及对应的隔离策略（线程池隔离 or 信号量隔离）。</p>
+<p><strong>线程池隔离模式下需要配置线程池对应的参数（线程池名称、容量、排队超时等）</strong>，然后 Command 就会在指定的线程池按照指定的容错策略执行；<strong>信号量隔离模式下需要配置最大并发数</strong>，执行 Command 时 Hystrix 就会限制其并发调用。</p>
+<p>2、Sentinel 的设计则更为简单<br>相比 Hystrix Command <strong>强依赖隔离规则</strong>，Sentinel 的资源定义与规则配置的耦合度更低。<strong>Hystrix 的 Command 强依赖于隔离规则配置的原因是隔离规则会直接影响 Command 的执行</strong>。在执行的时候 Hystrix 会解析 Command 的隔离规则来创建 RxJava Scheduler 并在其上调度执行，若是线程池模式则 Scheduler 底层的线程池为配置的线程池，若是信号量模式则简单包装成当前线程执行的 Scheduler。</p>
+<p>而 Sentinel 并不指定执行模型，也不关注应用是如何执行的。Sentinel 的原则非常简单：根据对应资源配置的规则来为资源执行相应的限流&#x2F;降级&#x2F;负载保护策略。在 <strong>Sentinel 中资源定义和规则配置是分离</strong>的。用户先通过 Sentinel API 给对应的业务逻辑定义资源（埋点），然后可以在需要的时候配置规则，埋点方式有两种：</p>
+<ul>
+<li>try-catch 方式（通过 <strong>SphU</strong>.entry(…))，用户在 catch 块中执行异常处理 &#x2F; fallback</li>
+<li>if-else 方式（通过 <strong>SphO</strong>.entry(…)），当返回 false 时执行异常处理 &#x2F; fallback</li>
+</ul>
+<p>未来 Sentinel 还会引入基于注解的资源定义方式，同时可以通过注解参数指定异常处理函数和 fallback 函数。</p>
+<p>Sentinel 提供多样化的规则配置方式。除了直接通过 loadRules API 将规则注册到内存态之外，用户还可以注册各种外部数据源来提供动态的规则。用户可以根据系统当前的实时情况去动态地变更规则配置，数据源会将变更推送至 Sentinel 并即时生效。</p>
+<h3 id="隔离设计上的对比"><a href="#隔离设计上的对比" class="headerlink" title="隔离设计上的对比"></a>隔离设计上的对比</h3><p><strong>1、Hystrix 隔离策略</strong><br>隔离是 Hystrix 的核心功能之一。<strong>Hystrix 提供两种隔离策略：线程池隔离（Bulkhead Pattern）和信号量隔离</strong>，其中最推荐也是最常用的是线程池隔离。Hystrix 的线程池隔离针对不同的资源分别创建不同的线程池，不同服务调用都发生在不同的线程池中，在线程池排队、超时等阻塞情况时可以快速失败，并可以提供 fallback 机制。线程池隔离的好处是隔离度比较高，可以针对某个资源的线程池去进行处理而不影响其它资源，但是代价就是线程上下文切换的 overhead 比较大，特别是对低延时的调用有比较大的影响。</p>
+<p>但是，实际情况下，线程池隔离并没有带来非常多的好处。首先就是过多的<strong>线程池会非常影响性能</strong>。考虑这样一个场景，在 Tomcat 之类的 Servlet 容器使用 Hystrix，本身 Tomcat 自身的线程数目就非常多了（可能到几十或一百多），如果加上 Hystrix 为各个资源创建的线程池，总共线程数目会非常多（几百个线程），这样上下文切换会有非常大的损耗。另外，线程池模式比较彻底的隔离性使得 Hystrix 可以针对不同资源线程池的排队、超时情况分别进行处理，但这其实是超时熔断和流量控制要解决的问题，如果组件具备了超时熔断和流量控制的能力，线程池隔离就显得没有那么必要了。</p>
+<p><strong>2、Sentinel 隔离策略</strong><br><strong>Sentinel 可以通过并发线程数模式的流量控制来提供信号量隔离的功能</strong>。这样的隔离非常轻量级，仅限制对某个资源调用的并发数，而不是显式地去创建线程池，所以 overhead 比较小，但是效果不错。并且结合基于响应时间的熔断降级模式，可以在不稳定资源的平均响应时间比较高的时候自动降级，防止过多的慢调用占满并发数，影响整个系统。而 Hystrix 的信号量隔离比较简单，无法对慢调用自动进行降级，只能等待客户端自己超时，因此仍然可能会出现级联阻塞的情况。</p>
+<h3 id="熔断降级对比"><a href="#熔断降级对比" class="headerlink" title="熔断降级对比"></a>熔断降级对比</h3><p>Sentinel 和 Hystrix 的熔断降级功能本质上都是基于熔断器模式（Circuit Breaker Pattern）。Sentinel 与 Hystrix 都支持基于失败比率（异常比率）的熔断降级，在调用达到一定量级并且失败比率达到设定的阈值时自动进行熔断，此时所有对该资源的调用都会被 block，直到过了指定的时间窗口后才启发性地恢复。上面提到过，Sentinel 还支持基于平均响应时间的熔断降级，可以在服务响应时间持续飙高的时候自动熔断，拒绝掉更多的请求，直到一段时间后才恢复。这样可以防止调用非常慢造成级联阻塞的情况。</p>
+<h3 id="实时指标统计实现对比"><a href="#实时指标统计实现对比" class="headerlink" title="实时指标统计实现对比"></a>实时指标统计实现对比</h3><p>Hystrix 和 Sentinel 的实时指标数据统计实现都是基于<strong>滑动窗口</strong>的。</p>
+<ul>
+<li>Hystrix 1.5 之前的版本是通过环形数组实现的滑动窗口，通过锁配合 CAS 的操作对每个桶的统计信息进行更新。Hystrix 1.5 开始对实时指标统计的实现进行了重构，将指标统计数据结构抽象成了响应式流（reactive stream）的形式，方便消费者去利用指标信息。同时底层改造成了基于 RxJava 的事件驱动模式，在服务调用成功&#x2F;失败&#x2F;超时的时候发布相应的事件，通过一系列的变换和聚合最终得到实时的指标统计数据流，可以被熔断器或 Dashboard 消费。</li>
+<li>Sentinel 目前抽象出了 Metric 指标统计接口，底层可以有不同的实现，目前默认的实现是基于 <strong>LeapArray</strong> 的滑动窗口，后续根据需要可能会引入 <strong>reactive</strong> <strong>stream</strong> 等实现。</li>
+</ul>
+<h2 id="Sentinel-的特色"><a href="#Sentinel-的特色" class="headerlink" title="Sentinel 的特色"></a>Sentinel 的特色</h2><p>除了之前提到的两者的共同特性之外，Sentinel 还提供以下的特色功能：</p>
+<h3 id="轻量级、高性能"><a href="#轻量级、高性能" class="headerlink" title="轻量级、高性能"></a>轻量级、高性能</h3><p>Sentinel 作为一个功能完备的高可用流量管控组件，其核心 sentinel-core 没有任何多余依赖，打包后只有不到 200 KB，非常轻量级。开发者可以放心地引入 sentinel-core 而不需担心依赖问题。同时，Sentinel 提供了多种扩展点，用户可以很方便地根据需求去进行扩展，并且无缝地切合到 Sentinel 中。<br>引入 Sentinel 带来的性能损耗非常小。只有在业务单机量级超过 25W QPS 的时候才会有一些显著的影响（5% - 10% 左右），单机 QPS 不太大的时候损耗几乎可以忽略不计。</p>
+<h3 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h3><p>Sentinel 可以针对不同的调用关系，以不同的运行指标（如 QPS、并发调用数、系统负载等）为基准，对资源调用进行流量控制，将随机的请求调整成合适的形状。<br>Sentinel 支持多样化的流量整形策略，在 QPS 过高的时候可以自动将流量调整成合适的形状。常用的有：</p>
+<ul>
+<li><strong>直接拒绝模式</strong>：即超出的请求直接拒绝。</li>
+<li><strong>慢启动预热模式</strong>：当流量激增的时候，控制流量通过的速率，让通过的流量缓慢增加，在一定时间内逐渐增加到阈值上限，给冷系统一个预热的时间，避免冷系统被压垮。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648092157855-7f16f5f1-5859-492a-a1d7-69930c547e0d.png#clientId=u54d46c2c-7e67-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=489&id=u578fce8b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=489&originWidth=567&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=51718&status=done&style=none&taskId=u3c1a7e4a-7ab0-47e5-8d25-9fb6ec48922&title=&width=567" alt="image.png" width="567"></p>
+<ul>
+<li><strong>匀速器模式</strong>：利用 Leaky Bucket 算法实现的匀速模式，严格控制了请求通过的时间间隔，同时堆积的请求将会排队，超过超时时长的请求直接被拒绝。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648092917274-de7029ed-78a7-4cb3-bc71-dcc1720e7946.png#clientId=u54d46c2c-7e67-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=422&id=ubf8b4131&margin=%5Bobject%20Object%5D&name=image.png&originHeight=422&originWidth=1250&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=44005&status=done&style=none&taskId=u9a4683b1-92c9-4729-903e-f542bb03a88&title=&width=1250" alt="image.png" width="1250"></p>
+<p>Sentinel 还支持基于调用关系的限流，包括基于调用方限流、基于调用链入口限流、关联流量限流等，依托于 Sentinel 强大的调用链路统计信息，可以提供精准的不同维度的限流。<br>目前 Sentinel 对异步调用链路的支持还不是很好，后续版本会着重改善支持异步调用。</p>
+<h3 id="系统负载保护"><a href="#系统负载保护" class="headerlink" title="系统负载保护"></a>系统负载保护</h3><p>Sentinel 对系统的维度提供保护，负载保护算法借鉴了 TCP BBR 的思想。当系统负载较高的时候，如果仍持续让请求进入，可能会导致系统崩溃，无法响应。在集群环境下，网络负载均衡会把本应这台机器承载的流量转发到其它的机器上去。如果这个时候其它的机器也处在一个边缘状态的时候，这个增加的流量就会导致这台机器也崩溃，最后导致整个集群不可用。针对这个情况，Sentinel 提供了对应的保护机制，让系统的入口流量和系统的负载达到一个平衡，保证系统在能力范围之内处理最多的请求。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648093267714-9c7a3d8a-ff3e-4362-9ad1-e5beffc6102e.png#clientId=u54d46c2c-7e67-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=137&id=u35838e37&margin=%5Bobject%20Object%5D&name=image.png&originHeight=137&originWidth=871&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=25235&status=done&style=none&taskId=u648a729d-1288-4672-8778-80df67c9e60&title=&width=871" alt="image.png" width="871"></p>
+<h3 id="实时监控与控制面板"><a href="#实时监控与控制面板" class="headerlink" title="实时监控与控制面板"></a>实时监控与控制面板</h3><p>Sentinel 提供 HTTP API 用于获取实时的监控信息，如调用链路统计信息、簇点信息、规则信息等。如果用户正在使用 Spring Boot&#x2F;Spring Cloud 并使用了 Sentinel Spring Cloud Starter，还可以方便地通过其暴露的 Actuator Endpoint 来获取运行时的一些信息，如动态规则等。未来 Sentinel 还会支持标准化的指标监控 API，可以方便地整合各种监控系统和可视化系统，如 Prometheus、Grafana 等。</p>
+<p>Sentinel 控制台（Dashboard）提供了机器发现、配置规则、查看实时监控、查看调用链路信息等功能，使得用户可以非常方便地去查看监控和进行配置。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648093287021-622cf832-4136-4de2-8609-2cabcdb832ff.png#clientId=u54d46c2c-7e67-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1586&id=ua3d1786b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1586&originWidth=2428&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=367092&status=done&style=none&taskId=uc321d861-3fa3-4b4f-81d9-6c47b351213&title=&width=2428" alt="image.png" width="2428"></p>
+<h3 id="生态"><a href="#生态" class="headerlink" title="生态"></a>生态</h3><p>Sentinel 目前已经针对 Servlet、Dubbo、Spring Boot&#x2F;Spring Cloud、gRPC 等进行了适配，用户只需引入相应依赖并进行简单配置即可非常方便地享受 Sentinel 的高可用流量防护能力。未来 Sentinel 还会对更多常用框架进行适配，并且会为 Service Mesh 提供集群流量防护的能力。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>最后用表格来进行对比</p>
+<table><thead><tr>
+<th></th>
+<th>Sentinel</th>
+<th>Hystrix</th>
+</tr>
+</thead><tbody><tr>
+<td>隔离策略</td>
+<td>基于并发数</td>
+<td>线程池隔离&#x2F;信号量隔离</td>
+</tr>
+<tr>
+<td>熔断降级策略</td>
+<td>基于响应时间或失败比率</td>
+<td>基于失败比率</td>
+</tr>
+<tr>
+<td>实时指标实现</td>
+<td>滑动窗口</td>
+<td>滑动窗口（基于 RxJava）</td>
+</tr>
+<tr>
+<td>规则配置</td>
+<td>支持多种数据源</td>
+<td>支持多种数据源</td>
+</tr>
+<tr>
+<td>扩展性</td>
+<td>多个扩展点</td>
+<td>插件的形式</td>
+</tr>
+<tr>
+<td>基于注解的支持</td>
+<td>即将发布</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>调用链路信息</td>
+<td>支持同步调用</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>限流</td>
+<td>基于 QPS &#x2F; 并发数，支持基于调用关系的限流</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>流量整形</td>
+<td>支持慢启动、匀速器模式</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>系统负载保护</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>实时监控 API</td>
+<td>各式各样</td>
+<td>较为简单</td>
+</tr>
+<tr>
+<td>控制台</td>
+<td>开箱即用，可配置规则、查看秒级监控、机器发现等</td>
+<td>不完善</td>
+</tr>
+<tr>
+<td>常见框架的适配</td>
+<td>Servlet、Spring Cloud、Dubbo、gRPC 等</td>
+<td>Servlet、Spring Cloud Netflix</td>
+</tr>
+</tbody></table>]]></content>
+      <categories>
+        <category>stability</category>
+      </categories>
+      <tags>
+        <tag>Stability</tag>
+        <tag>Sentinel</tag>
+        <tag>Hystrix</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis（四）存储结构</title>
     <url>/article/redis/redis-storage-structure/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Redis 作为一款高性能数据库，表现在：它接收到一个键值对操作后， 能以微秒级别的速度找到数据，并快速完成操作。其高性能得奥秘来缘于以下两点：</p>
@@ -8836,140 +8970,6 @@ photo_obj_id: 3301000051</code></pre>
       <tags>
         <tag>Cache</tag>
         <tag>Redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Sentinel与Hystrix的对比</title>
-    <url>/article/stability/sentinel-hystrix/</url>
-    <content><![CDATA[<p>Sentinel 是阿里中间件团队研发的面向分布式服务架构的轻量级高可用流量控制组件，已开源。Sentinel 主要以流量为切入点，从流量控制、熔断降级、系统负载保护等多个维度来帮助用户保护服务的稳定性。</p>
-<p>大家可能会问：Sentinel 和之前常用的熔断降级库 Netflix Hystrix 有什么异同呢？本文将从多个角度对 Sentinel 和 Hystrix 进行对比，帮助大家进行技术选型。先来看一下 Hystrix 的官方介绍：</p>
-<blockquote>
-<p>Hystrix is a library that helps you control the interactions between these distributed services by adding latency tolerance and fault tolerance logic. Hystrix does this by isolating points of access between the services, stopping cascading failures across them, and providing fallback options, all of which improve your system’s overall resiliency.</p>
-</blockquote>
-<p>Hystrix 是一个库，通过添加延迟容忍和容错逻辑，帮助您控制这些分布式服务之间的交互。Hystrix 通过隔离服务之间的访问点、阻止跨服务的级联故障以及提供回退选项来实现这一点，所有这些都可以提高系统的整体弹性。</p>
-<h2 id="关注点差异"><a href="#关注点差异" class="headerlink" title="关注点差异"></a>关注点差异</h2><p>1、Hystrix 的关注点<br>以 <strong>隔离 和 熔断 <strong>为主的容错机制，</strong>超时或被熔断的调用将会快速失败</strong>，并可以提供 <strong>fallback</strong> 机制。<br>2、Sentinel 的侧重点在于</p>
-<ul>
-<li>多样化的流量控制</li>
-<li>熔断降级</li>
-<li>系统负载保护</li>
-<li>实时监控和控制台</li>
-</ul>
-<p>可以看到两者解决的问题还是有比较大的不同的，下面我们来分别对比一下。</p>
-<h2 id="共同特性"><a href="#共同特性" class="headerlink" title="共同特性"></a>共同特性</h2><h3 id="资源模型和执行模型对比"><a href="#资源模型和执行模型对比" class="headerlink" title="资源模型和执行模型对比"></a>资源模型和执行模型对比</h3><p>1、Hystrix 的资源模型设计上采用<strong>命令模式</strong><br>将对外部资源的调用和 fallback 逻辑封装成一个命令对象（<strong>HystrixCommand</strong> &#x2F; <strong>HystrixObservableCommand</strong>），其底层的执行是基于 RxJava 实现的。每个 Command 创建时都要指定** commandKey** 和 <strong>groupKey</strong>（用于区分资源）以及对应的隔离策略（线程池隔离 or 信号量隔离）。</p>
-<p><strong>线程池隔离模式下需要配置线程池对应的参数（线程池名称、容量、排队超时等）</strong>，然后 Command 就会在指定的线程池按照指定的容错策略执行；<strong>信号量隔离模式下需要配置最大并发数</strong>，执行 Command 时 Hystrix 就会限制其并发调用。</p>
-<p>2、Sentinel 的设计则更为简单<br>相比 Hystrix Command <strong>强依赖隔离规则</strong>，Sentinel 的资源定义与规则配置的耦合度更低。<strong>Hystrix 的 Command 强依赖于隔离规则配置的原因是隔离规则会直接影响 Command 的执行</strong>。在执行的时候 Hystrix 会解析 Command 的隔离规则来创建 RxJava Scheduler 并在其上调度执行，若是线程池模式则 Scheduler 底层的线程池为配置的线程池，若是信号量模式则简单包装成当前线程执行的 Scheduler。</p>
-<p>而 Sentinel 并不指定执行模型，也不关注应用是如何执行的。Sentinel 的原则非常简单：根据对应资源配置的规则来为资源执行相应的限流&#x2F;降级&#x2F;负载保护策略。在 <strong>Sentinel 中资源定义和规则配置是分离</strong>的。用户先通过 Sentinel API 给对应的业务逻辑定义资源（埋点），然后可以在需要的时候配置规则，埋点方式有两种：</p>
-<ul>
-<li>try-catch 方式（通过 <strong>SphU</strong>.entry(…))，用户在 catch 块中执行异常处理 &#x2F; fallback</li>
-<li>if-else 方式（通过 <strong>SphO</strong>.entry(…)），当返回 false 时执行异常处理 &#x2F; fallback</li>
-</ul>
-<p>未来 Sentinel 还会引入基于注解的资源定义方式，同时可以通过注解参数指定异常处理函数和 fallback 函数。</p>
-<p>Sentinel 提供多样化的规则配置方式。除了直接通过 loadRules API 将规则注册到内存态之外，用户还可以注册各种外部数据源来提供动态的规则。用户可以根据系统当前的实时情况去动态地变更规则配置，数据源会将变更推送至 Sentinel 并即时生效。</p>
-<h3 id="隔离设计上的对比"><a href="#隔离设计上的对比" class="headerlink" title="隔离设计上的对比"></a>隔离设计上的对比</h3><p><strong>1、Hystrix 隔离策略</strong><br>隔离是 Hystrix 的核心功能之一。<strong>Hystrix 提供两种隔离策略：线程池隔离（Bulkhead Pattern）和信号量隔离</strong>，其中最推荐也是最常用的是线程池隔离。Hystrix 的线程池隔离针对不同的资源分别创建不同的线程池，不同服务调用都发生在不同的线程池中，在线程池排队、超时等阻塞情况时可以快速失败，并可以提供 fallback 机制。线程池隔离的好处是隔离度比较高，可以针对某个资源的线程池去进行处理而不影响其它资源，但是代价就是线程上下文切换的 overhead 比较大，特别是对低延时的调用有比较大的影响。</p>
-<p>但是，实际情况下，线程池隔离并没有带来非常多的好处。首先就是过多的<strong>线程池会非常影响性能</strong>。考虑这样一个场景，在 Tomcat 之类的 Servlet 容器使用 Hystrix，本身 Tomcat 自身的线程数目就非常多了（可能到几十或一百多），如果加上 Hystrix 为各个资源创建的线程池，总共线程数目会非常多（几百个线程），这样上下文切换会有非常大的损耗。另外，线程池模式比较彻底的隔离性使得 Hystrix 可以针对不同资源线程池的排队、超时情况分别进行处理，但这其实是超时熔断和流量控制要解决的问题，如果组件具备了超时熔断和流量控制的能力，线程池隔离就显得没有那么必要了。</p>
-<p><strong>2、Sentinel 隔离策略</strong><br><strong>Sentinel 可以通过并发线程数模式的流量控制来提供信号量隔离的功能</strong>。这样的隔离非常轻量级，仅限制对某个资源调用的并发数，而不是显式地去创建线程池，所以 overhead 比较小，但是效果不错。并且结合基于响应时间的熔断降级模式，可以在不稳定资源的平均响应时间比较高的时候自动降级，防止过多的慢调用占满并发数，影响整个系统。而 Hystrix 的信号量隔离比较简单，无法对慢调用自动进行降级，只能等待客户端自己超时，因此仍然可能会出现级联阻塞的情况。</p>
-<h3 id="熔断降级对比"><a href="#熔断降级对比" class="headerlink" title="熔断降级对比"></a>熔断降级对比</h3><p>Sentinel 和 Hystrix 的熔断降级功能本质上都是基于熔断器模式（Circuit Breaker Pattern）。Sentinel 与 Hystrix 都支持基于失败比率（异常比率）的熔断降级，在调用达到一定量级并且失败比率达到设定的阈值时自动进行熔断，此时所有对该资源的调用都会被 block，直到过了指定的时间窗口后才启发性地恢复。上面提到过，Sentinel 还支持基于平均响应时间的熔断降级，可以在服务响应时间持续飙高的时候自动熔断，拒绝掉更多的请求，直到一段时间后才恢复。这样可以防止调用非常慢造成级联阻塞的情况。</p>
-<h3 id="实时指标统计实现对比"><a href="#实时指标统计实现对比" class="headerlink" title="实时指标统计实现对比"></a>实时指标统计实现对比</h3><p>Hystrix 和 Sentinel 的实时指标数据统计实现都是基于<strong>滑动窗口</strong>的。</p>
-<ul>
-<li>Hystrix 1.5 之前的版本是通过环形数组实现的滑动窗口，通过锁配合 CAS 的操作对每个桶的统计信息进行更新。Hystrix 1.5 开始对实时指标统计的实现进行了重构，将指标统计数据结构抽象成了响应式流（reactive stream）的形式，方便消费者去利用指标信息。同时底层改造成了基于 RxJava 的事件驱动模式，在服务调用成功&#x2F;失败&#x2F;超时的时候发布相应的事件，通过一系列的变换和聚合最终得到实时的指标统计数据流，可以被熔断器或 Dashboard 消费。</li>
-<li>Sentinel 目前抽象出了 Metric 指标统计接口，底层可以有不同的实现，目前默认的实现是基于 <strong>LeapArray</strong> 的滑动窗口，后续根据需要可能会引入 <strong>reactive</strong> <strong>stream</strong> 等实现。</li>
-</ul>
-<h2 id="Sentinel-的特色"><a href="#Sentinel-的特色" class="headerlink" title="Sentinel 的特色"></a>Sentinel 的特色</h2><p>除了之前提到的两者的共同特性之外，Sentinel 还提供以下的特色功能：</p>
-<h3 id="轻量级、高性能"><a href="#轻量级、高性能" class="headerlink" title="轻量级、高性能"></a>轻量级、高性能</h3><p>Sentinel 作为一个功能完备的高可用流量管控组件，其核心 sentinel-core 没有任何多余依赖，打包后只有不到 200 KB，非常轻量级。开发者可以放心地引入 sentinel-core 而不需担心依赖问题。同时，Sentinel 提供了多种扩展点，用户可以很方便地根据需求去进行扩展，并且无缝地切合到 Sentinel 中。<br>引入 Sentinel 带来的性能损耗非常小。只有在业务单机量级超过 25W QPS 的时候才会有一些显著的影响（5% - 10% 左右），单机 QPS 不太大的时候损耗几乎可以忽略不计。</p>
-<h3 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h3><p>Sentinel 可以针对不同的调用关系，以不同的运行指标（如 QPS、并发调用数、系统负载等）为基准，对资源调用进行流量控制，将随机的请求调整成合适的形状。<br>Sentinel 支持多样化的流量整形策略，在 QPS 过高的时候可以自动将流量调整成合适的形状。常用的有：</p>
-<ul>
-<li><strong>直接拒绝模式</strong>：即超出的请求直接拒绝。</li>
-<li><strong>慢启动预热模式</strong>：当流量激增的时候，控制流量通过的速率，让通过的流量缓慢增加，在一定时间内逐渐增加到阈值上限，给冷系统一个预热的时间，避免冷系统被压垮。</li>
-</ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648092157855-7f16f5f1-5859-492a-a1d7-69930c547e0d.png#clientId=u54d46c2c-7e67-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=489&id=u578fce8b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=489&originWidth=567&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=51718&status=done&style=none&taskId=u3c1a7e4a-7ab0-47e5-8d25-9fb6ec48922&title=&width=567" alt="image.png" width="567"></p>
-<ul>
-<li><strong>匀速器模式</strong>：利用 Leaky Bucket 算法实现的匀速模式，严格控制了请求通过的时间间隔，同时堆积的请求将会排队，超过超时时长的请求直接被拒绝。</li>
-</ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648092917274-de7029ed-78a7-4cb3-bc71-dcc1720e7946.png#clientId=u54d46c2c-7e67-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=422&id=ubf8b4131&margin=%5Bobject%20Object%5D&name=image.png&originHeight=422&originWidth=1250&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=44005&status=done&style=none&taskId=u9a4683b1-92c9-4729-903e-f542bb03a88&title=&width=1250" alt="image.png" width="1250"></p>
-<p>Sentinel 还支持基于调用关系的限流，包括基于调用方限流、基于调用链入口限流、关联流量限流等，依托于 Sentinel 强大的调用链路统计信息，可以提供精准的不同维度的限流。<br>目前 Sentinel 对异步调用链路的支持还不是很好，后续版本会着重改善支持异步调用。</p>
-<h3 id="系统负载保护"><a href="#系统负载保护" class="headerlink" title="系统负载保护"></a>系统负载保护</h3><p>Sentinel 对系统的维度提供保护，负载保护算法借鉴了 TCP BBR 的思想。当系统负载较高的时候，如果仍持续让请求进入，可能会导致系统崩溃，无法响应。在集群环境下，网络负载均衡会把本应这台机器承载的流量转发到其它的机器上去。如果这个时候其它的机器也处在一个边缘状态的时候，这个增加的流量就会导致这台机器也崩溃，最后导致整个集群不可用。针对这个情况，Sentinel 提供了对应的保护机制，让系统的入口流量和系统的负载达到一个平衡，保证系统在能力范围之内处理最多的请求。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648093267714-9c7a3d8a-ff3e-4362-9ad1-e5beffc6102e.png#clientId=u54d46c2c-7e67-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=137&id=u35838e37&margin=%5Bobject%20Object%5D&name=image.png&originHeight=137&originWidth=871&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=25235&status=done&style=none&taskId=u648a729d-1288-4672-8778-80df67c9e60&title=&width=871" alt="image.png" width="871"></p>
-<h3 id="实时监控与控制面板"><a href="#实时监控与控制面板" class="headerlink" title="实时监控与控制面板"></a>实时监控与控制面板</h3><p>Sentinel 提供 HTTP API 用于获取实时的监控信息，如调用链路统计信息、簇点信息、规则信息等。如果用户正在使用 Spring Boot&#x2F;Spring Cloud 并使用了 Sentinel Spring Cloud Starter，还可以方便地通过其暴露的 Actuator Endpoint 来获取运行时的一些信息，如动态规则等。未来 Sentinel 还会支持标准化的指标监控 API，可以方便地整合各种监控系统和可视化系统，如 Prometheus、Grafana 等。</p>
-<p>Sentinel 控制台（Dashboard）提供了机器发现、配置规则、查看实时监控、查看调用链路信息等功能，使得用户可以非常方便地去查看监控和进行配置。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648093287021-622cf832-4136-4de2-8609-2cabcdb832ff.png#clientId=u54d46c2c-7e67-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1586&id=ua3d1786b&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1586&originWidth=2428&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=367092&status=done&style=none&taskId=uc321d861-3fa3-4b4f-81d9-6c47b351213&title=&width=2428" alt="image.png" width="2428"></p>
-<h3 id="生态"><a href="#生态" class="headerlink" title="生态"></a>生态</h3><p>Sentinel 目前已经针对 Servlet、Dubbo、Spring Boot&#x2F;Spring Cloud、gRPC 等进行了适配，用户只需引入相应依赖并进行简单配置即可非常方便地享受 Sentinel 的高可用流量防护能力。未来 Sentinel 还会对更多常用框架进行适配，并且会为 Service Mesh 提供集群流量防护的能力。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>最后用表格来进行对比</p>
-<table><thead><tr>
-<th></th>
-<th>Sentinel</th>
-<th>Hystrix</th>
-</tr>
-</thead><tbody><tr>
-<td>隔离策略</td>
-<td>基于并发数</td>
-<td>线程池隔离&#x2F;信号量隔离</td>
-</tr>
-<tr>
-<td>熔断降级策略</td>
-<td>基于响应时间或失败比率</td>
-<td>基于失败比率</td>
-</tr>
-<tr>
-<td>实时指标实现</td>
-<td>滑动窗口</td>
-<td>滑动窗口（基于 RxJava）</td>
-</tr>
-<tr>
-<td>规则配置</td>
-<td>支持多种数据源</td>
-<td>支持多种数据源</td>
-</tr>
-<tr>
-<td>扩展性</td>
-<td>多个扩展点</td>
-<td>插件的形式</td>
-</tr>
-<tr>
-<td>基于注解的支持</td>
-<td>即将发布</td>
-<td>支持</td>
-</tr>
-<tr>
-<td>调用链路信息</td>
-<td>支持同步调用</td>
-<td>不支持</td>
-</tr>
-<tr>
-<td>限流</td>
-<td>基于 QPS &#x2F; 并发数，支持基于调用关系的限流</td>
-<td>不支持</td>
-</tr>
-<tr>
-<td>流量整形</td>
-<td>支持慢启动、匀速器模式</td>
-<td>不支持</td>
-</tr>
-<tr>
-<td>系统负载保护</td>
-<td>支持</td>
-<td>不支持</td>
-</tr>
-<tr>
-<td>实时监控 API</td>
-<td>各式各样</td>
-<td>较为简单</td>
-</tr>
-<tr>
-<td>控制台</td>
-<td>开箱即用，可配置规则、查看秒级监控、机器发现等</td>
-<td>不完善</td>
-</tr>
-<tr>
-<td>常见框架的适配</td>
-<td>Servlet、Spring Cloud、Dubbo、gRPC 等</td>
-<td>Servlet、Spring Cloud Netflix</td>
-</tr>
-</tbody></table>]]></content>
-      <categories>
-        <category>stability</category>
-      </categories>
-      <tags>
-        <tag>Stability</tag>
-        <tag>Sentinel</tag>
-        <tag>Hystrix</tag>
       </tags>
   </entry>
   <entry>
@@ -9429,6 +9429,160 @@ class BaseSimpleTest extends Specification &#123;
       <tags>
         <tag>Java</tag>
         <tag>Spock</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>TMC多级缓存</title>
+    <url>/article/cache/tmc/</url>
+    <content><![CDATA[<blockquote>
+<p>TMC (Transparent Multilevel Cache) 在通用“分布式缓存解决方案（如 CodisProxy + Redis ）”基础上，增加了以下功能：</p>
+<ul>
+<li>应用层热点探测</li>
+<li>应用层本地缓存</li>
+<li>应用层缓存命中统计</li>
+</ul>
+<p>以帮助应用层解决缓存使用过程中出现的热点访问问题</p>
+</blockquote>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646820802045-a323118a-557c-437b-b9be-a088dbe54746.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=375&id=u40be1be5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=375&originWidth=529&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=43922&status=done&style=none&taskId=ua6df5020-2746-48b0-b0d7-c884974a4c5&title=&width=529" alt="image.png" width="529"></p>
+<p>使用有赞服务的电商商家数量和类型很多， 商家会不定期做一些“商品秒杀”、“商品推广”活动， 导致“营销活动”、“商品详情”、“交易下单”等链路应用出现 缓存热点访问 的情况：</p>
+<ul>
+<li>活动时间、活动类型、活动商品之类的信息不可预期，导致 缓存热点访问 情况不可提前预知;</li>
+<li>缓存热点访问 出现期间，应用层少数热点访问 key 产生大量缓存访问请求:冲击分布式缓存系统，大量 占据内网带宽，最终影响应用层系统稳定性;</li>
+</ul>
+<p>为了应对以上问题，需要一个能够 自动发现热点 并将 热点缓存访问请求前置在应用层本地缓存 的解决方案， 这就是 TMC 产生的原因。</p>
+<h2 id="TMC-架构"><a href="#TMC-架构" class="headerlink" title="TMC 架构"></a>TMC 架构</h2><h3 id="业务定位"><a href="#业务定位" class="headerlink" title="业务定位"></a>业务定位</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646821796846-9a991b6c-34c8-444c-a836-a36d0a25ec5b.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=704&id=u48b2c098&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1408&originWidth=1948&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=824381&status=done&style=none&taskId=u335a67a8-16fe-4046-abdf-35aaec6946d&title=&width=974" alt="image.png" width="974"></p>
+<h3 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823138502-b2037837-e4d9-49eb-a1f7-fa9ede195b43.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=773&id=ufc255c34&margin=%5Bobject%20Object%5D&name=image.png&originHeight=773&originWidth=1233&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=328621&status=done&style=none&taskId=u503f2fcc-6797-42f7-b817-b57efea6c9b&title=&width=1233" alt="image.png" width="1233"></p>
+<h4 id="老的上报链路"><a href="#老的上报链路" class="headerlink" title="老的上报链路"></a>老的上报链路</h4><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823300463-ff6d428d-cac3-4fe8-8ef3-584ba8451831.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=337&id=ucfda2623&margin=%5Bobject%20Object%5D&name=image.png&originHeight=337&originWidth=1097&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=118996&status=done&style=none&taskId=u38ed54a1-a4c7-4353-b314-b765cce3b8e&title=&width=1097" alt="image.png" width="1097"><br>旧架构强依赖 etcd 和 kafka</p>
+<ul>
+<li>etcd write 1w&#x2F;s， 击穿时 tmc 产生的 变更事件远超这个量级；</li>
+<li>kafka 链路长，延迟较高且潜在风险较高。</li>
+</ul>
+<h4 id="新的上报通道"><a href="#新的上报通道" class="headerlink" title="新的上报通道"></a>新的上报通道</h4><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823329955-979a8907-e143-448a-a563-ed3f61d15085.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=303&id=uc8b73849&margin=%5Bobject%20Object%5D&name=image.png&originHeight=303&originWidth=1089&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=81534&status=done&style=none&taskId=u953b6a30-7332-4636-a1b2-93febeb25be&title=&width=1089" alt="image.png" width="1089"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646821907075-e77eaf88-f968-48e5-bb9d-3a545df7607d.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=894&id=Gag7f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1788&originWidth=2466&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=523892&status=done&style=none&taskId=uc20faab3-42cc-4aa2-a04e-e7c683ce7bb&title=&width=1233" alt="image.png" width="1233"><br>主要功能：热点上报、缓存失效广播、热点下发、服务依赖<br>主要接接口</p>
+<ul>
+<li>NotifierService#Report 供 sdk 上报新的热 key</li>
+<li>NotifierService#ExpireHotKeys 供 sdk 推送 key 过期通知</li>
+<li>NotifierService#Publish， 供 volcano publish 热 key</li>
+</ul>
+<pre class="line-numbers language-pascal" data-language="pascal"><code class="language-pascal">syntax&#x3D;&quot;proto3&quot;;
+
+package&#x3D;v1;
+
+service NotifierService &#123;
+    rpc ExpireHotKeys (ExpireHotKeysRequest) returns (ExpireHotKeysResponse) &#123;
+    &#125;
+
+    rpc Report (ReportRequest) returns (ReportResponse) &#123;
+    &#125;
+
+    rpc Publish (PublishRequest) returns (PublishResponse) &#123;
+    &#125;
+&#125;
+
+message ExpireHotKeysRequest &#123;
+  repeated string appNames&#x3D;1;
+  repeated bytes hotKeys&#x3D;2;
+  string groupName&#x3D;3;
+&#125;
+
+message ExpireHotKeysResponse &#123;
+  int32 code&#x3D;1;
+  string msg&#x3D;2;
+&#125;
+
+message ReportRequest &#123;
+    repeated ReportData reportData &#x3D; 1;
+    string groupName &#x3D; 2;
+&#125;
+
+message ReportData &#123;
+    string appName &#x3D; 1;
+    string key &#x3D; 2;
+    int32 accessTimes &#x3D; 3;
+    int32 redisHitTimes &#x3D; 4;
+    int32 localCacheHitTimes &#x3D; 5;
+    int32 localCacheLossTimes &#x3D; 6;
+    int32 version &#x3D; 7;
+    int64 sendTime &#x3D; 8;
+&#125;
+
+message ReportResponse &#123;
+    int32 code &#x3D; 1;
+    string msg &#x3D; 2;
+&#125;
+
+message PublishRequest &#123;
+    string groupName &#x3D; 1;
+    repeated string appNames &#x3D; 2;
+    repeated HotKeyChangeModel changeModels &#x3D; 3;
+    int64 findAt &#x3D; 4;
+    enum EventType &#123;
+        NULL &#x3D; 0;
+        DELETE &#x3D; 1;
+        UPDATE &#x3D; 2;
+        EXPIRE &#x3D; 3;
+        FIND &#x3D; 4;
+    &#125;
+    EventType eventType &#x3D; 5;
+&#125;
+
+message HotKeyChangeModel &#123;
+    string hotKey &#x3D; 1;
+    int64 expireTime &#x3D; 2;
+&#125;
+
+message PublishResponse &#123;
+    int32 code &#x3D; 1;
+    string msg &#x3D; 2;
+&#125;
+
+&#x2F;&#x2F; code 0: 正确
+&#x2F;&#x2F; code 400: 参数不对</code></pre>
+
+<ul>
+<li>按 group+key 维度聚合</li>
+<li>跨注册中心的需求，采用 notifier 互调实现</li>
+<li>对于 kvproxy 的 hotkey error，触发立即下发热点 key 的逻辑</li>
+</ul>
+<p>notifier 可能会存在内存泄露问题<br>1、双缓冲队列：通过覆盖写的方式，只能解决突发流量洪峰，丢弃 limit 以外的流量；<br>2、下游 sweep（Tether 广播或者上报 volcano-server）性能受限时，内存中的 message 会产生积压，造成泄漏；<br>使用 LRU 缓存来替换抖动的数据映射来解决</p>
+<h2 id="热点计算"><a href="#热点计算" class="headerlink" title="热点计算"></a>热点计算</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823769927-04919d8e-a674-458c-9747-74815d47ef3e.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=89&id=uab9b841c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=89&originWidth=757&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=40862&status=done&style=none&taskId=ueb90a1de-ff6b-4442-af25-83381c6f784&title=&width=757" alt="image.png" width="757"></p>
+<ul>
+<li><strong>数据收集</strong>: 收集 Volcano-SDK 上报的 key 访问事件;</li>
+<li><strong>热度滑窗</strong>: 对 App 的每个 Key ，维护一个时间轮，记录基于当前时刻滑窗的访问热度;</li>
+<li><strong>热度汇聚</strong>: 对 App 的所有 Key ，以&lt;key， 热度&gt;的形式进行 热度排序汇总;</li>
+<li><strong>热点探测</strong>: 对 App ，从 热 Key 排序汇总 结果中选出 TopN 的热点 Key ，推送给 volcano-SDK;</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823827946-0b66c565-0753-4a82-b219-5cfa14cf0ff6.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=891&id=u3bfdcd68&margin=%5Bobject%20Object%5D&name=image.png&originHeight=891&originWidth=1893&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=463441&status=done&style=none&taskId=ub6a503d8-388c-4bb0-b5e4-7e1c20e345d&title=&width=1893" alt="image.png" width="1893"></p>
+<p><strong>volcano-sdk</strong><br>对于 redis 的 Jedis 客户端中封装已有的 get、set、expire、delete 操作，做热点的发现统计，以及本地缓存变更通知。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823662468-ff5848c6-0a20-4ddc-b578-06b89099f5ce.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1970&id=u04c4c881&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1970&originWidth=2832&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=2136422&status=done&style=none&taskId=ud56b3858-b3e0-4ad2-b1e5-0de0f081211&title=&width=2832" alt="image.png" width="2832"><br><strong>volcano-server</strong><br>对于收集的数据，进行滑动窗口计算，汇总，热点推送到各机器上<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823710525-c6631258-d680-43b8-954d-131d9ae6d86e.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=2232&id=u543813a8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=2232&originWidth=1634&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=540021&status=done&style=none&taskId=ub6fb5c79-1778-47c4-ad67-cb30480bf3f&title=&width=1634" alt="image.png" width="1634"></p>
+<h2 id="关于缓存击穿的处理"><a href="#关于缓存击穿的处理" class="headerlink" title="关于缓存击穿的处理"></a>关于缓存击穿的处理</h2><p>如果没有处理好并发问题， 业务方很容易出现， 在缓存数据过期时， 大量相同的请求回源到底层的 DB 读取数据， 导致大量无效回源请求， 增加 DB 的压力， 在大流量的情况下可能会导致 DB 崩溃， 从而导致雪崩。 对于这种情况， 我们在 redis-zan 框架中封装了一个简易接口来避免这种情况。<br>使用 redis-zan 的业务方， 可以通过封装的接口完成缓存击穿的简化处理， 缓存失效自动 DB 回源更新缓存的使用示例:</p>
+<pre class="line-numbers language-protobuf" data-language="protobuf"><code class="language-protobuf">public void testStringGet() throws ExecutionException &#123;
+   String key &#x3D; &quot;youzan:test:db_callback&quot;;
+   Supplier&lt;String&gt; supplier &#x3D; () -&gt; &#123;
+    &#x2F;&#x2F; 处理读取db的数据, 返回对应db的值
+     return ret;
+   &#125;;
+
+   &#x2F;&#x2F; 此方法会从kv读取key的值, 如果不存在, 调用supplier回调函数从db中回源, 然后自动更新到kv, 并设置指定的ttl过期时间.
+   &#x2F;&#x2F; 此方法会自动处理缓存失效时多个并发回源问题, 保证只有第一个线程的调用会回源db并更新kv. 后面的线程会排队等待第一个线程返回.
+
+   String value &#x3D; redisClient.opsForString().get(key, 5, supplier);
+ &#125;</code></pre>
+
+<p>注意， 此方式可以单独使用， 不需要开启 TMC 本地缓存功能也可以使用。<br>类似的， 对于读取业务本身就不存在的数据， 出现的缓存穿透情况， 业务可以设置一个业务认为不存在的标记， 来避免不存在的数据一直请求 DB。</p>
+<h2 id="KV-增强本地缓存-LRUs"><a href="#KV-增强本地缓存-LRUs" class="headerlink" title="KV 增强本地缓存 LRUs"></a>KV 增强本地缓存 LRUs</h2><p>默认的热点缓存一般只用于少量的热点数据缓存(几百以内的 key)， tmc-kv 新功能新增支持本地 LRU 能力， 可以近实时的拦截热点(理论上可以立即缓存热点读请求)， 也可以缓存更多的数据到本地(几十万 key)， 并且通过淘汰算法自动驱逐非热点数据， 不过由于缓存的 key 更多了， 因此有可能会扩大数据不一致的影响范围(开启更新通知广播可以通过更新广播减少不一致窗口)， 适合数据修改不频繁的业务场景， 需要的业务方可以联系开发手动开启本地 LRU 增强功能。</p>
+<h2 id="RPC-缓存"><a href="#RPC-缓存" class="headerlink" title="RPC 缓存"></a>RPC 缓存</h2><p>最近新增了一项 RPC 缓存功能， 来提供更加快捷的本地缓存使用方式， 可以直接缓存 RPC 的响应结果， 业务方不需要关注缓存细节。 通过 RPC 缓存，业务可以：</p>
+<ul>
+<li>提升请求的处理速度，提升业务的吞吐量。从本地缓存中获取响应结果，性能远高于向后端发起 RPC 请求。</li>
+<li>降低后端应用负载，节省成本。本地缓存可以有效的降低后端应用处理的 RPC 请求量(RPS，requests per second)，进而降低后端应用的负载，节省成本。</li>
+<li>流量削峰，提升应用稳定性。缓存命中率在秒杀等瞬间洪水流量场景下会显著提升，从而避免洪水流量瞬间冲击后端服务。</li>
+</ul>
+<p>通过开启缓存配置，即可零开发零成本的享受到 RPC 缓存带来的收益。对于不需要针对 kv 具体缓存数据做读取操作的应用，或者需要 kv 之外数据缓存的业务， 可以使用 RPC 缓存更加简单的提升性能。</p>
+]]></content>
+      <categories>
+        <category>cache</category>
+      </categories>
+      <tags>
+        <tag>Cache</tag>
+        <tag>TMC</tag>
       </tags>
   </entry>
   <entry>
@@ -9927,160 +10081,6 @@ int LOWEST_PRECEDENCE &#x3D; Integer.MAX_VALUE;&#125;</code></pre>
       </tags>
   </entry>
   <entry>
-    <title>TMC多级缓存</title>
-    <url>/article/cache/tmc/</url>
-    <content><![CDATA[<blockquote>
-<p>TMC (Transparent Multilevel Cache) 在通用“分布式缓存解决方案（如 CodisProxy + Redis ）”基础上，增加了以下功能：</p>
-<ul>
-<li>应用层热点探测</li>
-<li>应用层本地缓存</li>
-<li>应用层缓存命中统计</li>
-</ul>
-<p>以帮助应用层解决缓存使用过程中出现的热点访问问题</p>
-</blockquote>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646820802045-a323118a-557c-437b-b9be-a088dbe54746.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=375&id=u40be1be5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=375&originWidth=529&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=43922&status=done&style=none&taskId=ua6df5020-2746-48b0-b0d7-c884974a4c5&title=&width=529" alt="image.png" width="529"></p>
-<p>使用有赞服务的电商商家数量和类型很多， 商家会不定期做一些“商品秒杀”、“商品推广”活动， 导致“营销活动”、“商品详情”、“交易下单”等链路应用出现 缓存热点访问 的情况：</p>
-<ul>
-<li>活动时间、活动类型、活动商品之类的信息不可预期，导致 缓存热点访问 情况不可提前预知;</li>
-<li>缓存热点访问 出现期间，应用层少数热点访问 key 产生大量缓存访问请求:冲击分布式缓存系统，大量 占据内网带宽，最终影响应用层系统稳定性;</li>
-</ul>
-<p>为了应对以上问题，需要一个能够 自动发现热点 并将 热点缓存访问请求前置在应用层本地缓存 的解决方案， 这就是 TMC 产生的原因。</p>
-<h2 id="TMC-架构"><a href="#TMC-架构" class="headerlink" title="TMC 架构"></a>TMC 架构</h2><h3 id="业务定位"><a href="#业务定位" class="headerlink" title="业务定位"></a>业务定位</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646821796846-9a991b6c-34c8-444c-a836-a36d0a25ec5b.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=704&id=u48b2c098&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1408&originWidth=1948&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=824381&status=done&style=none&taskId=u335a67a8-16fe-4046-abdf-35aaec6946d&title=&width=974" alt="image.png" width="974"></p>
-<h3 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h3><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823138502-b2037837-e4d9-49eb-a1f7-fa9ede195b43.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=773&id=ufc255c34&margin=%5Bobject%20Object%5D&name=image.png&originHeight=773&originWidth=1233&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=328621&status=done&style=none&taskId=u503f2fcc-6797-42f7-b817-b57efea6c9b&title=&width=1233" alt="image.png" width="1233"></p>
-<h4 id="老的上报链路"><a href="#老的上报链路" class="headerlink" title="老的上报链路"></a>老的上报链路</h4><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823300463-ff6d428d-cac3-4fe8-8ef3-584ba8451831.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=337&id=ucfda2623&margin=%5Bobject%20Object%5D&name=image.png&originHeight=337&originWidth=1097&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=118996&status=done&style=none&taskId=u38ed54a1-a4c7-4353-b314-b765cce3b8e&title=&width=1097" alt="image.png" width="1097"><br>旧架构强依赖 etcd 和 kafka</p>
-<ul>
-<li>etcd write 1w&#x2F;s， 击穿时 tmc 产生的 变更事件远超这个量级；</li>
-<li>kafka 链路长，延迟较高且潜在风险较高。</li>
-</ul>
-<h4 id="新的上报通道"><a href="#新的上报通道" class="headerlink" title="新的上报通道"></a>新的上报通道</h4><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823329955-979a8907-e143-448a-a563-ed3f61d15085.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=303&id=uc8b73849&margin=%5Bobject%20Object%5D&name=image.png&originHeight=303&originWidth=1089&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=81534&status=done&style=none&taskId=u953b6a30-7332-4636-a1b2-93febeb25be&title=&width=1089" alt="image.png" width="1089"><br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646821907075-e77eaf88-f968-48e5-bb9d-3a545df7607d.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=894&id=Gag7f&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1788&originWidth=2466&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=523892&status=done&style=none&taskId=uc20faab3-42cc-4aa2-a04e-e7c683ce7bb&title=&width=1233" alt="image.png" width="1233"><br>主要功能：热点上报、缓存失效广播、热点下发、服务依赖<br>主要接接口</p>
-<ul>
-<li>NotifierService#Report 供 sdk 上报新的热 key</li>
-<li>NotifierService#ExpireHotKeys 供 sdk 推送 key 过期通知</li>
-<li>NotifierService#Publish， 供 volcano publish 热 key</li>
-</ul>
-<pre class="line-numbers language-pascal" data-language="pascal"><code class="language-pascal">syntax&#x3D;&quot;proto3&quot;;
-
-package&#x3D;v1;
-
-service NotifierService &#123;
-    rpc ExpireHotKeys (ExpireHotKeysRequest) returns (ExpireHotKeysResponse) &#123;
-    &#125;
-
-    rpc Report (ReportRequest) returns (ReportResponse) &#123;
-    &#125;
-
-    rpc Publish (PublishRequest) returns (PublishResponse) &#123;
-    &#125;
-&#125;
-
-message ExpireHotKeysRequest &#123;
-  repeated string appNames&#x3D;1;
-  repeated bytes hotKeys&#x3D;2;
-  string groupName&#x3D;3;
-&#125;
-
-message ExpireHotKeysResponse &#123;
-  int32 code&#x3D;1;
-  string msg&#x3D;2;
-&#125;
-
-message ReportRequest &#123;
-    repeated ReportData reportData &#x3D; 1;
-    string groupName &#x3D; 2;
-&#125;
-
-message ReportData &#123;
-    string appName &#x3D; 1;
-    string key &#x3D; 2;
-    int32 accessTimes &#x3D; 3;
-    int32 redisHitTimes &#x3D; 4;
-    int32 localCacheHitTimes &#x3D; 5;
-    int32 localCacheLossTimes &#x3D; 6;
-    int32 version &#x3D; 7;
-    int64 sendTime &#x3D; 8;
-&#125;
-
-message ReportResponse &#123;
-    int32 code &#x3D; 1;
-    string msg &#x3D; 2;
-&#125;
-
-message PublishRequest &#123;
-    string groupName &#x3D; 1;
-    repeated string appNames &#x3D; 2;
-    repeated HotKeyChangeModel changeModels &#x3D; 3;
-    int64 findAt &#x3D; 4;
-    enum EventType &#123;
-        NULL &#x3D; 0;
-        DELETE &#x3D; 1;
-        UPDATE &#x3D; 2;
-        EXPIRE &#x3D; 3;
-        FIND &#x3D; 4;
-    &#125;
-    EventType eventType &#x3D; 5;
-&#125;
-
-message HotKeyChangeModel &#123;
-    string hotKey &#x3D; 1;
-    int64 expireTime &#x3D; 2;
-&#125;
-
-message PublishResponse &#123;
-    int32 code &#x3D; 1;
-    string msg &#x3D; 2;
-&#125;
-
-&#x2F;&#x2F; code 0: 正确
-&#x2F;&#x2F; code 400: 参数不对</code></pre>
-
-<ul>
-<li>按 group+key 维度聚合</li>
-<li>跨注册中心的需求，采用 notifier 互调实现</li>
-<li>对于 kvproxy 的 hotkey error，触发立即下发热点 key 的逻辑</li>
-</ul>
-<p>notifier 可能会存在内存泄露问题<br>1、双缓冲队列：通过覆盖写的方式，只能解决突发流量洪峰，丢弃 limit 以外的流量；<br>2、下游 sweep（Tether 广播或者上报 volcano-server）性能受限时，内存中的 message 会产生积压，造成泄漏；<br>使用 LRU 缓存来替换抖动的数据映射来解决</p>
-<h2 id="热点计算"><a href="#热点计算" class="headerlink" title="热点计算"></a>热点计算</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823769927-04919d8e-a674-458c-9747-74815d47ef3e.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=89&id=uab9b841c&margin=%5Bobject%20Object%5D&name=image.png&originHeight=89&originWidth=757&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=40862&status=done&style=none&taskId=ueb90a1de-ff6b-4442-af25-83381c6f784&title=&width=757" alt="image.png" width="757"></p>
-<ul>
-<li><strong>数据收集</strong>: 收集 Volcano-SDK 上报的 key 访问事件;</li>
-<li><strong>热度滑窗</strong>: 对 App 的每个 Key ，维护一个时间轮，记录基于当前时刻滑窗的访问热度;</li>
-<li><strong>热度汇聚</strong>: 对 App 的所有 Key ，以&lt;key， 热度&gt;的形式进行 热度排序汇总;</li>
-<li><strong>热点探测</strong>: 对 App ，从 热 Key 排序汇总 结果中选出 TopN 的热点 Key ，推送给 volcano-SDK;</li>
-</ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823827946-0b66c565-0753-4a82-b219-5cfa14cf0ff6.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=891&id=u3bfdcd68&margin=%5Bobject%20Object%5D&name=image.png&originHeight=891&originWidth=1893&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=463441&status=done&style=none&taskId=ub6a503d8-388c-4bb0-b5e4-7e1c20e345d&title=&width=1893" alt="image.png" width="1893"></p>
-<p><strong>volcano-sdk</strong><br>对于 redis 的 Jedis 客户端中封装已有的 get、set、expire、delete 操作，做热点的发现统计，以及本地缓存变更通知。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823662468-ff5848c6-0a20-4ddc-b578-06b89099f5ce.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=1970&id=u04c4c881&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1970&originWidth=2832&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=2136422&status=done&style=none&taskId=ud56b3858-b3e0-4ad2-b1e5-0de0f081211&title=&width=2832" alt="image.png" width="2832"><br><strong>volcano-server</strong><br>对于收集的数据，进行滑动窗口计算，汇总，热点推送到各机器上<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1646823710525-c6631258-d680-43b8-954d-131d9ae6d86e.png#clientId=udf52bffe-ad73-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=2232&id=u543813a8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=2232&originWidth=1634&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=540021&status=done&style=none&taskId=ub6fb5c79-1778-47c4-ad67-cb30480bf3f&title=&width=1634" alt="image.png" width="1634"></p>
-<h2 id="关于缓存击穿的处理"><a href="#关于缓存击穿的处理" class="headerlink" title="关于缓存击穿的处理"></a>关于缓存击穿的处理</h2><p>如果没有处理好并发问题， 业务方很容易出现， 在缓存数据过期时， 大量相同的请求回源到底层的 DB 读取数据， 导致大量无效回源请求， 增加 DB 的压力， 在大流量的情况下可能会导致 DB 崩溃， 从而导致雪崩。 对于这种情况， 我们在 redis-zan 框架中封装了一个简易接口来避免这种情况。<br>使用 redis-zan 的业务方， 可以通过封装的接口完成缓存击穿的简化处理， 缓存失效自动 DB 回源更新缓存的使用示例:</p>
-<pre class="line-numbers language-protobuf" data-language="protobuf"><code class="language-protobuf">public void testStringGet() throws ExecutionException &#123;
-   String key &#x3D; &quot;youzan:test:db_callback&quot;;
-   Supplier&lt;String&gt; supplier &#x3D; () -&gt; &#123;
-    &#x2F;&#x2F; 处理读取db的数据, 返回对应db的值
-     return ret;
-   &#125;;
-
-   &#x2F;&#x2F; 此方法会从kv读取key的值, 如果不存在, 调用supplier回调函数从db中回源, 然后自动更新到kv, 并设置指定的ttl过期时间.
-   &#x2F;&#x2F; 此方法会自动处理缓存失效时多个并发回源问题, 保证只有第一个线程的调用会回源db并更新kv. 后面的线程会排队等待第一个线程返回.
-
-   String value &#x3D; redisClient.opsForString().get(key, 5, supplier);
- &#125;</code></pre>
-
-<p>注意， 此方式可以单独使用， 不需要开启 TMC 本地缓存功能也可以使用。<br>类似的， 对于读取业务本身就不存在的数据， 出现的缓存穿透情况， 业务可以设置一个业务认为不存在的标记， 来避免不存在的数据一直请求 DB。</p>
-<h2 id="KV-增强本地缓存-LRUs"><a href="#KV-增强本地缓存-LRUs" class="headerlink" title="KV 增强本地缓存 LRUs"></a>KV 增强本地缓存 LRUs</h2><p>默认的热点缓存一般只用于少量的热点数据缓存(几百以内的 key)， tmc-kv 新功能新增支持本地 LRU 能力， 可以近实时的拦截热点(理论上可以立即缓存热点读请求)， 也可以缓存更多的数据到本地(几十万 key)， 并且通过淘汰算法自动驱逐非热点数据， 不过由于缓存的 key 更多了， 因此有可能会扩大数据不一致的影响范围(开启更新通知广播可以通过更新广播减少不一致窗口)， 适合数据修改不频繁的业务场景， 需要的业务方可以联系开发手动开启本地 LRU 增强功能。</p>
-<h2 id="RPC-缓存"><a href="#RPC-缓存" class="headerlink" title="RPC 缓存"></a>RPC 缓存</h2><p>最近新增了一项 RPC 缓存功能， 来提供更加快捷的本地缓存使用方式， 可以直接缓存 RPC 的响应结果， 业务方不需要关注缓存细节。 通过 RPC 缓存，业务可以：</p>
-<ul>
-<li>提升请求的处理速度，提升业务的吞吐量。从本地缓存中获取响应结果，性能远高于向后端发起 RPC 请求。</li>
-<li>降低后端应用负载，节省成本。本地缓存可以有效的降低后端应用处理的 RPC 请求量(RPS，requests per second)，进而降低后端应用的负载，节省成本。</li>
-<li>流量削峰，提升应用稳定性。缓存命中率在秒杀等瞬间洪水流量场景下会显著提升，从而避免洪水流量瞬间冲击后端服务。</li>
-</ul>
-<p>通过开启缓存配置，即可零开发零成本的享受到 RPC 缓存带来的收益。对于不需要针对 kv 具体缓存数据做读取操作的应用，或者需要 kv 之外数据缓存的业务， 可以使用 RPC 缓存更加简单的提升性能。</p>
-]]></content>
-      <categories>
-        <category>cache</category>
-      </categories>
-      <tags>
-        <tag>Cache</tag>
-        <tag>TMC</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>分布式一致性Raft算法</title>
     <url>/article/raft/</url>
     <content><![CDATA[<blockquote>
@@ -10190,6 +10190,18 @@ message PublishResponse &#123;
     <url>/article/architecture/architecture-skill/</url>
     <content><![CDATA[<h2 id="架构师技能图谱"><a href="#架构师技能图谱" class="headerlink" title="架构师技能图谱"></a>架构师技能图谱</h2><p>平时学习的知识比较零散，没有做系统的归类和整理，通过下面的图，可以系统的学习。 补充不太熟悉知识，做到查漏补缺。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648980331589-0ee55daa-5a4c-4388-9801-5bbf7ef036e8.png#clientId=uf38a9b84-2418-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=3031&id=u060428fd&margin=%5Bobject%20Object%5D&name=image.png&originHeight=6061&originWidth=4127&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=1800478&status=done&style=none&taskId=u6932b75d-4b06-4d81-8172-5e9663baa00&title=&width=2063.5" alt="image.png" width="2063.5"></p>
 <h2 id="微服务架构图谱"><a href="#微服务架构图谱" class="headerlink" title="微服务架构图谱"></a>微服务架构图谱</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648980274280-d137083a-256a-407e-8636-6641f3e2c87d.png#clientId=u5affc02a-88fc-4&crop=0&crop=0&crop=1&crop=1&from=paste&id=u821406e5&margin=%5Bobject%20Object%5D&name=image.png&originHeight=719&originWidth=1280&originalType=url%E2%88%B6=1&rotation=0&showTitle=false&size=429091&status=done&style=none&taskId=uac98a620-4396-4fd8-a4fc-7a6fe7d07ab&title=" alt="image.png"></p>
+]]></content>
+      <categories>
+        <category>architecture</category>
+      </categories>
+      <tags>
+        <tag>Architecture</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>架构（二）秒杀架构设计</title>
+    <url>/article/architecture/architecture-miaosha/</url>
+    <content><![CDATA[<h2 id="秒杀业务与难点"><a href="#秒杀业务与难点" class="headerlink" title="秒杀业务与难点"></a>秒杀业务与难点</h2><p>秒杀业务在各业务中已然非常流行，这里我将互联网行业中的秒杀定义为： 在非常短的时间内，将一件商品分成多份进行购买的行为。微信抢红包、一元夺宝、双 11 大促抢购等业务本质上都可视作秒杀业务。而最近大热的抢红包的难度在于这是和钱打交道的秒杀场景，对于事务的要求性更高。 秒杀业务优化的难点或者说痛点在于： 同一件商品在同一时间段内有非常多的用户去进行抢夺，从而造成服务器资源的紧张。<br>非秒杀情况下，比如非大促的时候，用户购买的体验都是非常不错的。但是在秒杀场景下，这时意味着多个用户在同时抢一件商品，也就是并发很高，但集中在同一商品上，造成实质为串行操作。因为在数据库这层本质执行的是对同一件商品扣库存。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648980457917-053f8895-79ab-415f-9308-188a7a3903ef.png#clientId=ue66a0a2f-77e9-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=5141&id=ubd9150e7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=10282&originWidth=2278&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=2363971&status=done&style=none&taskId=u4cc2d65e-8c97-43ae-bef8-709a905f9a7&title=&width=1139" alt="image.png" width="1139"></p>
 ]]></content>
       <categories>
         <category>architecture</category>
@@ -10924,34 +10936,6 @@ public class OrderCreatedProcessor extends AbstractStateProcessor&lt;String, Cre
       </tags>
   </entry>
   <entry>
-    <title>架构（二）秒杀架构设计</title>
-    <url>/article/architecture/architecture-miaosha/</url>
-    <content><![CDATA[<h2 id="秒杀业务与难点"><a href="#秒杀业务与难点" class="headerlink" title="秒杀业务与难点"></a>秒杀业务与难点</h2><p>秒杀业务在各业务中已然非常流行，这里我将互联网行业中的秒杀定义为： 在非常短的时间内，将一件商品分成多份进行购买的行为。微信抢红包、一元夺宝、双 11 大促抢购等业务本质上都可视作秒杀业务。而最近大热的抢红包的难度在于这是和钱打交道的秒杀场景，对于事务的要求性更高。 秒杀业务优化的难点或者说痛点在于： 同一件商品在同一时间段内有非常多的用户去进行抢夺，从而造成服务器资源的紧张。<br>非秒杀情况下，比如非大促的时候，用户购买的体验都是非常不错的。但是在秒杀场景下，这时意味着多个用户在同时抢一件商品，也就是并发很高，但集中在同一商品上，造成实质为串行操作。因为在数据库这层本质执行的是对同一件商品扣库存。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/104130/1648980457917-053f8895-79ab-415f-9308-188a7a3903ef.png#clientId=ue66a0a2f-77e9-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=5141&id=ubd9150e7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=10282&originWidth=2278&originalType=binary%E2%88%B6=1&rotation=0&showTitle=false&size=2363971&status=done&style=none&taskId=u4cc2d65e-8c97-43ae-bef8-709a905f9a7&title=&width=1139" alt="image.png" width="1139"></p>
-]]></content>
-      <categories>
-        <category>architecture</category>
-      </categories>
-      <tags>
-        <tag>Architecture</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>深入理解Disruptor</title>
-    <url>/article/disruptor/understanding-disruptor/</url>
-    <content><![CDATA[<blockquote>
-<p>Disruptor 是 LMAX 公司开源的一个高效的内存无锁队列，一个高性能的异步处理框架，或者可以认为是最快的消息框架(轻量的 JMS)，也可以认为是一个观察者模式实现，或者事件-监听模式的实现，直接称 disruptor 模式。disruptor 最大特点是高性能，其 LMAX 架构可以获得每秒 6 百万订单，用 1 微秒的延迟获得吞吐量为 100K+。理解 Disruptor 的原理，可以帮助我们更好的理解内存无锁，CAS，volatile，缓冲行等并发原理。</p>
-</blockquote>
-<p>本文主要从以下方面介绍 disruptor：<br>1、<a href="https://www.alicharles.com/article/disruptor/disruptor-ringbuffer/">Disruptor 概念和 RingBuffer 数据结构</a><br>2、<a href="https://www.alicharles.com/article/disruptor/disruptor-ringbuffer-read/">RingBuffer 读取</a><br>3、<a href="https://www.alicharles.com/article/disruptor/disruptor-ringbuffer-single-write/">RingBuffer 单生产者写入</a><br>4、<a href="https://www.alicharles.com/article/disruptor/disruptor-ringbuffer-muti-write/">RingBuffer 多生产者写入</a><br>5、<a href="https://www.alicharles.com/article/disruptor/disruptor-practise/">Disruptor 的 DSL 实践</a><br>6、相关的性能比较</p>
-]]></content>
-      <categories>
-        <category>disruptor</category>
-      </categories>
-      <tags>
-        <tag>Disruptor</tag>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>架构（四）架构设计参考规范</title>
     <url>/article/architecture/architecture-design/</url>
     <content><![CDATA[<h2 id="业务分析"><a href="#业务分析" class="headerlink" title="业务分析"></a>业务分析</h2><p><strong>业务模式</strong></p>
@@ -11058,6 +11042,38 @@ public class OrderCreatedProcessor extends AbstractStateProcessor&lt;String, Cre
       </categories>
       <tags>
         <tag>Architecture</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>深入理解Disruptor</title>
+    <url>/article/disruptor/understanding-disruptor/</url>
+    <content><![CDATA[<blockquote>
+<p>Disruptor 是 LMAX 公司开源的一个高效的内存无锁队列，一个高性能的异步处理框架，或者可以认为是最快的消息框架(轻量的 JMS)，也可以认为是一个观察者模式实现，或者事件-监听模式的实现，直接称 disruptor 模式。disruptor 最大特点是高性能，其 LMAX 架构可以获得每秒 6 百万订单，用 1 微秒的延迟获得吞吐量为 100K+。理解 Disruptor 的原理，可以帮助我们更好的理解内存无锁，CAS，volatile，缓冲行等并发原理。</p>
+</blockquote>
+<p>本文主要从以下方面介绍 disruptor：<br>1、<a href="https://www.alicharles.com/article/disruptor/disruptor-ringbuffer/">Disruptor 概念和 RingBuffer 数据结构</a><br>2、<a href="https://www.alicharles.com/article/disruptor/disruptor-ringbuffer-read/">RingBuffer 读取</a><br>3、<a href="https://www.alicharles.com/article/disruptor/disruptor-ringbuffer-single-write/">RingBuffer 单生产者写入</a><br>4、<a href="https://www.alicharles.com/article/disruptor/disruptor-ringbuffer-muti-write/">RingBuffer 多生产者写入</a><br>5、<a href="https://www.alicharles.com/article/disruptor/disruptor-practise/">Disruptor 的 DSL 实践</a><br>6、相关的性能比较</p>
+]]></content>
+      <categories>
+        <category>disruptor</category>
+      </categories>
+      <tags>
+        <tag>Disruptor</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>深入理解jvm虚拟机</title>
+    <url>/article/jvm/understanding-jvm/</url>
+    <content><![CDATA[<blockquote>
+<p>每个 Java 开发者都知道 Java 字节码是执行在 JRE(（Java Runtime Environment Java 运行时环境）上的。JRE 中最重要的部分是 Java 虚拟机（JVM），JVM 负责分析和执行 Java 字节码。Java 开发人员并不需要去关心 JVM 是如何运行的。在没有深入理解 JVM 的情况下，许多开发者已经开发出了非常多的优秀的应用以及 Java 类库。不过，如果你了解 JVM 的话，你会更加了解 Java 的，并且你会轻松解决那些看似简单但是无从下手的问题。</p>
+</blockquote>
+<p>本系列主要从以下几个方面进行分析<br>1、<a href="https://www.alicharles.com/article/jvm/java-oom/">Java 内存区域与内存溢出</a><br>2、<a href="https://www.alicharles.com/article/jvm/jvm-gc/">垃圾收集算法以及垃圾收集器</a><br>3、<a href="https://www.alicharles.com/article/jvm/jvm-gc-allocation/">内存分配与回收策略</a><br>4、<a href="https://www.alicharles.com/article/jvm/jvm-class/">类文件结构</a><br>5、<a href="https://www.alicharles.com/article/jvm/jvm-classloader/">虚拟机类加载机制</a><br>6、<a href="https://www.alicharles.com/article/jvm/jvm-classloader-delegate/">虚拟机类加载委派模型</a><br>7、<a href="https://www.alicharles.com/article/jvm/java-memory-model/">JVM 内存模型</a><br>8、虚拟机字节码执行引擎</p>
+]]></content>
+      <categories>
+        <category>jvm</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>JVM</tag>
       </tags>
   </entry>
   <entry>
@@ -11168,22 +11184,6 @@ Transfer&#x2F;sec:    236.93KB</code></pre>
       </categories>
       <tags>
         <tag>ShortUrl</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>深入理解jvm虚拟机</title>
-    <url>/article/jvm/understanding-jvm/</url>
-    <content><![CDATA[<blockquote>
-<p>每个 Java 开发者都知道 Java 字节码是执行在 JRE(（Java Runtime Environment Java 运行时环境）上的。JRE 中最重要的部分是 Java 虚拟机（JVM），JVM 负责分析和执行 Java 字节码。Java 开发人员并不需要去关心 JVM 是如何运行的。在没有深入理解 JVM 的情况下，许多开发者已经开发出了非常多的优秀的应用以及 Java 类库。不过，如果你了解 JVM 的话，你会更加了解 Java 的，并且你会轻松解决那些看似简单但是无从下手的问题。</p>
-</blockquote>
-<p>本系列主要从以下几个方面进行分析<br>1、<a href="https://www.alicharles.com/article/jvm/java-oom/">Java 内存区域与内存溢出</a><br>2、<a href="https://www.alicharles.com/article/jvm/jvm-gc/">垃圾收集算法以及垃圾收集器</a><br>3、<a href="https://www.alicharles.com/article/jvm/jvm-gc-allocation/">内存分配与回收策略</a><br>4、<a href="https://www.alicharles.com/article/jvm/jvm-class/">类文件结构</a><br>5、<a href="https://www.alicharles.com/article/jvm/jvm-classloader/">虚拟机类加载机制</a><br>6、<a href="https://www.alicharles.com/article/jvm/jvm-classloader-delegate/">虚拟机类加载委派模型</a><br>7、<a href="https://www.alicharles.com/article/jvm/java-memory-model/">JVM 内存模型</a><br>8、虚拟机字节码执行引擎</p>
-]]></content>
-      <categories>
-        <category>jvm</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>JVM</tag>
       </tags>
   </entry>
   <entry>
